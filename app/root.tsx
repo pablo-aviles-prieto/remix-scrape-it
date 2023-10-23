@@ -1,5 +1,10 @@
 import { cssBundleHref } from '@remix-run/css-bundle';
-import type { LinksFunction } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
+import type {
+  MetaFunction,
+  ActionFunctionArgs,
+  LinksFunction,
+} from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -9,11 +14,27 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import tailwindStylesheet from '~/styles/tailwind.css';
+import { SearchContainer } from './components/search-container/search-container';
+import { AppLayout } from './components/styles/app-layout';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
   { rel: 'stylesheet', href: tailwindStylesheet },
 ];
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'New Remix App' },
+    { name: 'description', content: 'Welcome to Remix!' },
+  ];
+};
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const searchWord = formData.get('search');
+  console.log('searchWord', searchWord);
+  return redirect(`/search`);
+};
 
 export default function App() {
   return (
@@ -25,15 +46,19 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <div
-          className='bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-black 
-          via-slate-900 to-black min-h-[100vh] text-gray-300'
-        >
-          <Outlet />
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </div>
+        <AppLayout>
+          <>
+            <section>
+              <SearchContainer />
+            </section>
+            <section className='mt-8'>
+              <Outlet />
+            </section>
+            <ScrollRestoration />
+            <Scripts />
+            <LiveReload />
+          </>
+        </AppLayout>
       </body>
     </html>
   );

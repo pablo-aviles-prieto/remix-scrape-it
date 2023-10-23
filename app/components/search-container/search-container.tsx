@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
-import { Form } from '@remix-run/react';
+import { Form, useNavigate } from '@remix-run/react';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -7,6 +7,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export const SearchContainer = () => {
+  const navigate = useNavigate();
+
   return (
     <div className='text-center'>
       <h2 className='text-4xl'>Rastrea los mejores precios</h2>
@@ -24,6 +26,12 @@ export const SearchContainer = () => {
           </button>
         </Form>
       </div>
+      <ul>
+        <li onClick={() => navigate('/search')}>Search page</li>
+        <li onClick={() => navigate('/search/item')}>Search page items</li>
+        <li onClick={() => navigate('/test2')}>Go to test2</li>
+        <li onClick={() => navigate('/')}>Go to homepage</li>
+      </ul>
     </div>
   );
 };
