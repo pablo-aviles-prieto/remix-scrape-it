@@ -5,7 +5,7 @@ export default function Test() {
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
-      <h1>Test page, gets redirected on /api/data route</h1>
+      <h1>List page</h1>
       <button type='button' onClick={() => navigate('/')}>
         Go to homepage
       </button>
