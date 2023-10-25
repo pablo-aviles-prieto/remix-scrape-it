@@ -3,6 +3,19 @@ import { Form, useNavigate } from '@remix-run/react';
 export const SearchContainer = () => {
   const navigate = useNavigate();
 
+  const getData = async () => {
+    const response = await fetch('/api/coolmod?url=https://fake.com');
+    // const response = await fetch('/data', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ data: 'hello' }),
+    // });
+    const parsedRes = await response.json();
+    console.log('parsedRes', parsedRes);
+  };
+
   return (
     <div className='text-center'>
       <h2 className='text-4xl'>Rastrea los mejores precios</h2>
@@ -30,6 +43,7 @@ export const SearchContainer = () => {
           Search details single item
         </li>
         <li onClick={() => navigate('/test2')}>Go to test2</li>
+        <li onClick={getData}>GET /api/coolmod.$url</li>
       </ul>
     </div>
   );
