@@ -1,13 +1,22 @@
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { scrapCoolmod } from '~/services/scrap/coolmod.service';
+import type { ItemCoolmod } from '~/interfaces/ItemCoolmod';
 
-export const loader = async ({ params, request }: ActionFunctionArgs) => {
+export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
-  console.log('queryUrl', queryUrl);
-  console.log('params', params);
 
-  await scrapCoolmod();
+  if (!queryUrl) {
+    console.log('NO URL QUERY PARAM DETECTED');
+    return json({ ok: false, error: 'No query param URL detected' }, 400);
+  }
 
-  return json({ url: params.url });
+  let scrapResponse: ItemCoolmod = undefined;
+  try {
+    scrapResponse = await scrapCoolmod({ productPage: queryUrl ?? '' });
+  } catch (err) {
+    console.log(err);
+  }
+
+  return json({ ok: true, data: scrapResponse }, 200);
 };

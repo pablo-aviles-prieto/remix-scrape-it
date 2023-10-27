@@ -1,18 +1,60 @@
-import type { ElementHandle } from 'playwright';
 import { getBrowser } from '../browser.service';
+import type { ItemCoolmod } from '~/interfaces/ItemCoolmod';
 
-export const scrapCoolmod = async () => {
+export const scrapCoolmod = async ({
+  productPage,
+}: {
+  productPage: string;
+}) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
-  await page.goto('https://www.coolmod.com/');
+  await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
-  const inputElement = await page.$('#seek');
-  await inputElement?.fill('RTX 4070');
-  const siblingElement = await page.evaluateHandle((inputElement) => {
-    return inputElement?.nextElementSibling as unknown as ElementHandle;
-  }, inputElement);
-  console.log('siblingElement', siblingElement);
 
-  // await browser.close();
+  let itemData: ItemCoolmod = undefined;
+  const inputElement = await page.$('#layerdt');
+  const itemName =
+    (await inputElement?.getAttribute('data-itemname')) || undefined;
+  try {
+    const oldPrice = await page.$eval(
+      '#discountProductPrice .crossout',
+      (el) => {
+        const amount = el.querySelector('#oldprice')?.textContent?.trim();
+        const currency = el.textContent?.replace(amount ?? '', '').trim();
+        return { amount, currency };
+      }
+    );
+    const actualPrice =
+      (await inputElement?.getAttribute('data-itemprice')) || undefined;
+
+    itemData = {
+      oldPrice: oldPrice.amount,
+      actualPrice,
+      itemName,
+      currency: oldPrice.currency,
+    };
+  } catch (err) {
+    // Meaning the product doesnt have a discount
+  }
+
+  if (!itemData?.oldPrice) {
+    const actualPrice = await page.$eval('#normalpriceproduct', (el) => {
+      const amount = el
+        .querySelector('#normalpricenumber')
+        ?.textContent?.trim();
+      const currency = el.textContent?.replace(amount ?? '', '').trim();
+      return { amount, currency };
+    });
+
+    itemData = {
+      actualPrice: actualPrice.amount,
+      itemName,
+      currency: actualPrice.currency,
+    };
+  }
+
+  await browser.close();
+
+  return itemData;
 };
