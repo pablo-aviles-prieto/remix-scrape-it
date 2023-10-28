@@ -1,7 +1,8 @@
+import { COOLMOD_BASE_RUL } from '~/utils/const';
 import { getBrowser } from '../browser.service';
 import type { ItemCoolmod } from '~/interfaces/ItemCoolmod';
 
-export const scrapCoolmod = async ({
+export const getCoolmodSingleItem = async ({
   productPage,
 }: {
   productPage: string;
@@ -16,7 +17,9 @@ export const scrapCoolmod = async ({
   const inputElement = await page.$('#layerdt');
   const itemName =
     (await inputElement?.getAttribute('data-itemname')) || undefined;
+
   try {
+    // TODO: get the discount %
     const oldPrice = await page.$eval(
       '#discountProductPrice .crossout',
       (el) => {
@@ -57,4 +60,38 @@ export const scrapCoolmod = async ({
   await browser.close();
 
   return itemData;
+};
+
+export const getCoolmodListItems = async ({
+  querySearch,
+}: {
+  querySearch: string;
+}) => {
+  const browser = await getBrowser();
+
+  const page = await browser.newPage();
+  const url = `${COOLMOD_BASE_RUL}#/dffullscreen/query=${querySearch}`;
+  await page.goto(url);
+  await page.waitForLoadState('domcontentloaded');
+
+  const listItems = await page.$$eval(
+    'div.df-card[data-role="result"]',
+    (items) => {
+      const parsedItems = items.map((item) => {
+        const url = item.querySelector('.df-card__main')?.getAttribute('href');
+        const imgPath = item
+          .querySelector('.df-card__image img')
+          ?.getAttribute('src');
+        const name = item.querySelector('.df-card__title')?.textContent?.trim();
+        const price = item
+          .querySelector('.df-card__price')
+          ?.textContent?.trim();
+        return { name, url, imgPath: `https:${imgPath}`, price };
+      });
+      return parsedItems;
+    }
+  );
+
+  await browser.close();
+  return listItems;
 };

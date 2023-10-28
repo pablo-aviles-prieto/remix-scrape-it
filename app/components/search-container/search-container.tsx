@@ -3,8 +3,14 @@ import { Form, useNavigate } from '@remix-run/react';
 export const SearchContainer = () => {
   const navigate = useNavigate();
 
-  const getData = async (urlPage: string) => {
+  const getSingleItem = async (urlPage: string) => {
     const response = await fetch(`/api/coolmod?url=${urlPage}`);
+    const parsedRes = await response.json();
+    console.log('parsedRes', parsedRes);
+  };
+
+  const getListItems = async (queryWord: string) => {
+    const response = await fetch(`/api/coolmod?query=${queryWord}`);
     const parsedRes = await response.json();
     console.log('parsedRes', parsedRes);
   };
@@ -38,22 +44,23 @@ export const SearchContainer = () => {
         <li onClick={() => navigate('/test2')}>Go to test2</li>
         <li
           onClick={() =>
-            getData(
+            getSingleItem(
               'https://www.coolmod.com/palit-geforce-rtx-4070-dual-12gb-gddr6x-dlss3/'
             )
           }
         >
-          GET /api/coolmod (with discount)
+          GET /api/coolmod?url (with discount)
         </li>
         <li
           onClick={() =>
-            getData(
+            getSingleItem(
               'https://www.coolmod.com/asus-dual-geforce-rtx-4060-oc-gaming-8gb-gddr6-dlss3/'
             )
           }
         >
-          GET /api/coolmod (without discount)
+          GET /api/coolmod?url (without discount)
         </li>
+        <li onClick={() => getListItems('rtx 4070')}>GET /api/coolmod?query</li>
       </ul>
     </div>
   );

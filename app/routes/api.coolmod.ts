@@ -1,21 +1,45 @@
 import { type ActionFunctionArgs, json } from '@remix-run/node';
-import { scrapCoolmod } from '~/services/scrap/coolmod.service';
+import {
+  getCoolmodListItems,
+  getCoolmodSingleItem,
+} from '~/services/scrap/coolmod.service';
 import type { ItemCoolmod } from '~/interfaces/ItemCoolmod';
+import { errorMsgs } from '~/utils/const';
+
+type ListItemsCoolmod = {
+  name: string | undefined;
+  url: string | null | undefined;
+  imgPath: string | null | undefined;
+  price: string | undefined;
+}[];
 
 export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
+  const queryWord = url.searchParams.get('query');
 
-  if (!queryUrl) {
-    console.log('NO URL QUERY PARAM DETECTED');
-    return json({ ok: false, error: 'No query param URL detected' }, 400);
+  if (!queryUrl && !queryWord) {
+    return json({ ok: false, error: errorMsgs.internalError }, 500);
   }
 
-  let scrapResponse: ItemCoolmod = undefined;
-  try {
-    scrapResponse = await scrapCoolmod({ productPage: queryUrl ?? '' });
-  } catch (err) {
-    console.log(err);
+  let scrapResponse: ItemCoolmod | ListItemsCoolmod = undefined;
+
+  if (queryUrl) {
+    try {
+      scrapResponse = await getCoolmodSingleItem({
+        productPage: queryUrl,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    try {
+      scrapResponse = await getCoolmodListItems({
+        querySearch: queryWord ?? '',
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return json({ ok: true, data: scrapResponse }, 200);
