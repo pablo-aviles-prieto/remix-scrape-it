@@ -22,6 +22,7 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStylesheet },
 ];
 
+// TODO: Change meta data
 export const meta: MetaFunction = () => {
   return [
     { title: 'New Remix App' },
@@ -32,7 +33,6 @@ export const meta: MetaFunction = () => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const searchWord = formData.get('search')?.toString();
-  console.log('searchWord', searchWord);
 
   if (!searchWord) {
     return;
@@ -40,7 +40,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const regex = /^(https:\/\/)?(www\.)?coolmod\.com/;
   if (regex.test(searchWord)) {
-    return redirect(`/search/details?url=${searchWord}`);
+    return searchWord.startsWith('https://')
+      ? redirect(`/search/details?url=${searchWord}`)
+      : redirect(`/search/details?url=https://${searchWord}`);
   } else {
     return redirect(`/search/${searchWord}`);
   }

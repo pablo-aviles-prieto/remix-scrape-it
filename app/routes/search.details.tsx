@@ -62,7 +62,7 @@ export default function SearchIndex() {
       <div className='flex gap-x-2'>
         <p>Name: {data.itemName}</p>
         <p>ActualPrice: {data.actualPrice}</p>
-        <p>OldPrice: {data.oldPrice}</p>
+        <p>OldPrice: {data.oldPrice ?? 'none'}</p>
         <p>Url: {url}</p>
         <p>ImgPath: {data.imgPath}</p>
         <p>Discount?: {data.discount ?? 'none'}</p>
