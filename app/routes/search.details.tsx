@@ -59,11 +59,13 @@ export default function SearchIndex() {
         Search details page - Should display the details of an item given a url
         on params
       </div>
-      <div key={data.itemName} className='flex gap-x-2'>
+      <div className='flex gap-x-2'>
         <p>Name: {data.itemName}</p>
         <p>ActualPrice: {data.actualPrice}</p>
         <p>OldPrice: {data.oldPrice}</p>
         <p>Url: {url}</p>
+        <p>ImgPath: {data.imgPath}</p>
+        <p>Discount?: {data.discount ?? 'none'}</p>
       </div>
     </div>
   );

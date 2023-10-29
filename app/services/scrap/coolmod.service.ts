@@ -17,6 +17,9 @@ export const getCoolmodSingleItem = async ({
   const itemName =
     (await inputElement?.getAttribute('data-itemname')) || undefined;
 
+  const imgElement = await page.$('#productmainimageitem');
+  const imgPath = (await imgElement?.getAttribute('src')) || undefined;
+
   try {
     // TODO: get the discount %
     const oldPrice = await page.$eval(
@@ -29,11 +32,9 @@ export const getCoolmodSingleItem = async ({
     );
     const actualPrice =
       (await inputElement?.getAttribute('data-itemprice')) || undefined;
-    const imgElement = await page.$('#productmainimageitem');
-    const imgPath = await imgElement?.getAttribute('src');
 
     const discountElement = await page.$('.ratebox');
-    const discount = await discountElement?.textContent();
+    const discount = (await discountElement?.textContent()) || undefined;
 
     itemData = {
       oldPrice: oldPrice.amount,
@@ -60,6 +61,7 @@ export const getCoolmodSingleItem = async ({
       actualPrice: actualPrice.amount,
       itemName,
       currency: actualPrice.currency,
+      imgPath,
     };
   }
 
