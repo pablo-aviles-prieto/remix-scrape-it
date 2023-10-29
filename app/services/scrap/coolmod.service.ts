@@ -74,6 +74,7 @@ export const getCoolmodListItems = async ({
   await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
 
+  // TODO: Wrap into a try catch without throwing to not block execution?
   const listItems = await page.$$eval(
     'div.df-card[data-role="result"]',
     (items) => {
