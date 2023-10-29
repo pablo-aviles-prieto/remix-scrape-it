@@ -13,10 +13,10 @@ type LoaderResponse = {
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
   if (!params.words) {
-    return json(
-      { ok: false, words: params.words, error: errorMsgs.internalError },
-      500
-    );
+    return json({
+      ok: false,
+      error: errorMsgs.internalError,
+    });
   }
   try {
     const scrapResponse = await getCoolmodListItems({
@@ -28,7 +28,7 @@ export const loader = async ({ params }: ActionFunctionArgs) => {
       data: scrapResponse,
     });
   } catch (err) {
-    console.log(err);
+    console.log('ERROR LIST ITEMS', err);
     return json({
       ok: false,
       error: errorMsgs.internalError,
@@ -41,7 +41,7 @@ export default function SearchItem() {
 
   if (!data) {
     if (!ok && error) {
-      // toast with error
+      // show error
     }
     return <div>No data for the search</div>;
   }

@@ -29,12 +29,19 @@ export const getCoolmodSingleItem = async ({
     );
     const actualPrice =
       (await inputElement?.getAttribute('data-itemprice')) || undefined;
+    const imgElement = await page.$('#productmainimageitem');
+    const imgPath = await imgElement?.getAttribute('src');
+
+    const discountElement = await page.$('.ratebox');
+    const discount = await discountElement?.textContent();
 
     itemData = {
       oldPrice: oldPrice.amount,
       actualPrice,
       itemName,
       currency: oldPrice.currency,
+      imgPath,
+      discount,
     };
   } catch (err) {
     // Meaning the product doesnt have a discount

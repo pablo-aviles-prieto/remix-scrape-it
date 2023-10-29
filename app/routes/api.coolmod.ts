@@ -10,7 +10,6 @@ import type {
 import { errorMsgs } from '~/utils/const';
 
 export const loader = async ({ request }: ActionFunctionArgs) => {
-  console.log('request', request);
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
   const queryWord = url.searchParams.get('query');
