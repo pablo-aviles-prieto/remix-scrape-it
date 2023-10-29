@@ -3,17 +3,14 @@ import {
   getCoolmodListItems,
   getCoolmodSingleItem,
 } from '~/services/scrap/coolmod.service';
-import type { ItemCoolmod } from '~/interfaces/ItemCoolmod';
+import type {
+  SingleItemCoolmod,
+  ListItemsCoolmod,
+} from '~/interfaces/ItemCoolmod';
 import { errorMsgs } from '~/utils/const';
 
-type ListItemsCoolmod = {
-  name: string | undefined;
-  url: string | null | undefined;
-  imgPath: string | null | undefined;
-  price: string | undefined;
-}[];
-
 export const loader = async ({ request }: ActionFunctionArgs) => {
+  console.log('request', request);
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
   const queryWord = url.searchParams.get('query');
@@ -22,7 +19,8 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     return json({ ok: false, error: errorMsgs.internalError }, 500);
   }
 
-  let scrapResponse: ItemCoolmod | ListItemsCoolmod = undefined;
+  let scrapResponse: SingleItemCoolmod | ListItemsCoolmod[] | undefined =
+    undefined;
 
   if (queryUrl) {
     try {

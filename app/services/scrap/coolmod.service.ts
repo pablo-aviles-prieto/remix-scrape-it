@@ -1,6 +1,5 @@
 import { COOLMOD_BASE_RUL } from '~/utils/const';
 import { getBrowser } from '../browser.service';
-import type { ItemCoolmod } from '~/interfaces/ItemCoolmod';
 
 export const getCoolmodSingleItem = async ({
   productPage,
@@ -13,7 +12,7 @@ export const getCoolmodSingleItem = async ({
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
-  let itemData: ItemCoolmod = undefined;
+  let itemData = undefined;
   const inputElement = await page.$('#layerdt');
   const itemName =
     (await inputElement?.getAttribute('data-itemname')) || undefined;

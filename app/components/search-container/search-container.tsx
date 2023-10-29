@@ -26,7 +26,7 @@ export const SearchContainer = () => {
           <SearchInput
             name='search'
             placeholder='Busca o inserta el enlace de un producto'
-            className='bg-gray-100 !pr-20 w-full'
+            className='bg-gray-100 !pr-20'
             width='30rem'
           />
           <Button
@@ -45,7 +45,9 @@ export const SearchContainer = () => {
         <li onClick={() => navigate('/search/palabra%20clave%20busqueda')}>
           Search page list items
         </li>
-        <li onClick={() => navigate('/search/details/www.param-manolo.com')}>
+        <li
+          onClick={() => navigate('/search/details?url=www.param-manolo.com')}
+        >
           Search details single item
         </li>
         <li onClick={() => navigate('/test2')}>Go to test2</li>

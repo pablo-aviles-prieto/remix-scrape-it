@@ -2,8 +2,10 @@ import type { ActionFunctionArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
-export const loader = async ({ params }: ActionFunctionArgs) => {
-  return json({ url: params.url });
+export const loader = async ({ request }: ActionFunctionArgs) => {
+  const url = new URL(request.url);
+  const queryUrl = url.searchParams.get('url');
+  return json({ url: queryUrl });
 };
 
 export default function SearchIndex() {

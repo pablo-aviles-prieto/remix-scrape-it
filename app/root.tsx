@@ -31,9 +31,19 @@ export const meta: MetaFunction = () => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const searchWord = formData.get('search');
+  const searchWord = formData.get('search')?.toString();
   console.log('searchWord', searchWord);
-  return redirect(`/search`);
+
+  if (!searchWord) {
+    return;
+  }
+
+  const regex = /^(https:\/\/)?(www\.)?coolmod\.com/;
+  if (regex.test(searchWord)) {
+    return redirect(`/search/details?url=${searchWord}`);
+  } else {
+    return redirect(`/search/${searchWord}`);
+  }
 };
 
 export default function App() {
