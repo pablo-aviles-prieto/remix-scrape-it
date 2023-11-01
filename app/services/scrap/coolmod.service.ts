@@ -90,7 +90,8 @@ export const getCoolmodListItems = async ({
         const url = item.querySelector('.df-card__main')?.getAttribute('href');
         const imgPath = item
           .querySelector('.df-card__image img')
-          ?.getAttribute('src');
+          ?.getAttribute('src')
+          ?.replace('normal', 'large');
         const name = item.querySelector('.df-card__title')?.textContent?.trim();
         const price = item
           .querySelector('.df-card__price')
