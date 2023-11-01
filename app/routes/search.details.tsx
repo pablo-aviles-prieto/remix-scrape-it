@@ -1,8 +1,9 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
+import { Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
-import type { SingleItemCoolmod } from '~/interfaces/ItemCoolmod';
+import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
 
@@ -57,7 +58,13 @@ export default function SearchIndex() {
         Search details page - Should display the details of an item given a url
         on params
       </div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className='absolute top-0 left-0 bottom-0 right-0 bg-transparent z-10'>
+            <Spinner size={128} marginX='auto' marginY={425} />
+          </div>
+        }
+      >
         <Await resolve={data as Promise<SingleItemCoolmod>}>
           {(resolvedData) => (
             <div className='flex gap-x-2'>

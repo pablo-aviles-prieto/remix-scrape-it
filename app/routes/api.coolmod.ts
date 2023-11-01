@@ -6,7 +6,7 @@ import {
 import type {
   SingleItemCoolmod,
   ListItemsCoolmod,
-} from '~/interfaces/ItemCoolmod';
+} from '~/interfaces/item-coolmod';
 import { errorMsgs } from '~/utils/const';
 
 export const loader = async ({ request }: ActionFunctionArgs) => {

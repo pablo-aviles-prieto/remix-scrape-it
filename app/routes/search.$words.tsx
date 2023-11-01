@@ -1,9 +1,9 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Position, Tooltip } from 'evergreen-ui';
+import { Position, Spinner, Tooltip } from 'evergreen-ui';
 import { Suspense } from 'react';
-import type { ListItemsCoolmod } from '~/interfaces/ItemCoolmod';
+import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
 
@@ -50,7 +50,13 @@ export default function SearchItem() {
       <div>Search item - Displaying the list of items searched by keyword</div>
       <div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense
+            fallback={
+              <div className='absolute top-0 left-0 bottom-0 right-0 bg-transparent z-10'>
+                <Spinner size={128} marginX='auto' marginY={425} />
+              </div>
+            }
+          >
             <Await resolve={data as Promise<ListItemsCoolmod[]>}>
               {(resolvedData) =>
                 resolvedData.map((item) => (
