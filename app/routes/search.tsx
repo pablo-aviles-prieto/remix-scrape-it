@@ -8,7 +8,7 @@ export default function Search() {
         /search que es la busqueda por palabra o /serach/:item que es enseñar el
         detalle de un item ya buscado
       </div>
-      {/* TODO: Extract this container as SearchLayout style component */}
+      {/* TODO?: Extract this container as SearchLayout style component */}
       <div className='h-[1px] border border-b-gray-300 my-4' />
       <Outlet />
     </div>
