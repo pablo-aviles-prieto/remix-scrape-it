@@ -1,21 +1,28 @@
 import { Form, useNavigate } from '@remix-run/react';
-import { Button, Heading, SearchInput } from 'evergreen-ui';
+import { Button, Heading, TextInput } from 'evergreen-ui';
+import { SearchIcon } from '../styles/search-icon';
 
 export const SearchContainer = () => {
   const navigate = useNavigate();
 
   return (
     <div className='text-center'>
-      <Heading color='muted' size={800}>
+      <Heading color='muted' size={900}>
         Rastrea los mejores precios
       </Heading>
-      <div className='relative w-[30rem] mx-auto'>
+      <div className='relative w-[30rem] mx-auto mt-4'>
         <Form id='search-form' method='post'>
-          <SearchInput
+          <TextInput
             name='search'
             placeholder='Busca o inserta el enlace de un producto'
-            className='bg-gray-100 !pr-20'
+            className='bg-gray-100 !pr-20 !pl-7 !text-sm'
             width='30rem'
+          />
+          <SearchIcon
+            className='absolute left-1 top-[7px] text-indigo-600'
+            width={20}
+            height={20}
+            strokeWidth={2.5}
           />
           <Button
             color='whitesmoke'
