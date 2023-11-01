@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { defer } from '@remix-run/node';
+import { Await, useLoaderData } from '@remix-run/react';
+import { Suspense } from 'react';
 import type { SingleItemCoolmod } from '~/interfaces/ItemCoolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
@@ -8,7 +9,7 @@ import { errorMsgs } from '~/utils/const';
 type LoaderResponse = {
   ok: boolean;
   error?: string;
-  data?: SingleItemCoolmod;
+  data?: Promise<SingleItemCoolmod>;
   url: URL;
 };
 
@@ -16,7 +17,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
   if (!queryUrl) {
-    return json({
+    return defer({
       ok: false,
       error: errorMsgs.internalError,
       url: queryUrl,
@@ -24,18 +25,18 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    const scrapResponse = await getCoolmodSingleItem({
+    const scrapResponsePromise = getCoolmodSingleItem({
       productPage: queryUrl,
     });
 
-    return json({
+    return defer({
       ok: true,
-      data: scrapResponse,
+      data: scrapResponsePromise,
       url: queryUrl,
     });
   } catch (err) {
     console.log('ERROR SINGLE ITEM', err);
-    return json({
+    return defer({
       ok: false,
       error: errorMsgs.internalError,
       url: queryUrl,
@@ -46,11 +47,8 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
 export default function SearchIndex() {
   const { data, ok, error, url } = useLoaderData<LoaderResponse>();
 
-  if (!data) {
-    if (!ok && error) {
-      // Error
-    }
-    return <div>No data for the URL provided</div>;
+  if (!ok && error) {
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -59,14 +57,20 @@ export default function SearchIndex() {
         Search details page - Should display the details of an item given a url
         on params
       </div>
-      <div className='flex gap-x-2'>
-        <p>Name: {data.itemName}</p>
-        <p>ActualPrice: {data.actualPrice}</p>
-        <p>OldPrice: {data.oldPrice ?? 'none'}</p>
-        <p>Url: {url}</p>
-        <p>ImgPath: {data.imgPath}</p>
-        <p>Discount?: {data.discount ?? 'none'}</p>
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Await resolve={data as Promise<SingleItemCoolmod>}>
+          {(resolvedData) => (
+            <div className='flex gap-x-2'>
+              <p>Name: {resolvedData.itemName}</p>
+              <p>ActualPrice: {resolvedData.actualPrice}</p>
+              <p>OldPrice: {resolvedData.oldPrice ?? 'none'}</p>
+              <p>Url: {url}</p>
+              <p>ImgPath: {resolvedData.imgPath}</p>
+              <p>Discount?: {resolvedData.discount ?? 'none'}</p>
+            </div>
+          )}
+        </Await>
+      </Suspense>
     </div>
   );
 }

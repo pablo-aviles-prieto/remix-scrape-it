@@ -9,13 +9,13 @@ import {
   Links,
   LiveReload,
   Meta,
+  Outlet,
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
 import tailwindStylesheet from '~/styles/tailwind.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
-import { LoaderLayout } from './components/loader/loader-layout';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -63,7 +63,7 @@ export default function App() {
             <SearchContainer />
           </section>
           <section className='mt-8'>
-            <LoaderLayout />
+            <Outlet />
           </section>
           <ScrollRestoration />
           <Scripts />
