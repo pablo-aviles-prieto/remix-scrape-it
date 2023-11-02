@@ -34,7 +34,10 @@ export const ItemModal = ({
         />
       </div>
       <div className='my-16'>
-        <div className='flex items-center max-h-[12rem] overflow-hidden'>
+        <div className='text-center'>
+          Gráfica en caso de que haya seguimiento
+        </div>
+        <div className='my-4 flex items-center max-h-[12rem] overflow-hidden'>
           <div className='w-[50%]'>
             <img
               src={imgPath}
@@ -70,8 +73,12 @@ export const ItemModal = ({
             </p>
           </div>
         </div>
-        <div className='mt-2'>
-          <p className='text-center'>No hay seguimiento para este producto</p>
+        <div>
+          <p className='text-center'>
+            Mostrar 'No hay seguimiento para este producto' o si no información
+            sobre como funciona el seguimiento, y como subscribirse dentro de la
+            página del item
+          </p>
         </div>
       </div>
       <div className='flex justify-between mb-1'>
