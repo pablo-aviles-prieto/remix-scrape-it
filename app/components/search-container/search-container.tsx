@@ -1,10 +1,8 @@
-import { Form, useNavigate } from '@remix-run/react';
+import { Form } from '@remix-run/react';
 import { Button, Heading, TextInput } from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
 
 export const SearchContainer = () => {
-  const navigate = useNavigate();
-
   return (
     <div className='text-center'>
       <Heading color='muted' size={900}>
@@ -34,22 +32,6 @@ export const SearchContainer = () => {
           </Button>
         </Form>
       </div>
-      <ul>
-        <li onClick={() => navigate('/')}>Go to homepage</li>
-        <li onClick={() => navigate('/search')}>Search page</li>
-        <li
-          onClick={() =>
-            navigate(
-              '/search/details?url=https://www.coolmod.com/palit-geforce-rtx-4070-dual-12gb-gddr6x-dlss3/'
-            )
-          }
-        >
-          Search details single item
-        </li>
-        <li onClick={() => navigate('/search/rtx 4070')}>
-          Search list items rtx 4070
-        </li>
-      </ul>
     </div>
   );
 };
