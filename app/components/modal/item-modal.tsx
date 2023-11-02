@@ -75,7 +75,7 @@ export const ItemModal = ({
         </div>
       </div>
       <div className='flex justify-between mb-1'>
-        <RegularButton content='Cerrar' onClick={onClose} />
+        <RegularButton content='Cerrar' onClick={onClose} color='secondary' />
         {/* Mostrar 'crear seguimiento' o 'ver seguimiento' */}
         {/* Solo debe aparecer mas detalles si ya hay creado un seguimiento */}
         <RegularButton
