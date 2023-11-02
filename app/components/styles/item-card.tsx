@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { Dialog } from 'evergreen-ui';
+import { ItemModal } from '../modal/item-modal';
+import { RegularButton } from './regular-button';
 
 type Props = {
   item: SingleItemCoolmod;
@@ -49,17 +51,10 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           </div>
         </div>
         <div className='p-6 pt-0 flex justify-between'>
-          <button
-            className='select-none rounded-lg bg-indigo-600 py-3 px-6 text-center align-middle font-sans text-xs font-bold 
-          uppercase text-slate-200 shadow-md shadow-indigo-500/20 transition-all hover:shadow-lg 
-          hover:shadow-indigo-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] 
-          active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
-            type='button'
-            data-ripple-light='true'
+          <RegularButton
+            content='Seguimiento'
             onClick={() => setIsShown(true)}
-          >
-            Seguimiento
-          </button>
+          />
           <a
             className='select-none rounded-lg bg-indigo-600 py-3 px-6 text-center align-middle font-sans text-xs font-bold 
           uppercase text-slate-200 shadow-md shadow-indigo-500/20 transition-all hover:shadow-lg 
@@ -75,12 +70,15 @@ export const ItemCard = ({ item, urlItem }: Props) => {
       </div>
       <Dialog
         isShown={isShown}
-        title={item.itemName}
         onCloseComplete={() => setIsShown(false)}
-        confirmLabel='Aceptar'
-        onConfirm={() => console.log('confirm')}
+        hasHeader={false}
+        hasFooter={false}
       >
-        <div>Test content</div>
+        <ItemModal
+          item={item}
+          urlItem={urlItem}
+          onClose={() => setIsShown(false)}
+        />
       </Dialog>
     </>
   );
