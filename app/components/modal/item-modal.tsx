@@ -1,15 +1,25 @@
-import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { CloseBtn } from '../styles/icons/close-btn';
 import { RegularButton } from '../styles/regular-button';
 
 type Props = {
-  item: SingleItemCoolmod;
+  itemName: string;
+  actualPrice: string;
+  imgPath: string;
+  oldPrice?: string;
+  discount?: string;
   urlItem: string;
   onClose: () => void;
 };
 
-export const ItemModal = ({ item, urlItem, onClose }: Props) => {
-  const { itemName, actualPrice, imgPath, oldPrice, discount } = item;
+export const ItemModal = ({
+  itemName,
+  actualPrice,
+  imgPath,
+  oldPrice,
+  discount,
+  urlItem,
+  onClose,
+}: Props) => {
   return (
     <div>
       <div className='flex gap-8 items-center justify-between'>
@@ -23,7 +33,7 @@ export const ItemModal = ({ item, urlItem, onClose }: Props) => {
           onClick={onClose}
         />
       </div>
-      <div className='my-6'>
+      <div className='my-16'>
         <div className='flex items-center max-h-[12rem] overflow-hidden'>
           <div className='w-[50%]'>
             <img
@@ -32,22 +42,32 @@ export const ItemModal = ({ item, urlItem, onClose }: Props) => {
               className='object-cover w-full h-full'
             />
           </div>
-          <div className='w-[50%] text-xs font-bold'>
-            <p className='line-clamp-2'>
-              Nombre: <span className='text-base font-normal'>{itemName}</span>
-            </p>
+          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col gap-3'>
+            <p className='text-base font-normal'>{itemName}</p>
             <p>
               Precio:{' '}
-              <span className='text-base font-normal'>{actualPrice}</span>
-            </p>
-            {oldPrice && discount && (
-              <p>
-                Precio sin dto:{' '}
+              <span
+                className={`text-lg font-bold ${
+                  oldPrice ? 'text-green-700' : 'text-slate-800'
+                }`}
+              >
+                {actualPrice}
+              </span>
+              {oldPrice && discount && (
                 <span>
-                  {oldPrice} {discount}
+                  {' '}
+                  sin dto:{' '}
+                  <span className='text-base relative font-semibold'>
+                    <span className='line-through text-red-800 font-bold italic'>
+                      {oldPrice}
+                    </span>
+                    <span className='text-xs text-slate-900 absolute top-[2px] -right-[25px]'>
+                      {discount}
+                    </span>
+                  </span>
                 </span>
-              </p>
-            )}
+              )}
+            </p>
           </div>
         </div>
         <div className='mt-2'>
@@ -55,15 +75,20 @@ export const ItemModal = ({ item, urlItem, onClose }: Props) => {
         </div>
       </div>
       <div className='flex justify-between mb-1'>
-        {/* TODO: Invertir los colores */}
         <RegularButton content='Cerrar' onClick={onClose} />
+        {/* Mostrar 'crear seguimiento' o 'ver seguimiento' */}
+        {/* Solo debe aparecer mas detalles si ya hay creado un seguimiento */}
         <RegularButton
-          content='Más detalles'
-          onClick={() => console.log('Mas detalles')}
+          content='Ver seguimiento'
+          onClick={() => console.log('Link to /item/:id')}
         />
         <RegularButton
           content='Crear seguimiento'
-          onClick={() => console.log('Crear seguimiento')}
+          onClick={() =>
+            console.log(
+              'Endpoint que cree el seguimiento. Redirect to the created id'
+            )
+          }
         />
       </div>
     </div>

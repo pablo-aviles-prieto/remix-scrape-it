@@ -75,7 +75,11 @@ export const ItemCard = ({ item, urlItem }: Props) => {
         hasFooter={false}
       >
         <ItemModal
-          item={item}
+          itemName={item.itemName ?? ''}
+          actualPrice={item.actualPrice ?? ''}
+          imgPath={item.imgPath ?? ''}
+          oldPrice={item.oldPrice}
+          discount={item.discount}
           urlItem={urlItem}
           onClose={() => setIsShown(false)}
         />
