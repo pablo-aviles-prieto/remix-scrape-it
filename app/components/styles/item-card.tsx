@@ -21,7 +21,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           />
         </div>
         <div className='p-6'>
-          <h5 className='mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-slate-600 antialiased'>
+          <h5 className='mb-2 h-[55px] block font-sans text-xl font-semibold line-clamp-2 leading-snug tracking-normal text-slate-600 antialiased'>
             {item.itemName}
           </h5>
           <div className='flex gap-3'>
