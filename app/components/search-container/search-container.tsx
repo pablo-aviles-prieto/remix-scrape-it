@@ -1,6 +1,6 @@
 import { Form, useNavigate } from '@remix-run/react';
 import { Button, Heading, TextInput } from 'evergreen-ui';
-import { SearchIcon } from '../styles/search-icon';
+import { SearchIcon } from '../styles/icons/search-icon';
 
 export const SearchContainer = () => {
   const navigate = useNavigate();

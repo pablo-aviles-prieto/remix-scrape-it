@@ -3,6 +3,7 @@ import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
+import { ItemCard } from '~/components/styles/item-card';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
@@ -54,7 +55,7 @@ export default function SearchIndex() {
 
   return (
     <div>
-      <div>
+      <div className='mb-8'>
         Search details page - Should display the details of an item given a url
         on params
       </div>
@@ -67,14 +68,15 @@ export default function SearchIndex() {
       >
         <Await resolve={data as Promise<SingleItemCoolmod>}>
           {(resolvedData) => (
-            <div className='flex gap-x-2'>
-              <p>Name: {resolvedData.itemName}</p>
-              <p>ActualPrice: {resolvedData.actualPrice}</p>
-              <p>OldPrice: {resolvedData.oldPrice ?? 'none'}</p>
-              <p>Url: {url}</p>
-              <p>ImgPath: {resolvedData.imgPath}</p>
-              <p>Discount?: {resolvedData.discount ?? 'none'}</p>
-            </div>
+            <ItemCard item={resolvedData} urlItem={url} />
+            // <div className='flex gap-x-2'>
+            //   <p>Name: {resolvedData.itemName}</p>
+            //   <p>ActualPrice: {resolvedData.actualPrice}</p>
+            //   <p>OldPrice: {resolvedData.oldPrice ?? 'none'}</p>
+            //   <p>Url: {url}</p>
+            //   <p>ImgPath: {resolvedData.imgPath}</p>
+            //   <p>Discount?: {resolvedData.discount ?? 'none'}</p>
+            // </div>
           )}
         </Await>
       </Suspense>

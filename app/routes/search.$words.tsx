@@ -1,8 +1,9 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Position, Spinner, Tooltip } from 'evergreen-ui';
+import { Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
+import { ListItemsCard } from '~/components/styles/list-items-card';
 import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
@@ -60,40 +61,7 @@ export default function SearchItem() {
             <Await resolve={data as Promise<ListItemsCoolmod[]>}>
               {(resolvedData) =>
                 resolvedData.map((item) => (
-                  <div
-                    key={item.url}
-                    className='w-full relative shadow-md rounded-lg overflow-hidden'
-                  >
-                    <img
-                      src={
-                        item.imgPath ??
-                        'https://static.vecteezy.com/system/resources/previews/007/126/739/non_2x/question-mark-icon-free-vector.jpg'
-                      }
-                      alt={item.name}
-                      className='w-full h-auto object-cover rounded-lg cursor-pointer'
-                    />
-                    <div
-                      className='absolute bottom-0 left-0 right-0 h-30 bg-slate-900 bg-opacity-70 
-                      backdrop-blur-[3px] text-white p-2 rounded-b-lg'
-                    >
-                      <Tooltip content={item.name} position={Position.TOP}>
-                        <h1 className='text-sm font-semibold overflow-hidden line-clamp-1'>
-                          {item.name}
-                        </h1>
-                      </Tooltip>
-                      <div className='pt-1 flex items-center justify-between'>
-                        <p className='text-xl'>{item.price}</p>
-                        <a
-                          href={item.url ?? ''}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='underline'
-                        >
-                          Visitar página
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                  <ListItemsCard item={item} key={item.url} />
                 ))
               }
             </Await>
