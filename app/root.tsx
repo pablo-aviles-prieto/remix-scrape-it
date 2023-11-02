@@ -16,20 +16,11 @@ import {
 import tailwindStylesheet from '~/styles/tailwind.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
-import { connectDb } from './config/connect-db';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
   { rel: 'stylesheet', href: tailwindStylesheet },
 ];
-
-connectDb()
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
-  });
 
 // TODO: Change meta data
 export const meta: MetaFunction = () => {
