@@ -8,11 +8,13 @@ type Props = {
 export const ItemCard = ({ item, urlItem }: Props) => {
   return (
     <div className='flex w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md overflow-hidden mx-auto'>
-      <img
-        className='object-cover w-full h-[20rem]'
-        src={item.imgPath}
-        alt={item.itemName}
-      />
+      <div className='h-[20rem] overflow-hidden'>
+        <img
+          className='object-cover w-full h-full hover:scale-105 transition-transform'
+          src={item.imgPath}
+          alt={item.itemName}
+        />
+      </div>
       <div className='p-6'>
         <h5 className='mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-slate-600 antialiased'>
           {item.itemName}
