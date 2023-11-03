@@ -17,7 +17,7 @@ export async function action({ request }: ActionFunctionArgs) {
   ) as Payload;
 
   if (!name || !url || !image || !currency || !actualPrice) {
-    return json({ response: 'false', error: errorMsgs.invalidPayload }, 400);
+    return json({ ok: false, error: errorMsgs.invalidPayload }, 400);
   }
 
   const itemExists = await TrackingModel.findOne({
@@ -37,8 +37,34 @@ export async function action({ request }: ActionFunctionArgs) {
         },
       ],
     });
-    console.log('createdTracking.id', createdTracking.id);
+    return json({ ok: true, insertedId: createdTracking.id }, 201);
+  } else {
+    return json({ ok: true, insertedId: itemExists.id }, 202);
+  }
+}
+
+export const loader = async ({ request }: ActionFunctionArgs) => {
+  const url = new URL(request.url);
+  const queryName = url.searchParams.get('name');
+  const queryUrl = url.searchParams.get('url');
+
+  if (!queryUrl || !queryName) {
+    return json(
+      {
+        ok: false,
+        error: errorMsgs.invalidParams,
+      },
+      400
+    );
   }
 
-  return json({ response: 'ok', data: 'Yep' }, 202);
-}
+  const itemExists = await TrackingModel.findOne({
+    $or: [{ name: queryName }, { url: queryUrl }],
+  });
+
+  if (!itemExists) {
+    return json({ ok: true, itemId: undefined });
+  }
+
+  return json({ ok: true, itemId: itemExists.id });
+};

@@ -16,4 +16,8 @@ export interface ITracking {
   updatedAt: Date;
 }
 
+export interface TrackingResponse extends Omit<ITracking, '_id'> {
+  id: string;
+}
+
 export type IDocTracking = Document & ITracking;

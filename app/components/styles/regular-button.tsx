@@ -1,3 +1,5 @@
+import { CustomSpinner } from './custom-spinner';
+
 type Props = {
   content: string;
   onClick: () => void;
@@ -5,6 +7,7 @@ type Props = {
   type?: 'button' | 'submit' | 'reset';
   isDisabled?: boolean;
   color?: 'primary' | 'secondary';
+  isLoading?: boolean;
 };
 
 export const RegularButton = ({
@@ -14,6 +17,7 @@ export const RegularButton = ({
   type = 'button',
   isDisabled = false,
   color = 'primary',
+  isLoading = false,
 }: Props) => {
   const isPrimaryColor = color === 'primary';
   return (
@@ -34,13 +38,16 @@ export const RegularButton = ({
           : 'hover:shadow-indigo-300/30'
       } active:opacity-[0.85] 
         active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none 
-        ${overrideClasses}
+        flex gap-2 ${overrideClasses}
       `}
       type={type}
       data-ripple-light='true'
       onClick={onClick}
       disabled={isDisabled}
     >
+      {isLoading && (
+        <CustomSpinner size='sm' classes='border-violet-400 w-5 h-5' />
+      )}
       {content}
     </button>
   );

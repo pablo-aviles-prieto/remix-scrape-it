@@ -1,5 +1,7 @@
+import { useNavigate } from '@remix-run/react';
 import { CloseBtn } from '../styles/icons/close-btn';
 import { RegularButton } from '../styles/regular-button';
+import { useEffect, useState } from 'react';
 
 type Props = {
   itemName: string;
@@ -8,7 +10,28 @@ type Props = {
   oldPrice?: string;
   discount?: string;
   urlItem: string;
+  currency: string;
   onClose: () => void;
+};
+
+type TrackingResponseGET = {
+  ok: boolean;
+  error?: string;
+  itemId?: string;
+};
+
+type TrackingResponsePOST = {
+  ok: boolean;
+  error?: string;
+  insertedId?: string;
+};
+
+type PayloadTrackingPOST = {
+  name: string;
+  url: string;
+  image: string;
+  currency: string;
+  actualPrice: string;
 };
 
 export const ItemModal = ({
@@ -18,8 +41,63 @@ export const ItemModal = ({
   oldPrice,
   discount,
   urlItem,
+  currency,
   onClose,
 }: Props) => {
+  const [trackingId, setTrackingId] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getTrackingItemId = async () => {
+      setIsLoading(true);
+      const response = await fetch(
+        `/api/trackings?name=${itemName}&url=${urlItem}`
+      );
+      const trackingItemId = (await response.json()) as TrackingResponseGET;
+
+      if (!trackingItemId.ok && trackingItemId.error) {
+        // TODO: Display a toast with the error and set a variable to not show
+        // any of the buttons related to the tracking
+        setIsLoading(false);
+        return;
+      }
+
+      if (trackingItemId.ok && trackingItemId.itemId) {
+        setTrackingId(trackingItemId.itemId);
+      } else {
+        setTrackingId(undefined);
+      }
+      setIsLoading(false);
+    };
+    getTrackingItemId();
+  }, [itemName, urlItem]);
+
+  const createTrackingHelper = async () => {
+    const payload: PayloadTrackingPOST = {
+      name: itemName,
+      image: imgPath,
+      actualPrice,
+      currency: currency,
+      url: urlItem,
+    };
+
+    const response = await fetch('/api/trackings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    const createTracking = (await response.json()) as TrackingResponsePOST;
+
+    if (createTracking.ok && createTracking.insertedId) {
+      navigate(`/item/${createTracking.insertedId}`);
+    } else {
+      // TODO: Show toast displaying error message or a generic one
+    }
+  };
+
   return (
     <div>
       <div className='flex gap-8 items-center justify-between'>
@@ -84,20 +162,19 @@ export const ItemModal = ({
       </div>
       <div className='flex justify-between mb-1'>
         <RegularButton content='Cerrar' onClick={onClose} color='secondary' />
-        {/* Mostrar 'crear seguimiento' o 'ver seguimiento' */}
-        {/* Solo debe aparecer mas detalles si ya hay creado un seguimiento */}
-        <RegularButton
-          content='Ver seguimiento'
-          onClick={() => console.log('Link to /item/:id')}
-        />
-        <RegularButton
-          content='Crear seguimiento'
-          onClick={() =>
-            console.log(
-              'Endpoint que cree el seguimiento. Redirect to the created id'
-            )
-          }
-        />
+        {trackingId ? (
+          <RegularButton
+            content={isLoading ? '' : 'Ver seguimiento'}
+            onClick={() => navigate(`/item/${trackingId}`)}
+            isLoading={isLoading}
+          />
+        ) : (
+          <RegularButton
+            content={isLoading ? '' : 'Crear seguimiento'}
+            onClick={createTrackingHelper}
+            isLoading={isLoading}
+          />
+        )}
       </div>
     </div>
   );

@@ -80,6 +80,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           imgPath={item.imgPath ?? ''}
           oldPrice={item.oldPrice}
           discount={item.discount}
+          currency={item.currency ?? '€'}
           urlItem={urlItem}
           onClose={() => setIsShown(false)}
         />
