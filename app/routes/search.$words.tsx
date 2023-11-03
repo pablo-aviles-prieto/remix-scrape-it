@@ -1,9 +1,10 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Spinner } from 'evergreen-ui';
+import { Heading, Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
+import { Info } from '~/components/styles/icons/info';
 import { ListItemsCard } from '~/components/styles/list-items-card';
 import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
@@ -49,7 +50,17 @@ export default function SearchItem() {
 
   return (
     <div>
-      <div>Search item - Displaying the list of items searched by keyword</div>
+      <div className='flex gap-1 mb-2 items-center justify-center'>
+        <Info
+          width={20}
+          height={20}
+          strokeWidth={2}
+          className='text-slate-200'
+        />
+        <Heading color='muted' size={500}>
+          Haz click sobre la imagen de un producto para ver su seguimiento
+        </Heading>
+      </div>
       <div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
           <LoaderWrapper>
