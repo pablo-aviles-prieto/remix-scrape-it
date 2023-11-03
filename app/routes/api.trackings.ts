@@ -1,5 +1,5 @@
 import { type ActionFunctionArgs, json } from '@remix-run/node';
-import TrackingModel from '~/models/tracking';
+import TrackingModel from '~/models/trackings';
 import { errorMsgs } from '~/utils/const';
 
 type Payload = {
@@ -23,7 +23,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const itemExists = await TrackingModel.findOne({
     $or: [{ name }, { url }],
   });
-  console.log('itemExists', itemExists);
 
   if (!itemExists) {
     const createdTracking = await TrackingModel.create({
@@ -38,7 +37,6 @@ export async function action({ request }: ActionFunctionArgs) {
         },
       ],
     });
-    console.log('createdTracking', createdTracking);
     console.log('createdTracking.id', createdTracking.id);
   }
 

@@ -1,11 +1,17 @@
-import type { Document } from 'mongoose';
+import type { Document, Model } from 'mongoose';
 import { Schema, model } from 'mongoose';
 import type { IDocTracking } from '~/interfaces/tracking-schema';
+import { modelExists } from '~/utils/check-model-exist';
 
-const PriceSchema: Schema = new Schema({
-  date: { type: Date, required: true },
-  price: { type: Number, required: true },
-});
+const PriceSchema: Schema = new Schema(
+  {
+    date: { type: Date, required: true },
+    price: { type: Number, required: true },
+  },
+  {
+    _id: false,
+  }
+);
 
 const TrackingSchema: Schema = new Schema(
   {
@@ -28,4 +34,12 @@ TrackingSchema.set('toJSON', {
   },
 });
 
-export default model<IDocTracking>('trackings', TrackingSchema);
+let TrackingModel: Model<IDocTracking>;
+
+if (modelExists('trackings')) {
+  TrackingModel = model<IDocTracking>('trackings');
+} else {
+  TrackingModel = model<IDocTracking>('trackings', TrackingSchema);
+}
+
+export default TrackingModel;
