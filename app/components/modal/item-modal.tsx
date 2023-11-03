@@ -46,11 +46,11 @@ export const ItemModal = ({
             />
           </div>
           <div className='w-[50%] ml-2 text-xs font-bold flex flex-col gap-3'>
-            <p className='text-base font-normal'>{itemName}</p>
+            <p className='text-base'>{itemName}</p>
             <p>
               Precio:{' '}
               <span
-                className={`text-lg font-bold ${
+                className={`text-lg ${
                   oldPrice ? 'text-green-700' : 'text-slate-800'
                 }`}
               >
@@ -76,8 +76,9 @@ export const ItemModal = ({
         <div>
           <p className='text-center'>
             Mostrar 'No hay seguimiento para este producto' o si no información
-            sobre como funciona el seguimiento, y como subscribirse dentro de la
-            página del item
+            sobre como funciona el seguimiento, y como subscribirse (tanto para
+            seguimiento como para notificación de un precio concreto) dentro de
+            la página del item
           </p>
         </div>
       </div>
