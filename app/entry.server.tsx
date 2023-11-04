@@ -12,10 +12,11 @@ import { RemixServer } from '@remix-run/react';
 import isbot from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { connectDb } from './config/connect-db';
-import { updateTrackedItems } from './services/tracking/update-tracked-items.service';
+import updatePricesCoolmodJobs from './services/jobs/coolmod.job';
 
 const ABORT_DELAY = 5_000;
 
+// Stablish DB connection
 connectDb()
   .then(() => {
     console.log('Connected to MongoDB');
@@ -24,9 +25,8 @@ connectDb()
     console.error('Failed to connect to MongoDB', err);
   });
 
-updateTrackedItems();
-// .then(() => console.log('Jobs loaded'))
-// .catch((err) => console.error('Failed to load jobs', err));
+// Load jobs for coolmod items
+updatePricesCoolmodJobs.forEach((job) => job.start());
 
 export default function handleRequest(
   request: Request,

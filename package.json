@@ -18,6 +18,7 @@
     "evergreen-ui": "^7.1.9",
     "isbot": "^3.6.8",
     "mongoose": "^8.0.0",
+    "node-cron": "^3.0.2",
     "playwright": "^1.39.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@remix-run/dev": "^2.1.0",
     "@remix-run/eslint-config": "^2.1.0",
+    "@types/node-cron": "^3.0.10",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "eslint": "^8.38.0",
