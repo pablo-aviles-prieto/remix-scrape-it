@@ -61,19 +61,6 @@ export default function SearchItem() {
             {(resolvedData) =>
               resolvedData ? (
                 <div>
-                  <p>ID: {resolvedData.id}</p>
-                  <p>Name: {resolvedData.name}</p>
-                  <p>Image: {resolvedData.image}</p>
-                  <p>URL: {resolvedData.url}</p>
-                  <p>Currency: {resolvedData.currency}</p>
-                  <p>Created: {resolvedData.createdAt as unknown as string}</p>
-                  <p>Updated: {resolvedData.updatedAt as unknown as string}</p>
-                  {resolvedData.prices.map((priceObj) => (
-                    <div key={priceObj.date as unknown as string}>
-                      <p>Fecha: {priceObj.date as unknown as string}</p>
-                      <p>Precio: {priceObj.price + resolvedData.currency}</p>
-                    </div>
-                  ))}
                   <TrackingItemCard item={resolvedData} />
                 </div>
               ) : (

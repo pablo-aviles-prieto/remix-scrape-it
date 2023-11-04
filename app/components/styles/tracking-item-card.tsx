@@ -1,16 +1,12 @@
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { RegularButton } from './regular-button';
+import { format } from 'date-fns';
 
 type Props = {
   item: TrackingResponse;
 };
 
 export const TrackingItemCard = ({ item }: Props) => {
-  // const lastPrice =
-  //   item.prices.length > 0
-  //     ? item.prices[item.prices.length - 1].price
-  //     : undefined;
-
   const { [item.prices.length - 1]: lastPrices } = item.prices;
 
   return (
@@ -27,7 +23,8 @@ export const TrackingItemCard = ({ item }: Props) => {
             <h1 className='text-gray-700 font-bold text-xl my-2'>
               {lastPrices.price + item.currency}{' '}
               <span className='text-[10px] uppercase'>
-                Último precio ({lastPrices.date as unknown as string})
+                Último precio (
+                {format(new Date(lastPrices.date), 'dd/MM/yyyy HH:mm')})
               </span>
             </h1>
           </div>
