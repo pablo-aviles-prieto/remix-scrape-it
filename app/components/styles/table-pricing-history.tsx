@@ -6,11 +6,15 @@ type Props = {
   item: TrackingResponse;
 };
 
-// TODO: Reorganize by date the item.prices rendered
+// TODO: Add max-height to the "table" and scroll it on overflow y
 export const TablePricingHistory = ({ item }: Props) => {
+  const sortedPrices = [...item.prices].sort((a, b) =>
+    (b.date as unknown as string).localeCompare(a.date as unknown as string)
+  );
+
   return (
     <>
-      {item.prices.map((priceObj, i) => (
+      {sortedPrices.map((priceObj, i) => (
         <div key={String(priceObj.date)} className='flex w-full justify-center'>
           <p
             className={`min-w-[12rem] py-2 pr-4 border-r-2 border-indigo-700 text-right ${
