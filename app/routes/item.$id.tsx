@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Spinner } from 'evergreen-ui';
+import { Heading, Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { TrackingItemCard } from '~/components/styles/tracking-item-card';
@@ -9,6 +9,7 @@ import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/get-tracked-item.service';
 import { errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
+import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 
 type LoaderResponse = {
   ok: boolean;
@@ -61,7 +62,22 @@ export default function SearchItem() {
             {(resolvedData) =>
               resolvedData ? (
                 <div>
-                  <TrackingItemCard item={resolvedData} />
+                  <div className='text-center'>
+                    Gráfica con datos (si hay 5 o más??)
+                  </div>
+                  <div className='my-8'>
+                    <TrackingItemCard item={resolvedData} />
+                  </div>
+                  <Heading
+                    color='muted'
+                    className='text-center mb-1'
+                    size={600}
+                  >
+                    Histórico de precios
+                  </Heading>
+                  <div className='pr-[46px] max-w-3xl mx-auto'>
+                    <TablePricingHistory item={resolvedData} />
+                  </div>
                 </div>
               ) : (
                 <div>

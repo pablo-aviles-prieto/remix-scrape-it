@@ -6,3 +6,7 @@ export const errorMsgs = {
 };
 
 export const COOLMOD_BASE_RUL = 'https://www.coolmod.com/';
+
+export const dateFormat = {
+  euWithTime: 'dd/MM/yyyy HH:mm',
+};
