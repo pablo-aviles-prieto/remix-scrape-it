@@ -76,7 +76,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
       >
         <ItemModal
           itemName={item.itemName ?? ''}
-          actualPrice={`${item.actualPrice}${item.currency}`}
+          actualPrice={item.actualPrice ?? ''}
           imgPath={item.imgPath ?? ''}
           oldPrice={item.oldPrice}
           discount={item.discount}

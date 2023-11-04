@@ -25,6 +25,10 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   if (!itemExists) {
+    // Replacing the comma decimal separator by a point separator
+    const parsedActualPrice = actualPrice.includes(',')
+      ? actualPrice.replace(',', '.')
+      : actualPrice;
     const createdTracking = await TrackingModel.create({
       name,
       url,
@@ -33,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
       prices: [
         {
           date: new Date(),
-          price: parseFloat(actualPrice),
+          price: parseFloat(parsedActualPrice),
         },
       ],
     });

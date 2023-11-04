@@ -12,4 +12,5 @@ export type ListItemsCoolmod = {
   url: string | null | undefined;
   imgPath: string | null | undefined;
   price: string | undefined;
+  currency: string;
 };

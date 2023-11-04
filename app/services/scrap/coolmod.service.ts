@@ -1,5 +1,5 @@
 import { COOLMOD_BASE_RUL } from '~/utils/const';
-import { getBrowser } from '../browser.service';
+import { getBrowser } from './browser.service';
 
 export const getCoolmodSingleItem = async ({
   productPage,
@@ -21,7 +21,6 @@ export const getCoolmodSingleItem = async ({
   const imgPath = (await imgElement?.getAttribute('src')) || undefined;
 
   try {
-    // TODO: get the discount %
     const oldPrice = await page.$eval(
       '#discountProductPrice .crossout',
       (el) => {
@@ -34,7 +33,8 @@ export const getCoolmodSingleItem = async ({
       (await inputElement?.getAttribute('data-itemprice')) || undefined;
 
     const discountElement = await page.$('.ratebox');
-    const discount = (await discountElement?.textContent()) || undefined;
+    const discount =
+      (await discountElement?.textContent())?.trim() || undefined;
 
     itemData = {
       oldPrice: oldPrice.amount,
@@ -66,7 +66,6 @@ export const getCoolmodSingleItem = async ({
   }
 
   await browser.close();
-
   return itemData;
 };
 
@@ -96,7 +95,13 @@ export const getCoolmodListItems = async ({
         const price = item
           .querySelector('.df-card__price')
           ?.textContent?.trim();
-        return { name, url, imgPath: `https:${imgPath}`, price };
+        return {
+          name,
+          url,
+          imgPath: `https:${imgPath}`,
+          price: price?.replace('€', '').trim(),
+          currency: '€',
+        };
       });
       return parsedItems;
     }

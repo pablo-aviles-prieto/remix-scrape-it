@@ -12,6 +12,7 @@ import { RemixServer } from '@remix-run/react';
 import isbot from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { connectDb } from './config/connect-db';
+import { updateTrackedItems } from './services/tracking/update-tracked-items.service';
 
 const ABORT_DELAY = 5_000;
 
@@ -22,6 +23,10 @@ connectDb()
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
   });
+
+updateTrackedItems();
+// .then(() => console.log('Jobs loaded'))
+// .catch((err) => console.error('Failed to load jobs', err));
 
 export default function handleRequest(
   request: Request,

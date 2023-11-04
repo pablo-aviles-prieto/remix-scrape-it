@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { TrackingItemCard } from '~/components/styles/tracking-item-card';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
-import { getTrackedItem } from '~/services/get-tracked-item.service';
+import { getTrackedItem } from '~/services/tracking/get-tracked-item.service';
 import { errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';

@@ -133,6 +133,7 @@ export const ItemModal = ({
                 }`}
               >
                 {actualPrice}
+                {currency}
               </span>
               {oldPrice && discount && (
                 <span>

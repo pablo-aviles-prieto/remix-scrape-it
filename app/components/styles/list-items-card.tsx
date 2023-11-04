@@ -32,7 +32,10 @@ export const ListItemsCard = ({ item }: Props) => {
             </h1>
           </Tooltip>
           <div className='pt-1 flex items-center justify-between'>
-            <p className='text-xl'>{item.price}</p>
+            <p className='text-xl'>
+              {item.price}
+              {item.currency}
+            </p>
             <a
               href={item.url ?? ''}
               target='_blank'
