@@ -4,9 +4,11 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
+import { TrackingItemCard } from '~/components/styles/tracking-item-card';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/get-tracked-item.service';
 import { errorMsgs } from '~/utils/const';
+import { isValidObjectId } from 'mongoose';
 
 type LoaderResponse = {
   ok: boolean;
@@ -15,12 +17,13 @@ type LoaderResponse = {
 };
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
-  if (!params.id) {
+  if (!params.id || !isValidObjectId(params.id)) {
     return defer({
       ok: false,
       error: errorMsgs.invalidId,
     });
   }
+
   try {
     const trackedItemPromise = getTrackedItem(params.id);
 
@@ -44,7 +47,6 @@ export default function SearchItem() {
     return <div>Error: {error}</div>;
   }
 
-  // TODO: Add a button to go back to the home page
   return (
     <div>
       <LoaderWrapper>
@@ -72,6 +74,7 @@ export default function SearchItem() {
                       <p>Precio: {priceObj.price + resolvedData.currency}</p>
                     </div>
                   ))}
+                  <TrackingItemCard item={resolvedData} />
                 </div>
               ) : (
                 <div>
