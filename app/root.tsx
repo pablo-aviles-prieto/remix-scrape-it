@@ -14,12 +14,14 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import tailwindStylesheet from '~/styles/tailwind.css';
+import globalStylesheet from '~/styles/global.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
   { rel: 'stylesheet', href: tailwindStylesheet },
+  { rel: 'stylesheet', href: globalStylesheet },
 ];
 
 // TODO: Change meta data

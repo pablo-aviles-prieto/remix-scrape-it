@@ -2,7 +2,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const container = 'p-16';
+const container = 'p-16 pb-0';
 
 export const AppLayout = ({ children }: Props) => {
   return (

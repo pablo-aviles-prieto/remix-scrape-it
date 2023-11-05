@@ -75,7 +75,7 @@ export default function SearchItem() {
                   >
                     Histórico de precios
                   </Heading>
-                  <div className='pr-[46px] max-w-3xl mx-auto'>
+                  <div className='pr-[46px] max-w-3xl mx-auto border h-[calc(100vh-625px)] overflow-y-auto border-slate-800 rounded-lg'>
                     <TablePricingHistory item={resolvedData} />
                   </div>
                 </div>
