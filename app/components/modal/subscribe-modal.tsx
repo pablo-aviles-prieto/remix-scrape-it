@@ -1,7 +1,8 @@
 import { useFetcher } from '@remix-run/react';
 import { CloseBtn } from '../styles/icons/close-btn';
 import { RegularButton } from '../styles/regular-button';
-import { TextInput } from 'evergreen-ui';
+import { TextInput, toaster } from 'evergreen-ui';
+import { useEffect, useMemo } from 'react';
 
 type Props = {
   itemName: string;
@@ -16,18 +17,32 @@ type Fetcher = {
 };
 
 export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
-  const fetcher = useFetcher<Fetcher>();
+  const {
+    data: fetcherData,
+    Form: FetcherForm,
+    state: fetcherState,
+  } = useFetcher<Fetcher>();
+  const email = useMemo(() => fetcherData?.email, [fetcherData]);
+  const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
 
-  // TODO: Show a toast if succesfully created or if it has an error!
-  const email = fetcher?.data?.email;
-  const hasError = fetcher?.data?.error;
-  console.log('fetcher.data', fetcher.data);
-  console.log('email', email);
-  console.log('hasError', hasError);
+  useEffect(() => {
+    if (!email && hasError) {
+      toaster.danger(`Error al subscribirse`, {
+        description: `Revisa el email facilitado e inténtalo nuevamente`,
+      });
+      return;
+    }
+    if (email && !hasError) {
+      toaster.success(`Te has subscrito correctamente!`, {
+        description: `Recibirás notificaciones diarias sobre este producto en ${email}`,
+      });
+      onClose();
+    }
+  }, [email, hasError]);
 
   return (
     <div>
-      <fetcher.Form id='subscribe-form' method='post'>
+      <FetcherForm id='subscribe-form' method='post'>
         <div className='flex gap-8 items-center justify-between'>
           <h3 className='line-clamp-1 text-slate-900 text-lg font-semibold'>
             Subscríbete a los últimos precios
@@ -62,14 +77,14 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
             content='Subscribirse'
             type='submit'
             isLoading={
-              fetcher.state === 'submitting' || fetcher.state === 'loading'
+              fetcherState === 'submitting' || fetcherState === 'loading'
             }
             isDisabled={
-              fetcher.state === 'submitting' || fetcher.state === 'loading'
+              fetcherState === 'submitting' || fetcherState === 'loading'
             }
           />
         </div>
-      </fetcher.Form>
+      </FetcherForm>
     </div>
   );
 };
