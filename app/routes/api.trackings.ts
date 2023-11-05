@@ -1,6 +1,7 @@
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import TrackingModel from '~/models/trackings';
 import { errorMsgs } from '~/utils/const';
+import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
 
 type Payload = {
   name: string;
@@ -26,9 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!itemExists) {
     // Replacing the comma decimal separator by a point separator
-    const parsedActualPrice = actualPrice.includes(',')
-      ? actualPrice.replace(',', '.')
-      : actualPrice;
+    const parsedActualPrice = transformDecimalOperator(actualPrice);
     const createdTracking = await TrackingModel.create({
       name,
       url,

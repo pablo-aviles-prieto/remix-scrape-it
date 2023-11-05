@@ -12,7 +12,7 @@ export const TrackingItemCard = ({ item }: Props) => {
 
   return (
     <div className='flex mx-auto max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden'>
-      <img className='w-2/5 bg-cover' src={item.image} />
+      <img className='w-2/5 object-cover max-h-[280px]' src={item.image} />
       <div className='w-3/5 p-4 flex flex-col justify-between'>
         <div>
           <h1 className='text-gray-900 font-bold text-2xl'>{item.name}</h1>
