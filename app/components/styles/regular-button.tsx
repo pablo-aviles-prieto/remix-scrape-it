@@ -2,7 +2,7 @@ import { CustomSpinner } from './custom-spinner';
 
 type Props = {
   content: string;
-  onClick: () => void;
+  onClick?: () => void;
   overrideClasses?: string;
   type?: 'button' | 'submit' | 'reset';
   isDisabled?: boolean;

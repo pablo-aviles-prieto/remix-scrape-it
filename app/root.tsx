@@ -37,7 +37,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const searchWord = formData.get('search')?.toString();
 
   if (!searchWord) {
-    return;
+    return null;
   }
 
   const regex = /^(https:\/\/)?(www\.)?coolmod\.com/;
@@ -64,7 +64,7 @@ export default function App() {
           <section>
             <SearchContainer />
           </section>
-          <section className='mt-8'>
+          <section className='mt-6'>
             <Outlet />
           </section>
           <ScrollRestoration />

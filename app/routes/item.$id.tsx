@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
-import { defer } from '@remix-run/node';
+import { defer, json } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Heading, Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
@@ -15,6 +15,20 @@ type LoaderResponse = {
   ok: boolean;
   error?: string;
   trackedItem?: Promise<TrackingResponse>;
+};
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const email = formData.get('subscribe')?.toString();
+  const itemId = formData.get('item-id')?.toString();
+
+  // TODO: Check email with regex and store the email in the itemId
+  console.log('itemId', itemId);
+  if (!email?.trim()) {
+    return json({ ok: false, error: 'No email provided' });
+  }
+
+  return json({ ok: true, email });
 };
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
@@ -65,17 +79,17 @@ export default function SearchItem() {
                   <div className='text-center'>
                     Gráfica con datos (si hay 5 o más??)
                   </div>
-                  <div className='my-8'>
+                  <div className='my-6'>
                     <TrackingItemCard item={resolvedData} />
                   </div>
                   <Heading
                     color='muted'
-                    className='text-center mb-1'
+                    className='text-center !mb-1'
                     size={600}
                   >
                     Histórico de precios
                   </Heading>
-                  <div className='pr-[46px] max-w-3xl mx-auto border h-[calc(100vh-625px)] overflow-y-auto border-slate-800 rounded-lg'>
+                  <div className='pr-[46px] max-w-3xl mx-auto border h-[calc(100vh-600px)] overflow-y-auto border-slate-800 rounded-lg'>
                     <TablePricingHistory item={resolvedData} />
                   </div>
                 </div>
