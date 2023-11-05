@@ -19,6 +19,7 @@ const TrackingSchema: Schema = new Schema(
     url: { type: String, required: true },
     image: { type: String, required: true },
     prices: [PriceSchema],
+    subscribers: { type: [String], default: [] },
     currency: { type: String, required: true },
   },
   { timestamps: true }

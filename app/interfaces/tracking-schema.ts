@@ -11,6 +11,7 @@ export interface ITracking {
   url: string;
   image: string;
   prices: IPrices[];
+  subscribers: string[];
   currency: string;
   createdAt: Date;
   updatedAt: Date;
