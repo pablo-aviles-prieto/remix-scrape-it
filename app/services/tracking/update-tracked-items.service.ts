@@ -3,7 +3,12 @@ import { getCoolmodSingleItem } from '../scrap/coolmod.service';
 import { getAllTrackedItems } from './get-all-tracked-items.service';
 import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
 
-export const updateTrackedItems = async () => {
+type UpdateItemSubscriber = {
+  email: string;
+  id: string;
+};
+
+export const updateTrackedItemsPrice = async () => {
   const trackedItems = await getAllTrackedItems();
 
   /*
@@ -29,4 +34,18 @@ export const updateTrackedItems = async () => {
       }
     );
   }
+};
+
+export const updateTrackedItemSubscribers = async ({
+  email,
+  id,
+}: UpdateItemSubscriber) => {
+  return TrackingModel.updateOne(
+    { _id: id },
+    {
+      $addToSet: {
+        subscribers: email,
+      },
+    }
+  );
 };

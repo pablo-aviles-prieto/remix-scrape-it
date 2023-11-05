@@ -7,9 +7,10 @@ import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { TrackingItemCard } from '~/components/styles/tracking-item-card';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/tracking/get-tracked-item.service';
-import { errorMsgs } from '~/utils/const';
+import { SIMPLE_REGEX_EMAIL, errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';
+import { updateTrackedItemSubscribers } from '~/services/tracking/update-tracked-items.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -19,16 +20,19 @@ type LoaderResponse = {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const email = formData.get('subscribe')?.toString();
+  const email = formData.get('subscribe')?.toString()?.trim();
   const itemId = formData.get('item-id')?.toString();
 
-  // TODO: Check email with regex and store the email in the itemId
-  console.log('itemId', itemId);
-  if (!email?.trim()) {
-    return json({ ok: false, error: 'No email provided' });
+  if (!email || !email.match(SIMPLE_REGEX_EMAIL)) {
+    return json({ ok: false, error: errorMsgs.invalidEmail });
   }
 
-  return json({ ok: true, email });
+  const updatedSubscribers = await updateTrackedItemSubscribers({
+    email,
+    id: itemId ?? '',
+  });
+
+  return json({ ok: true, email, updatedSubscribers });
 };
 
 export const loader = async ({ params }: ActionFunctionArgs) => {

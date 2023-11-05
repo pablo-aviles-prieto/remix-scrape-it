@@ -18,7 +18,7 @@ type Fetcher = {
 export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
   const fetcher = useFetcher<Fetcher>();
 
-  // TODO: Show a toast if succesfully created or if it has an error
+  // TODO: Show a toast if succesfully created or if it has an error!
   const email = fetcher?.data?.email;
   const hasError = fetcher?.data?.error;
   console.log('fetcher.data', fetcher.data);

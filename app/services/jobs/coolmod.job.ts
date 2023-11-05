@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { updateTrackedItems } from '../tracking/update-tracked-items.service';
+import { updateTrackedItemsPrice } from '../tracking/update-tracked-items.service';
 import { schedules } from './schedules';
 
 const jobs: Map<string, cron.ScheduledTask> = new Map();
@@ -11,7 +11,7 @@ const updatePrices = cron.schedule(
     console.log(
       `JOB :: Coolmod updating tracked items started at ${new Date()}`
     );
-    await updateTrackedItems();
+    await updateTrackedItemsPrice();
     console.log(
       `JOB :: Coolmod updating tracked items finished at ${new Date()}`
     );
