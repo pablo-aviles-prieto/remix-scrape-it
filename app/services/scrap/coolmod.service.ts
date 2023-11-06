@@ -38,7 +38,7 @@ export const getCoolmodSingleItem = async ({
 
     itemData = {
       oldPrice: oldPrice.amount,
-      actualPrice,
+      actualPrice, // Returned in JS number (2399.95 instead of 2.399,95)
       itemName,
       currency: oldPrice.currency,
       imgPath,

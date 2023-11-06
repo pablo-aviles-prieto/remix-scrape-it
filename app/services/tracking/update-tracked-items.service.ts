@@ -1,7 +1,6 @@
 import TrackingModel from '~/models/trackings';
 import { getCoolmodSingleItem } from '../scrap/coolmod.service';
 import { getAllTrackedItems } from './get-all-tracked-items.service';
-import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
 import { mailSender } from '../mail/mail-sender.service';
 import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
@@ -28,8 +27,7 @@ export const updateTrackedPriceAndSendMail = async () => {
 
   for (const item of trackedItems) {
     const updatedData = await getCoolmodSingleItem({ productPage: item.url });
-    const updatedPrice = updatedData.actualPrice;
-    const parsedUpdatedPrice = transformDecimalOperator(updatedPrice ?? '0');
+    const updatedPrice = updatedData.actualPrice; // Returned in JS number (2399.95 instead of 2.399,95)
 
     try {
       await TrackingModel.updateOne(
@@ -37,7 +35,7 @@ export const updateTrackedPriceAndSendMail = async () => {
         {
           $push: {
             prices: {
-              price: parseFloat(parsedUpdatedPrice),
+              price: parseFloat(updatedPrice ?? '0'),
               date: new Date(),
             },
           },

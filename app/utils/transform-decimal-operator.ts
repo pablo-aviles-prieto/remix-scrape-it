@@ -1,2 +1,3 @@
-export const transformDecimalOperator = (price: string) =>
-  price.includes(',') ? price.replace(',', '.') : price;
+export const transformDecimalOperator = (price: string) => {
+  return price.replace(/\./g, '').replace(',', '.');
+};
