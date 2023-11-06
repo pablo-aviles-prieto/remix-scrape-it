@@ -1,7 +1,7 @@
 import { useFetcher } from '@remix-run/react';
 import { CloseBtn } from '../styles/icons/close-btn';
 import { RegularButton } from '../styles/regular-button';
-import { TextInput, toaster } from 'evergreen-ui';
+import { TextInput } from 'evergreen-ui';
 import { useEffect, useMemo } from 'react';
 
 type Props = {
@@ -25,20 +25,20 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
   const email = useMemo(() => fetcherData?.email, [fetcherData]);
   const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
 
-  useEffect(() => {
-    if (!email && hasError) {
-      toaster.danger(`Error al subscribirse`, {
-        description: `Revisa el email facilitado e inténtalo nuevamente`,
-      });
-      return;
-    }
-    if (email && !hasError) {
-      toaster.success(`Te has subscrito correctamente!`, {
-        description: `Recibirás notificaciones diarias sobre este producto en ${email}`,
-      });
-      onClose();
-    }
-  }, [email, hasError]);
+  // useEffect(() => {
+  //   if (!email && hasError) {
+  //     toaster.danger(`Error al subscribirse`, {
+  //       description: `Revisa el email facilitado e inténtalo nuevamente`,
+  //     });
+  //     return;
+  //   }
+  //   if (email && !hasError) {
+  //     toaster.success(`Te has subscrito correctamente!`, {
+  //       description: `Recibirás notificaciones diarias sobre este producto en ${email}`,
+  //     });
+  //     onClose();
+  //   }
+  // }, [email, hasError]);
 
   return (
     <div>

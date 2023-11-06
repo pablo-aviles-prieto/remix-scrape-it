@@ -1,19 +1,18 @@
 import cron from 'node-cron';
-import { updateTrackedItemsPrice } from '../tracking/update-tracked-items.service';
+import { updateTrackedPriceAndSendMail } from '../tracking/update-tracked-items.service';
 import { schedules } from './schedules';
 
 const jobs: Map<string, cron.ScheduledTask> = new Map();
 
-// TODO: Send the email for the subscribed users to each item!
 const updatePrices = cron.schedule(
   schedules.updatePrices,
   async () => {
     console.log(
-      `JOB :: Coolmod updating tracked items started at ${new Date()}`
+      `JOB :: Coolmod updating tracked items and sending mails started at ${new Date()}`
     );
-    await updateTrackedItemsPrice();
+    await updateTrackedPriceAndSendMail();
     console.log(
-      `JOB :: Coolmod updating tracked items finished at ${new Date()}`
+      `JOB :: Coolmod updating tracked items and sending mails finished at ${new Date()}`
     );
   },
   { scheduled: false }
