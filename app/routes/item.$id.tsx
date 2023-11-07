@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
-import { Await, useLoaderData } from '@remix-run/react';
+import { Await, Outlet, useLoaderData } from '@remix-run/react';
 import { Heading, Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
@@ -106,6 +106,7 @@ export default function SearchItem() {
           </Await>
         </Suspense>
       </LoaderWrapper>
+      <Outlet />
     </div>
   );
 }

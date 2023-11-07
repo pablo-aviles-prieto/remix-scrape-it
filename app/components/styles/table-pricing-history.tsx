@@ -8,8 +8,8 @@ type Props = {
 
 // TODO: Add max-height to the "table" and scroll it on overflow y
 export const TablePricingHistory = ({ item }: Props) => {
-  const sortedPrices = [...item.prices].sort((a, b) =>
-    (b.date as unknown as string).localeCompare(a.date as unknown as string)
+  const sortedPrices = [...item.prices].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
   return (
