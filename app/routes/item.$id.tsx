@@ -63,7 +63,12 @@ export default function SearchItem() {
   const { trackedItem, ok, error } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
-    return <div>Error: {error}</div>;
+    return (
+      // TODO: Center the message, beautify it, and show link to navigate back to home
+      <div>
+        Error: {error} (INVALID URL ERROR in case that invalid ID provided)
+      </div>
+    );
   }
 
   return (
@@ -96,6 +101,7 @@ export default function SearchItem() {
                   <div className='pr-[46px] max-w-3xl mx-auto border h-[calc(100vh-600px)] overflow-y-auto border-slate-800 rounded-lg'>
                     <TablePricingHistory item={resolvedData} />
                   </div>
+                  <Outlet context={resolvedData} />
                 </div>
               ) : (
                 <div>
@@ -105,8 +111,8 @@ export default function SearchItem() {
             }
           </Await>
         </Suspense>
+        {/* <Outlet /> */}
       </LoaderWrapper>
-      <Outlet />
     </div>
   );
 }

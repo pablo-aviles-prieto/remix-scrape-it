@@ -63,7 +63,7 @@ export const updateTrackedPriceAndSendMail = async () => {
 
       const emailPromises = item.subscribers.map((email: string) => {
         const encodedMail = CryptoJS.AES.encrypt(
-          JSON.stringify(email),
+          email,
           SECRET_UNSUBSCRIBE ?? ''
         ).toString();
 

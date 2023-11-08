@@ -25,6 +25,8 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
   const email = useMemo(() => fetcherData?.email, [fetcherData]);
   const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
 
+  // TODO: USE A FUCKING TOAST THAT DOESNT CRASH THE WHOLE APP. THX
+
   // useEffect(() => {
   //   if (!email && hasError) {
   //     toaster.danger(`Error al subscribirse`, {
