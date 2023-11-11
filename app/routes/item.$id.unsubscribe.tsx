@@ -63,22 +63,26 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
 export default function Unsubscribe() {
   const { ok, id, error, mail } = useLoaderData<LoaderResponse>();
   const itemData = useOutletContext<TrackingResponse>();
-  const [hasIdAndMail, setHasIdAndMail] = useState(Boolean(id && mail));
+  const [isShown, setIsShown] = useState(Boolean(id && mail));
+  console.log('ok', ok);
+  console.log('id', id);
+  console.log('error', error);
+  console.log('mail', mail);
 
   if (!ok && error) {
     toast.error(`Error interno. Inténtelo más tarde`);
     return null;
   }
 
-  if (!hasIdAndMail) {
+  if (!id || !mail) {
     toast.error(`Revise la URL proporcionada o contacte con el administrador`);
     return;
   }
 
   return (
     <Dialog
-      isShown={hasIdAndMail}
-      onCloseComplete={() => setHasIdAndMail(false)}
+      isShown={isShown}
+      onCloseComplete={() => setIsShown(false)}
       hasHeader={false}
       hasFooter={false}
     >
@@ -86,7 +90,7 @@ export default function Unsubscribe() {
         mail={mail ?? ''}
         itemId={itemData.id}
         itemName={itemData.name}
-        onClose={() => setHasIdAndMail(false)}
+        onClose={() => setIsShown(false)}
       />
     </Dialog>
   );
