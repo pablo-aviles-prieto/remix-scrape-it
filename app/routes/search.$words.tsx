@@ -1,9 +1,10 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Heading, Spinner } from 'evergreen-ui';
+import { Heading } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
+import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { Info } from '~/components/styles/icons/info';
 import { ListItemsCard } from '~/components/styles/list-items-card';
 import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
@@ -64,13 +65,7 @@ export default function SearchItem() {
       <div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
           <LoaderWrapper>
-            <Suspense
-              fallback={
-                <div className='absolute top-0 left-0 bottom-0 right-0 bg-transparent z-10'>
-                  <Spinner size={128} marginX='auto' marginY={425} />
-                </div>
-              }
-            >
+            <Suspense fallback={<FallbackLoader />}>
               <Await resolve={data as Promise<ListItemsCoolmod[]>}>
                 {(resolvedData) =>
                   resolvedData.map((item) => (

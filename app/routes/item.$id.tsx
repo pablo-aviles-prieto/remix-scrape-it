@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
 import { Await, Outlet, useLoaderData } from '@remix-run/react';
-import { Heading, Spinner } from 'evergreen-ui';
+import { Heading } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { TrackingItemCard } from '~/components/styles/tracking-item-card';
@@ -11,6 +11,7 @@ import { SIMPLE_REGEX_EMAIL, errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 import { updateTrackedItemSubscribers } from '~/services/tracking/update-tracked-items.service';
+import { FallbackLoader } from '~/components/styles/fallback-loader';
 
 type LoaderResponse = {
   ok: boolean;
@@ -74,13 +75,7 @@ export default function SearchItem() {
   return (
     <div>
       <LoaderWrapper>
-        <Suspense
-          fallback={
-            <div className='absolute top-0 left-0 bottom-0 right-0 bg-transparent z-10'>
-              <Spinner size={128} marginX='auto' marginY={425} />
-            </div>
-          }
-        >
+        <Suspense fallback={<FallbackLoader />}>
           <Await resolve={trackedItem as Promise<TrackingResponse>}>
             {(resolvedData) =>
               resolvedData ? (

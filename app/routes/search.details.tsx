@@ -1,9 +1,9 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Spinner } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
+import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { ItemCard } from '~/components/styles/item-card';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
@@ -61,13 +61,7 @@ export default function SearchIndex() {
         on params
       </div>
       <LoaderWrapper>
-        <Suspense
-          fallback={
-            <div className='absolute top-0 left-0 bottom-0 right-0 bg-transparent z-10'>
-              <Spinner size={128} marginX='auto' marginY={425} />
-            </div>
-          }
-        >
+        <Suspense fallback={<FallbackLoader />}>
           <Await resolve={data as Promise<SingleItemCoolmod>}>
             {(resolvedData) => <ItemCard item={resolvedData} urlItem={url} />}
           </Await>
