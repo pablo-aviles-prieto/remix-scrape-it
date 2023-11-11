@@ -6,13 +6,14 @@ import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
 import type { MailDynamicData } from '~/interfaces/mail-dynamic-data';
+import CryptoJS from 'crypto-js';
 
 type UpdateItemSubscriber = {
   email: string;
   id: string;
 };
 
-const { APP_BASE_URL } = process.env;
+const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
 export const updateTrackedPriceAndSendMail = async () => {
   const trackedItems = await getAllTrackedItems();
@@ -61,12 +62,16 @@ export const updateTrackedPriceAndSendMail = async () => {
       ];
 
       const emailPromises = item.subscribers.map((email: string) => {
+        const encodedMail = CryptoJS.AES.encrypt(
+          email,
+          SECRET_UNSUBSCRIBE ?? ''
+        ).toString();
+
         const dynamicData: MailDynamicData = {
-          // TODO: Create a unsubscribeUrl with cryptojs
           productName: item.name,
           productImage: item.image,
           productUrl: `${APP_BASE_URL}/item/${item.id}`,
-          unsubscribeUrl: `${APP_BASE_URL}/item/${item.id}/unsubscribe?id=TOKEN`,
+          unsubscribeUrl: `${APP_BASE_URL}/item/${item.id}/unsubscribe?id=${encodedMail}`,
           prices: pricesData,
         };
 

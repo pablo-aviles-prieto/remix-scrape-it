@@ -2,9 +2,9 @@ import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { RegularButton } from './regular-button';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
-import { Dialog } from 'evergreen-ui';
-import { useState } from 'react';
 import { SubscribeModal } from '../modal/subscribe-modal';
+import { useState } from 'react';
+import { Dialog } from 'evergreen-ui';
 
 type Props = {
   item: TrackingResponse;
@@ -45,6 +45,7 @@ export const TrackingItemCard = ({ item }: Props) => {
             >
               Visitar página
             </a>
+
             <RegularButton
               content='Subscribirse'
               onClick={() => setIsShown(true)}

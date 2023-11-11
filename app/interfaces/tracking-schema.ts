@@ -1,6 +1,6 @@
 import type { Document, ObjectId } from 'mongoose';
 
-type IPrices = {
+export type IPrices = {
   date: Date;
   price: number;
 };

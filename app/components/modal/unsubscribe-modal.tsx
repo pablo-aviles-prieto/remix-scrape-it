@@ -1,11 +1,11 @@
-import { useFetcher } from '@remix-run/react';
 import { CloseBtn } from '../styles/icons/close-btn';
+import { useFetcher } from '@remix-run/react';
 import { RegularButton } from '../styles/regular-button';
-import { TextInput } from 'evergreen-ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 
 type Props = {
+  mail: string;
   itemName: string;
   itemId: string;
   onClose: () => void;
@@ -13,40 +13,40 @@ type Props = {
 
 type Fetcher = {
   ok: boolean;
-  email?: string;
+  success?: string;
   error?: string;
 };
 
-export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
+export const UnsubscribeModal = ({
+  mail,
+  itemId,
+  itemName,
+  onClose,
+}: Props) => {
   const {
     data: fetcherData,
     Form: FetcherForm,
     state: fetcherState,
   } = useFetcher<Fetcher>();
-  const [displayError, setDisplayError] = useState(false);
-  const email = useMemo(() => fetcherData?.email, [fetcherData]);
+  const successMsg = useMemo(() => fetcherData?.success, [fetcherData]);
   const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
 
   useEffect(() => {
-    if (!email && hasError) {
-      toast.error(`Revisa el email facilitado e inténtalo nuevamente`);
-      setDisplayError(true);
-      return;
-    }
-    if (email && !hasError) {
-      toast.success(
-        `Recibirás notificaciones diarias sobre este producto en ${email}`
-      );
+    if (successMsg) {
+      toast.success(successMsg);
+      onClose();
+    } else if (hasError) {
+      toast.error(hasError);
       onClose();
     }
-  }, [email, hasError]);
+  }, [successMsg, hasError]);
 
   return (
     <div>
       <FetcherForm id='subscribe-form' method='post'>
         <div className='flex gap-8 items-center justify-between'>
           <h3 className='line-clamp-1 text-slate-900 text-lg font-semibold'>
-            Subscríbete a los últimos precios
+            ¿Seguro que quieres darte de baja?
           </h3>
           <CloseBtn
             className='cursor-pointer text-slate-600 hover:text-indigo-400'
@@ -55,30 +55,19 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
             onClick={onClose}
           />
         </div>
-        <div className='my-16'>
-          <div>
-            <p className='mb-4'>
-              ¿Quieres seguir los últimos precios de{' '}
-              <span className='text-sm font-semibold'>{itemName}</span>?
-            </p>
-            <p>¡Introduce un email para que te llegue un correo diario!</p>
-          </div>
-
-          <TextInput
-            name='subscribe'
-            placeholder='Introduce tu email'
-            className={`bg-gray-100 !text-sm !mt-1 !w-full ${
-              hasError && displayError ? '!border-red-400 !border-2' : ''
-            }`}
-            width='25rem'
-            onChange={() => setDisplayError(false)}
-          />
+        <div className='my-8'>
+          <p className='text-sm'>
+            Si pinchas en darse de baja no volverás a recibir correos con el
+            seguimiento de precios de{' '}
+            <span className='text-indigo-800 font-semibold'>{itemName}</span>
+          </p>
           <input hidden name='item-id' value={itemId} readOnly />
+          <input hidden name='unsubscribe-email' value={mail} readOnly />
         </div>
         <div className='flex justify-between mb-1'>
           <RegularButton content='Cerrar' onClick={onClose} color='secondary' />
           <RegularButton
-            content='Subscribirse'
+            content='Darse de baja'
             type='submit'
             isLoading={
               fetcherState === 'submitting' || fetcherState === 'loading'
