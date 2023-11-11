@@ -19,11 +19,6 @@ export const removeSubscriber = async ({
         error: 'No tracking document found with the provided ID',
       };
     }
-    console.log('doc.subscribers', doc.subscribers);
-    console.log(
-      'doc.subscribers.includes(emailToRemove)',
-      doc.subscribers.includes(emailToRemove)
-    );
     if (doc.subscribers.includes(emailToRemove)) {
       doc.subscribers = doc.subscribers.filter(
         (email) => email !== emailToRemove

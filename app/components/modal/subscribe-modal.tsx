@@ -2,7 +2,8 @@ import { useFetcher } from '@remix-run/react';
 import { CloseBtn } from '../styles/icons/close-btn';
 import { RegularButton } from '../styles/regular-button';
 import { TextInput } from 'evergreen-ui';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   itemName: string;
@@ -22,25 +23,23 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
     Form: FetcherForm,
     state: fetcherState,
   } = useFetcher<Fetcher>();
+  const [displayError, setDisplayError] = useState(false);
   const email = useMemo(() => fetcherData?.email, [fetcherData]);
   const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
 
-  // TODO: USE A FUCKING TOAST THAT DOESNT CRASH THE WHOLE APP. THX
-
-  // useEffect(() => {
-  //   if (!email && hasError) {
-  //     toaster.danger(`Error al subscribirse`, {
-  //       description: `Revisa el email facilitado e inténtalo nuevamente`,
-  //     });
-  //     return;
-  //   }
-  //   if (email && !hasError) {
-  //     toaster.success(`Te has subscrito correctamente!`, {
-  //       description: `Recibirás notificaciones diarias sobre este producto en ${email}`,
-  //     });
-  //     onClose();
-  //   }
-  // }, [email, hasError]);
+  useEffect(() => {
+    if (!email && hasError) {
+      toast.error(`Revisa el email facilitado e inténtalo nuevamente`);
+      setDisplayError(true);
+      return;
+    }
+    if (email && !hasError) {
+      toast.success(
+        `Recibirás notificaciones diarias sobre este producto en ${email}`
+      );
+      onClose();
+    }
+  }, [email, hasError]);
 
   return (
     <div>
@@ -68,8 +67,11 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
           <TextInput
             name='subscribe'
             placeholder='Introduce tu email'
-            className='bg-gray-100 !text-sm !mt-1 !w-full'
+            className={`bg-gray-100 !text-sm !mt-1 !w-full ${
+              hasError && displayError ? '!border-red-400 !border-2' : ''
+            }`}
             width='25rem'
+            onChange={() => setDisplayError(false)}
           />
           <input hidden name='item-id' value={itemId} readOnly />
         </div>

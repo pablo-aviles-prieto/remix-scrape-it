@@ -17,6 +17,7 @@ import tailwindStylesheet from '~/styles/tailwind.css';
 import globalStylesheet from '~/styles/global.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
+import { Toaster } from 'react-hot-toast';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -67,6 +68,7 @@ export default function App() {
           <section className='mt-6'>
             <Outlet />
           </section>
+          <Toaster position='bottom-right' />
           <ScrollRestoration />
           <Scripts />
           <LiveReload />

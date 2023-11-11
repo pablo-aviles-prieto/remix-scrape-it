@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { UnsubscribeModal } from '~/components/modal/unsubscribe-modal';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { removeSubscriber } from '~/services/tracking/remove-subscriber.service';
+import toast from 'react-hot-toast';
 
 type LoaderResponse = {
   ok: boolean;
@@ -20,14 +21,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get('unsubscribe-email')?.toString()?.trim();
   const itemId = formData.get('item-id')?.toString();
-  console.log('email', email);
-  console.log('itemId', itemId);
 
   const response = await removeSubscriber({
     emailToRemove: email ?? '',
     trackingId: itemId ?? '',
   });
-  console.log('response', response);
 
   return json(response);
 };
@@ -46,7 +44,6 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     const parsedQueryId = queryId.replaceAll(' ', '+');
     const bytes = CryptoJS.AES.decrypt(parsedQueryId, SECRET_UNSUBSCRIBE ?? '');
     const decryptedMail = bytes.toString(CryptoJS.enc.Utf8);
-    console.log('decryptedMail', decryptedMail);
 
     return json({
       ok: true,
@@ -69,12 +66,13 @@ export default function Unsubscribe() {
   const [hasIdAndMail, setHasIdAndMail] = useState(Boolean(id && mail));
 
   if (!ok && error) {
-    // TODO: Show a toast and not return anything at all
+    toast.error(`Error interno. Inténtelo más tarde`);
     return null;
   }
 
   if (!hasIdAndMail) {
-    // Show a toast since mail wasnt retrieved, meaning that the id provided is incorrect
+    toast.error(`Revise la URL proporcionada o contacte con el administrador`);
+    return;
   }
 
   return (

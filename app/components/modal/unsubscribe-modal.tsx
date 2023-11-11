@@ -1,7 +1,8 @@
 import { CloseBtn } from '../styles/icons/close-btn';
 import { useFetcher } from '@remix-run/react';
 import { RegularButton } from '../styles/regular-button';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   mail: string;
@@ -29,8 +30,16 @@ export const UnsubscribeModal = ({
   } = useFetcher<Fetcher>();
   const successMsg = useMemo(() => fetcherData?.success, [fetcherData]);
   const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
-  console.log('successMsg', successMsg);
-  console.log('hasError', hasError);
+
+  useEffect(() => {
+    if (successMsg) {
+      toast.success(successMsg);
+      onClose();
+    } else if (hasError) {
+      toast.error(hasError);
+      onClose();
+    }
+  }, [successMsg, hasError]);
 
   return (
     <div>
