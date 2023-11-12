@@ -106,7 +106,6 @@ export default function SearchItem() {
             }
           </Await>
         </Suspense>
-        {/* <Outlet /> */}
       </LoaderWrapper>
     </div>
   );

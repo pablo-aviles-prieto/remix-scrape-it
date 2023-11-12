@@ -1,5 +1,6 @@
 import { COOLMOD_BASE_RUL } from '~/utils/const';
 import { getBrowser } from './browser.service';
+import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
 
 export const getCoolmodSingleItem = async ({
   productPage,
@@ -58,7 +59,7 @@ export const getCoolmodSingleItem = async ({
     });
 
     itemData = {
-      actualPrice: actualPrice.amount,
+      actualPrice: transformDecimalOperator(actualPrice.amount ?? ''),
       itemName,
       currency: actualPrice.currency,
       imgPath,

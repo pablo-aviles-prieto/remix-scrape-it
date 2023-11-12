@@ -64,10 +64,6 @@ export default function Unsubscribe() {
   const { ok, id, error, mail } = useLoaderData<LoaderResponse>();
   const itemData = useOutletContext<TrackingResponse>();
   const [isShown, setIsShown] = useState(Boolean(id && mail));
-  console.log('ok', ok);
-  console.log('id', id);
-  console.log('error', error);
-  console.log('mail', mail);
 
   if (!ok && error) {
     toast.error(`Error interno. Inténtelo más tarde`);
