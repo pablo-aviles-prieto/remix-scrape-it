@@ -1,7 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
 import { Await, Outlet, useLoaderData } from '@remix-run/react';
-import { Heading } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { TrackingItemCard } from '~/components/styles/tracking-item-card';
@@ -9,9 +8,10 @@ import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/tracking/get-tracked-item.service';
 import { SIMPLE_REGEX_EMAIL, errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
-import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 import { updateTrackedItemSubscribers } from '~/services/tracking/update-tracked-items.service';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
+import { LineChart } from '~/components/chart/line-chart';
+import { PriceHistory } from '~/components/price-history/price-history';
 
 type LoaderResponse = {
   ok: boolean;
@@ -80,21 +80,16 @@ export default function SearchItem() {
             {(resolvedData) =>
               resolvedData ? (
                 <div>
-                  <div className='text-center'>
-                    Gráfica con datos (si hay 5 o más??)
-                  </div>
                   <div className='my-6'>
                     <TrackingItemCard item={resolvedData} />
                   </div>
-                  <Heading
-                    color='muted'
-                    className='text-center !mb-1'
-                    size={600}
-                  >
-                    Histórico de precios
-                  </Heading>
-                  <div className='pr-[46px] max-w-3xl mx-auto border h-[calc(100vh-600px)] overflow-y-auto border-slate-800 rounded-lg'>
-                    <TablePricingHistory item={resolvedData} />
+                  <div className='flex gap-2'>
+                    <div className='w-[60%]'>
+                      <LineChart prices={resolvedData.prices} />
+                    </div>
+                    <div className='w-[40%]'>
+                      <PriceHistory item={resolvedData} />
+                    </div>
                   </div>
                   <Outlet context={resolvedData} />
                 </div>
