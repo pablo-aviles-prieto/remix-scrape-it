@@ -66,8 +66,8 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   });
 
   if (!itemExists) {
-    return json({ ok: true, itemId: undefined });
+    return json({ ok: true, item: undefined });
   }
 
-  return json({ ok: true, itemId: itemExists.id });
+  return json({ ok: true, item: itemExists });
 };

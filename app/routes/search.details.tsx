@@ -56,10 +56,6 @@ export default function SearchIndex() {
 
   return (
     <div>
-      <div className='mb-8'>
-        Search details page - Should display the details of an item given a url
-        on params
-      </div>
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
           <Await resolve={data as Promise<SingleItemCoolmod>}>

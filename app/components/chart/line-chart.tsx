@@ -27,17 +27,31 @@ ChartJS.register(
 );
 
 const BRAND_COLOR = '#5024ee';
-const CHART_LABEL_COLORS = 'rgba(255, 255, 255, 0.5)';
-const CHART_GRID_LINES_COLORS = 'rgba(255, 255, 255, 0.1)';
-const CHART_BORDERS = 'rgb(100, 116, 139)';
+// const CHART_LABEL_COLORS = 'rgba(255, 255, 255, 0.5)';
+// const CHART_GRID_LINES_COLORS = 'rgba(255, 255, 255, 0.1)';
+// const CHART_BORDERS = 'rgb(100, 116, 139)';
 
 type Props = {
   prices: IPrices[];
   itemName: string;
   currency: string;
+  theme?: 'light' | 'dark';
+  isModal?: boolean;
 };
 
-export const LineChart = ({ prices, itemName, currency }: Props) => {
+export const LineChart = ({
+  prices,
+  itemName,
+  currency,
+  theme = 'dark',
+  isModal = false,
+}: Props) => {
+  const CHART_LABEL_COLORS =
+    theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(22, 22, 22, 0.7)';
+  const CHART_GRID_LINES_COLORS =
+    theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(22, 22, 22, 0.1)';
+  const CHART_BORDERS = 'rgb(100, 116, 139)';
+
   const breakLabel = (label: string, maxChars: number = 10) => {
     const ellipsis = label.length > maxChars ? '...' : '';
     return `${label.substring(0, maxChars)}${ellipsis}`;
@@ -131,12 +145,12 @@ export const LineChart = ({ prices, itemName, currency }: Props) => {
         },
         x: {
           ticks: {
-            maxTicksLimit: 8,
+            maxTicksLimit: isModal ? 4 : 8,
             beginAtZero: true,
             padding: 10,
             color: CHART_LABEL_COLORS,
             indexAxis: 'x',
-            font: { size: 11 },
+            font: { size: isModal ? 10 : 11 },
           },
           grid: {
             drawTicks: false,
@@ -154,7 +168,7 @@ export const LineChart = ({ prices, itemName, currency }: Props) => {
   };
 
   return (
-    <div className='h-[22rem] w-full'>
+    <div className={`${isModal ? 'h-[13rem]' : 'h-[22rem]'} w-full`}>
       <Line {...config} />
     </div>
   );
