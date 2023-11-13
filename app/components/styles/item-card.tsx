@@ -51,21 +51,21 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           </div>
         </div>
         <div className='p-6 pt-0 flex justify-between'>
-          <RegularButton
-            content='Seguimiento'
-            onClick={() => setIsShown(true)}
-          />
           <a
-            className='select-none rounded-lg bg-indigo-600 py-3 px-6 text-center align-middle font-sans text-xs font-bold 
-          uppercase text-slate-200 shadow-md shadow-indigo-500/20 transition-all hover:shadow-lg 
-          hover:shadow-indigo-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] 
-          active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
+            className='select-none rounded-lg bg-transparent py-3 px-6 text-center align-middle font-sans text-xs font-bold 
+            uppercase text-indigo-600 shadow-md shadow-indigo-300/20 transition-all hover:shadow-lg border border-indigo-600
+           hover:shadow-indigo-300/30 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] 
+            active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
             href={urlItem}
             target='_blank'
             rel='noopener noreferrer'
           >
             Visitar página
           </a>
+          <RegularButton
+            content='Seguimiento'
+            onClick={() => setIsShown(true)}
+          />
         </div>
       </div>
       <Dialog
