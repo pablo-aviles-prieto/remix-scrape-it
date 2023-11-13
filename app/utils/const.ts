@@ -4,6 +4,7 @@ export const errorMsgs = {
   invalidPayload: 'Check the data provided',
   invalidParams: 'Check the params provided',
   invalidId: 'Check the ID provided',
+  invalidURL: 'Check the URL provided',
   invalidEmail: 'Check the email provided',
 };
 

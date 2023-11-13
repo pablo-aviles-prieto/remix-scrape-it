@@ -2,6 +2,8 @@ import { useNavigate } from '@remix-run/react';
 import { CloseBtn } from '../styles/icons/close-btn';
 import { RegularButton } from '../styles/regular-button';
 import { useEffect, useState } from 'react';
+import type { TrackingResponse } from '~/interfaces/tracking-schema';
+import { LineChart } from '../chart/line-chart';
 
 type Props = {
   itemName: string;
@@ -17,7 +19,7 @@ type Props = {
 type TrackingResponseGET = {
   ok: boolean;
   error?: string;
-  itemId?: string;
+  item?: TrackingResponse;
 };
 
 type TrackingResponsePOST = {
@@ -45,6 +47,9 @@ export const ItemModal = ({
   onClose,
 }: Props) => {
   const [trackingId, setTrackingId] = useState<string | undefined>(undefined);
+  const [trackingData, setTrackingData] = useState<
+    TrackingResponse | undefined
+  >(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
@@ -54,19 +59,22 @@ export const ItemModal = ({
       const response = await fetch(
         `/api/trackings?name=${itemName}&url=${urlItem}`
       );
-      const trackingItemId = (await response.json()) as TrackingResponseGET;
+      const trackedItemResponse =
+        (await response.json()) as TrackingResponseGET;
 
-      if (!trackingItemId.ok && trackingItemId.error) {
+      if (!trackedItemResponse.ok && trackedItemResponse.error) {
         // TODO: Display a toast with the error and set a variable to not show
         // any of the buttons related to the tracking
         setIsLoading(false);
         return;
       }
 
-      if (trackingItemId.ok && trackingItemId.itemId) {
-        setTrackingId(trackingItemId.itemId);
+      if (trackedItemResponse.ok && trackedItemResponse.item?.id) {
+        setTrackingId(trackedItemResponse.item.id);
+        setTrackingData(trackedItemResponse.item);
       } else {
         setTrackingId(undefined);
+        setTrackingData(undefined);
       }
       setIsLoading(false);
     };
@@ -111,9 +119,17 @@ export const ItemModal = ({
           onClick={onClose}
         />
       </div>
-      <div className='my-16'>
-        <div className='text-center'>
-          Gráfica en caso de que haya seguimiento
+      <div className='my-8'>
+        <div className='mr-8'>
+          {trackingData && trackingData.prices.length >= 5 && (
+            <LineChart
+              theme='light'
+              prices={trackingData.prices}
+              itemName={trackingData.name}
+              currency={trackingData.currency}
+              isModal
+            />
+          )}
         </div>
         <div className='my-4 flex items-center max-h-[12rem] overflow-hidden'>
           <div className='w-[50%]'>
@@ -153,11 +169,10 @@ export const ItemModal = ({
           </div>
         </div>
         <div>
-          <p className='text-center'>
-            Mostrar 'No hay seguimiento para este producto' o si no información
-            sobre como funciona el seguimiento, y como subscribirse (tanto para
-            seguimiento como para notificación de un precio concreto) dentro de
-            la página del item
+          <p className='text-center text-indigo-700 font-semibold'>
+            {!trackingData && !trackingId
+              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para estar actualizado de los últimos precios'
+              : 'Acceda al seguimiento de este producto para subscribirse y estar actualizado de los últimos precios'}
           </p>
         </div>
       </div>
