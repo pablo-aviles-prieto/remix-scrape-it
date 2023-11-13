@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
-import { Await, Outlet, useLoaderData } from '@remix-run/react';
+import { Await, Outlet, useLoaderData, useNavigate } from '@remix-run/react';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { TrackingItemCard } from '~/components/styles/tracking-item-card';
@@ -13,6 +13,7 @@ import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { LineChart } from '~/components/chart/line-chart';
 import { Heading } from 'evergreen-ui';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';
+import { RegularButton } from '~/components/styles/regular-button';
 
 type LoaderResponse = {
   ok: boolean;
@@ -41,7 +42,7 @@ export const loader = async ({ params }: ActionFunctionArgs) => {
   if (!params.id || !isValidObjectId(params.id)) {
     return defer({
       ok: false,
-      error: errorMsgs.invalidId,
+      error: errorMsgs.invalidURL,
     });
   }
 
@@ -63,12 +64,24 @@ export const loader = async ({ params }: ActionFunctionArgs) => {
 
 export default function SearchItem() {
   const { trackedItem, ok, error } = useLoaderData<LoaderResponse>();
+  const navigate = useNavigate();
 
   if (!ok && error) {
     return (
-      // TODO: Center the message, beautify it, and show link to navigate back to home
-      <div>
-        Error: {error} (INVALID URL ERROR in case that invalid ID provided)
+      <div className='flex flex-col items-center gap-2'>
+        <p className='text-lg'>
+          Hubo un error:{' '}
+          <span className='text-indigo-300'>
+            {error === 'Check the URL provided'
+              ? 'Revise la URL introducida e inténtelo nuevamente'
+              : error}
+          </span>
+        </p>
+        <RegularButton
+          removeShadow
+          content='Volver atrás'
+          onClick={() => navigate(`/`)}
+        />
       </div>
     );
   }
@@ -78,50 +91,44 @@ export default function SearchItem() {
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
           <Await resolve={trackedItem as Promise<TrackingResponse>}>
-            {(resolvedData) =>
-              resolvedData ? (
-                <div>
-                  <div className='my-6'>
-                    <TrackingItemCard item={resolvedData} />
-                  </div>
-                  <div className='flex gap-2 justify-center'>
-                    {resolvedData.prices.length >= 5 && (
-                      <div className='w-[65%]'>
-                        <Heading
-                          color='muted'
-                          className='text-center !mb-1'
-                          size={600}
-                        >
-                          Gráfica de precios
-                        </Heading>
-                        <LineChart
-                          prices={resolvedData.prices}
-                          itemName={resolvedData.name}
-                          currency={resolvedData.currency}
-                        />
-                      </div>
-                    )}
-                    <div className='w-[35%]'>
+            {(resolvedData) => (
+              <div>
+                <div className='my-6'>
+                  <TrackingItemCard item={resolvedData} />
+                </div>
+                <div className='flex gap-2 justify-center'>
+                  {resolvedData.prices.length >= 5 && (
+                    <div className='w-[65%]'>
                       <Heading
                         color='muted'
-                        className='text-center !mb-5'
+                        className='text-center !mb-1'
                         size={600}
                       >
-                        Tabla con todos los precios registrados
+                        Gráfica de precios
                       </Heading>
-                      <div className='pr-[2rem] mx-auto border h-[19rem] overflow-y-auto border-slate-500 rounded-lg'>
-                        <TablePricingHistory item={resolvedData} />
-                      </div>
+                      <LineChart
+                        prices={resolvedData.prices}
+                        itemName={resolvedData.name}
+                        currency={resolvedData.currency}
+                      />
+                    </div>
+                  )}
+                  <div className='w-[35%]'>
+                    <Heading
+                      color='muted'
+                      className='text-center !mb-5'
+                      size={600}
+                    >
+                      Tabla con todos los precios registrados
+                    </Heading>
+                    <div className='pr-[2rem] mx-auto border h-[19rem] overflow-y-auto border-slate-500 rounded-lg'>
+                      <TablePricingHistory item={resolvedData} />
                     </div>
                   </div>
-                  <Outlet context={resolvedData} />
                 </div>
-              ) : (
-                <div>
-                  Please check the url provided. (navigate back to home page?)
-                </div>
-              )
-            }
+                <Outlet context={resolvedData} />
+              </div>
+            )}
           </Await>
         </Suspense>
       </LoaderWrapper>

@@ -8,6 +8,7 @@ type Props = {
   isDisabled?: boolean;
   color?: 'primary' | 'secondary';
   isLoading?: boolean;
+  removeShadow?: boolean;
 };
 
 export const RegularButton = ({
@@ -18,6 +19,7 @@ export const RegularButton = ({
   isDisabled = false,
   color = 'primary',
   isLoading = false,
+  removeShadow = false,
 }: Props) => {
   const isPrimaryColor = color === 'primary';
   return (
@@ -30,13 +32,16 @@ export const RegularButton = ({
         uppercase ${
           isPrimaryColor ? 'text-slate-200' : 'text-indigo-600'
         } shadow-md ${
-        isPrimaryColor ? 'shadow-indigo-500/20' : 'shadow-indigo-300/20'
+        !removeShadow &&
+        (isPrimaryColor ? 'shadow-indigo-500/20' : 'shadow-indigo-300/20')
       } transition-all hover:shadow-lg 
       ${
-        isPrimaryColor
+        !removeShadow &&
+        (isPrimaryColor
           ? 'hover:shadow-indigo-500/40'
-          : 'hover:shadow-indigo-300/30'
-      } active:opacity-[0.85] 
+          : 'hover:shadow-indigo-300/30')
+      }
+      ${removeShadow && 'hover:bg-indigo-500'} active:opacity-[0.85] 
         active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none 
         flex gap-2 ${overrideClasses}
       `}
