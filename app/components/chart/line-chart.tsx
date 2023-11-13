@@ -26,20 +26,35 @@ ChartJS.register(
   Legend
 );
 
-const CHART_LABEL_COLORS = '#e6e6e6';
+const BRAND_COLOR = '#5024ee';
+const CHART_LABEL_COLORS = 'rgba(255, 255, 255, 0.5)';
 const CHART_GRID_LINES_COLORS = 'rgba(255, 255, 255, 0.1)';
+const CHART_BORDERS = 'rgb(100, 116, 139)';
 
 type Props = {
   prices: IPrices[];
+  itemName: string;
+  currency: string;
 };
 
-export const LineChart = ({ prices }: Props) => {
-  const getDataSet = (prices: IPrices[]): LineChartData => {
+export const LineChart = ({ prices, itemName, currency }: Props) => {
+  const breakLabel = (label: string, maxChars: number = 10) => {
+    const ellipsis = label.length > maxChars ? '...' : '';
+    return `${label.substring(0, maxChars)}${ellipsis}`;
+  };
+
+  const getDataSet = ({
+    prices,
+    itemName,
+  }: {
+    prices: IPrices[];
+    itemName: string;
+  }): LineChartData => {
     const dataset: Dataset = {
-      label: `Precio `,
+      label: breakLabel(itemName, 30),
       data: prices.map((item) => item.price),
-      backgroundColor: '#3100e0',
-      borderColor: '#3100e0',
+      backgroundColor: BRAND_COLOR,
+      borderColor: BRAND_COLOR,
     };
     return {
       labels: prices.map((priceObj) =>
@@ -52,7 +67,7 @@ export const LineChart = ({ prices }: Props) => {
   const config = {
     id: 'pricing-history',
     type: 'line',
-    data: getDataSet(prices),
+    data: getDataSet({ prices, itemName }),
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -63,13 +78,7 @@ export const LineChart = ({ prices }: Props) => {
       },
       plugins: {
         legend: {
-          labels: {
-            usePointStyle: true,
-            pointStyle: 'circle',
-            boxHeight: 9,
-            font: { size: 15 },
-            color: CHART_LABEL_COLORS,
-          },
+          display: false,
         },
         tooltip: {
           interaction: {
@@ -79,22 +88,23 @@ export const LineChart = ({ prices }: Props) => {
           titleColor: '#4a41bd',
           titleMarginBottom: 8,
           titleFont: { size: 16 },
-          backgroundColor: 'rgba(236, 244, 249, 0.7)',
+          titleAlign: 'center' as unknown as 'center',
+          backgroundColor: 'rgba(236, 244, 249, 0.9)',
           padding: {
             x: 32,
             y: 24,
           },
-          bodyColor: '#02337c',
+          bodyColor: '#28117a',
           bodySpacing: 5,
-          bodyFont: { size: 15 },
+          bodyFont: { size: 14 },
           usePointStyle: true,
           pointStyle: 'circle',
           boxHeight: 10,
           callbacks: {
             label: (context: any) => {
-              return `${context.dataset.label}: ${context.dataset.data.at(
+              return `${context.dataset.label} ${context.dataset.data.at(
                 context.dataIndex
-              )}`;
+              )}${currency}`;
             },
           },
         },
@@ -102,9 +112,8 @@ export const LineChart = ({ prices }: Props) => {
       scales: {
         y: {
           min: 0,
-          // max: highestChartNumber * 1.1,
           ticks: {
-            maxTicksLimit: 10,
+            maxTicksLimit: 5,
             padding: 10,
             color: CHART_LABEL_COLORS,
             callback: (value: any) => Math.round(value).toLocaleString('es-ES'),
@@ -112,14 +121,19 @@ export const LineChart = ({ prices }: Props) => {
           grid: {
             drawTicks: false,
             drawOnChartArea: true,
-            color: CHART_GRID_LINES_COLORS,
+            color: (context: any) => {
+              if (context.tick.value === 0) {
+                return CHART_BORDERS; // Color for the zero line
+              }
+              return 'rgba(0, 0, 0, 0)'; // Transparent for all other lines
+            },
           },
         },
         x: {
           ticks: {
             maxTicksLimit: 8,
             beginAtZero: true,
-            padding: 5,
+            padding: 10,
             color: CHART_LABEL_COLORS,
             indexAxis: 'x',
             font: { size: 11 },
@@ -127,7 +141,12 @@ export const LineChart = ({ prices }: Props) => {
           grid: {
             drawTicks: false,
             drawOnChartArea: true,
-            color: CHART_GRID_LINES_COLORS,
+            color: (context: any) => {
+              if (context.tick.value === 0) {
+                return CHART_BORDERS;
+              }
+              return CHART_GRID_LINES_COLORS;
+            },
           },
         },
       },
@@ -135,7 +154,7 @@ export const LineChart = ({ prices }: Props) => {
   };
 
   return (
-    <div className='h-[20rem] w-full'>
+    <div className='h-[22rem] w-full'>
       <Line {...config} />
     </div>
   );

@@ -11,7 +11,8 @@ import { isValidObjectId } from 'mongoose';
 import { updateTrackedItemSubscribers } from '~/services/tracking/update-tracked-items.service';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { LineChart } from '~/components/chart/line-chart';
-import { PriceHistory } from '~/components/price-history/price-history';
+import { Heading } from 'evergreen-ui';
+import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 
 type LoaderResponse = {
   ok: boolean;
@@ -84,11 +85,31 @@ export default function SearchItem() {
                     <TrackingItemCard item={resolvedData} />
                   </div>
                   <div className='flex gap-2'>
-                    <div className='w-[60%]'>
-                      <LineChart prices={resolvedData.prices} />
+                    <div className='w-[65%]'>
+                      <Heading
+                        color='muted'
+                        className='text-center !mb-1'
+                        size={600}
+                      >
+                        Gráfica de precios
+                      </Heading>
+                      <LineChart
+                        prices={resolvedData.prices}
+                        itemName={resolvedData.name}
+                        currency={resolvedData.currency}
+                      />
                     </div>
-                    <div className='w-[40%]'>
-                      <PriceHistory item={resolvedData} />
+                    <div className='w-[35%]'>
+                      <Heading
+                        color='muted'
+                        className='text-center !mb-5'
+                        size={600}
+                      >
+                        Tabla con todos los precios registrados
+                      </Heading>
+                      <div className='pr-[2rem] mx-auto border h-[19rem] overflow-y-auto border-slate-500 rounded-lg'>
+                        <TablePricingHistory item={resolvedData} />
+                      </div>
                     </div>
                   </div>
                   <Outlet context={resolvedData} />
