@@ -84,21 +84,23 @@ export default function SearchItem() {
                   <div className='my-6'>
                     <TrackingItemCard item={resolvedData} />
                   </div>
-                  <div className='flex gap-2'>
-                    <div className='w-[65%]'>
-                      <Heading
-                        color='muted'
-                        className='text-center !mb-1'
-                        size={600}
-                      >
-                        Gráfica de precios
-                      </Heading>
-                      <LineChart
-                        prices={resolvedData.prices}
-                        itemName={resolvedData.name}
-                        currency={resolvedData.currency}
-                      />
-                    </div>
+                  <div className='flex gap-2 justify-center'>
+                    {resolvedData.prices.length >= 5 && (
+                      <div className='w-[65%]'>
+                        <Heading
+                          color='muted'
+                          className='text-center !mb-1'
+                          size={600}
+                        >
+                          Gráfica de precios
+                        </Heading>
+                        <LineChart
+                          prices={resolvedData.prices}
+                          itemName={resolvedData.name}
+                          currency={resolvedData.currency}
+                        />
+                      </div>
+                    )}
                     <div className='w-[35%]'>
                       <Heading
                         color='muted'
