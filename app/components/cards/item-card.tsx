@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { Dialog } from 'evergreen-ui';
 import { ItemModal } from '../modal/item-modal';
-import { RegularButton } from './regular-button';
+import { RegularButton } from '../styles/regular-button';
 
 type Props = {
   item: SingleItemCoolmod;

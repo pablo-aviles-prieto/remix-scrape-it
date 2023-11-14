@@ -3,7 +3,7 @@ import { defer, json } from '@remix-run/node';
 import { Await, Outlet, useLoaderData, useNavigate } from '@remix-run/react';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
-import { TrackingItemCard } from '~/components/styles/tracking-item-card';
+import { TrackingItemCard } from '~/components/cards/tracking-item-card';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/tracking/get-tracked-item.service';
 import { SIMPLE_REGEX_EMAIL, errorMsgs } from '~/utils/const';

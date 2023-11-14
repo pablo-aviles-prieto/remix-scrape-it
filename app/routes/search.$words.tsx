@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { Info } from '~/components/styles/icons/info';
-import { ListItemsCard } from '~/components/styles/list-items-card';
+import { ListItemsCard } from '~/components/cards/list-items-card';
 import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
@@ -46,6 +46,7 @@ export default function SearchItem() {
   const { data, ok, error } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
+    // TODO: Show toast
     return <div>Error: {error}</div>;
   }
 

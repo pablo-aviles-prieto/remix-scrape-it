@@ -1,5 +1,5 @@
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
-import { RegularButton } from './regular-button';
+import { RegularButton } from '../styles/regular-button';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
 import { SubscribeModal } from '../modal/subscribe-modal';
