@@ -10,11 +10,13 @@ type Props = {
 
 export const CarouselItemCard = ({ item }: Props) => {
   const navigate = useNavigate();
-
   const navigateToItem = () => navigate(`/item/${item.id}`);
+  const sortedPrices = [...item.prices].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   return (
-    <div className='shadow-lg m-2 my-4 pb-4 h-[36rem] rounded-lg bg-white'>
+    <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white'>
       <div className='h-[50%] overflow-hidden rounded-lg'>
         <img
           className='object-cover w-full h-full hover:scale-105 transition-transform'
@@ -22,14 +24,19 @@ export const CarouselItemCard = ({ item }: Props) => {
           alt={item.name}
         />
       </div>
-      <div className='px-4 h-[50%] flex flex-col justify-between'>
+      <div className='p-4 pt-2 h-[50%] flex flex-col justify-between'>
         <div>
-          <p className='text-indigo-600 font-semibold'>{item.name}</p>
+          <p className='text-indigo-600 font-semibold min-h-[4.5rem]'>
+            {item.name}
+          </p>
           <div className='text-sm my-2'>
             Últimos precios:
             <ul>
-              {item.prices.slice(0, 5).map((priceObj) => (
-                <li className='flex gap-2 text-sm'>
+              {sortedPrices.slice(0, 5).map((priceObj) => (
+                <li
+                  key={priceObj.date.toString()}
+                  className='flex gap-2 text-sm'
+                >
                   <p>
                     <span className='text-xs text-slate-400'>Fecha: </span>
                     {format(new Date(priceObj.date), dateFormat.euWithTime)}
