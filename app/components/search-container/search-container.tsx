@@ -10,6 +10,7 @@ export const SearchContainer = () => {
       <button className='mx-auto' type='button' onClick={() => navigate(`/`)}>
         <img src='/images/logo.webp' className='w-[85px] h-auto' />
       </button>
+      {/* TODO: Add info icon with a tooltip explaining the subscribing things */}
       <Heading color='muted' size={900}>
         Rastrea los mejores precios
       </Heading>

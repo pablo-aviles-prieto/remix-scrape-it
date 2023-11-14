@@ -4,7 +4,7 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
-import { ItemCard } from '~/components/styles/item-card';
+import { ItemCard } from '~/components/cards/item-card';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';

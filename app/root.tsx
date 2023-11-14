@@ -15,6 +15,8 @@ import {
 } from '@remix-run/react';
 import tailwindStylesheet from '~/styles/tailwind.css';
 import globalStylesheet from '~/styles/global.css';
+import slickStylesheet from 'slick-carousel/slick/slick.css';
+import slickThemeStylesheet from 'slick-carousel/slick/slick-theme.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 import { Toaster } from 'react-hot-toast';
@@ -23,9 +25,13 @@ export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
   { rel: 'stylesheet', href: tailwindStylesheet },
   { rel: 'stylesheet', href: globalStylesheet },
+  { rel: 'stylesheet', href: slickStylesheet },
+  { rel: 'stylesheet', href: slickThemeStylesheet },
 ];
 
 // TODO: Change meta data
+// TODO: Remove extra images stored on public folder
+// TODO: Add error bounderies
 export const meta: MetaFunction = () => {
   return [
     { title: 'New Remix App' },
