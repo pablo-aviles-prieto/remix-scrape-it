@@ -93,7 +93,7 @@ export default function SearchItem() {
           <Await resolve={trackedItem as Promise<TrackingResponse>}>
             {(resolvedData) => (
               <div>
-                <div className='my-6'>
+                <div className='my-4'>
                   <TrackingItemCard item={resolvedData} />
                 </div>
                 <div className='flex gap-2 justify-center'>
@@ -121,7 +121,7 @@ export default function SearchItem() {
                     >
                       Tabla con todos los precios registrados
                     </Heading>
-                    <div className='pr-[2rem] mx-auto border h-[19rem] overflow-y-auto border-slate-500 rounded-lg'>
+                    <div className='pr-[2rem] mx-auto border h-[18rem] overflow-y-auto border-slate-500 rounded-lg'>
                       <TablePricingHistory item={resolvedData} />
                     </div>
                   </div>

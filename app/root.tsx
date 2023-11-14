@@ -65,7 +65,7 @@ export default function App() {
           <section>
             <SearchContainer />
           </section>
-          <section className='mt-6'>
+          <section className='mt-4'>
             <Outlet />
           </section>
           <Toaster position='bottom-right' />

@@ -168,7 +168,7 @@ export const LineChart = ({
   };
 
   return (
-    <div className={`${isModal ? 'h-[13rem]' : 'h-[22rem]'} w-full`}>
+    <div className={`${isModal ? 'h-[13rem]' : 'h-[21rem]'} w-full`}>
       <Line {...config} />
     </div>
   );
