@@ -4,6 +4,7 @@ import { RegularButton } from '../styles/regular-button';
 import { useEffect, useState } from 'react';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { LineChart } from '../chart/line-chart';
+import toast from 'react-hot-toast';
 
 type Props = {
   itemName: string;
@@ -51,6 +52,7 @@ export const ItemModal = ({
     TrackingResponse | undefined
   >(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorGettingItem, setErrorGettingItem] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,8 +65,10 @@ export const ItemModal = ({
         (await response.json()) as TrackingResponseGET;
 
       if (!trackedItemResponse.ok && trackedItemResponse.error) {
-        // TODO: Display a toast with the error and set a variable to not show
-        // any of the buttons related to the tracking
+        toast.error(
+          `Error Interno. No se puede crear ni visualizar seguimientos`
+        );
+        setErrorGettingItem(true);
         setIsLoading(false);
         return;
       }
@@ -102,7 +106,7 @@ export const ItemModal = ({
     if (createTracking.ok && createTracking.insertedId) {
       navigate(`/item/${createTracking.insertedId}`);
     } else {
-      // TODO: Show toast displaying error message or a generic one
+      toast.error(`Error al crear el seguimiento. Inténtelo más tarde`);
     }
   };
 
@@ -178,19 +182,20 @@ export const ItemModal = ({
       </div>
       <div className='flex justify-between mb-1'>
         <RegularButton content='Cerrar' onClick={onClose} color='secondary' />
-        {trackingId ? (
-          <RegularButton
-            content={isLoading ? '' : 'Ver seguimiento'}
-            onClick={() => navigate(`/item/${trackingId}`)}
-            isLoading={isLoading}
-          />
-        ) : (
-          <RegularButton
-            content={isLoading ? '' : 'Crear seguimiento'}
-            onClick={createTrackingHelper}
-            isLoading={isLoading}
-          />
-        )}
+        {!errorGettingItem &&
+          (trackingId ? (
+            <RegularButton
+              content={isLoading ? '' : 'Ver seguimiento'}
+              onClick={() => navigate(`/item/${trackingId}`)}
+              isLoading={isLoading}
+            />
+          ) : (
+            <RegularButton
+              content={isLoading ? '' : 'Crear seguimiento'}
+              onClick={createTrackingHelper}
+              isLoading={isLoading}
+            />
+          ))}
       </div>
     </div>
   );

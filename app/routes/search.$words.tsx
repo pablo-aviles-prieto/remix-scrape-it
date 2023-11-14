@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
-import { defer } from '@remix-run/node';
+import { defer, json } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Heading } from 'evergreen-ui';
 import { Suspense } from 'react';
@@ -19,7 +19,7 @@ type LoaderResponse = {
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
   if (!params.words) {
-    return defer({
+    return json({
       ok: false,
       error: errorMsgs.internalError,
     });
@@ -35,7 +35,7 @@ export const loader = async ({ params }: ActionFunctionArgs) => {
     });
   } catch (err) {
     console.log('ERROR LIST ITEMS', err);
-    return defer({
+    return json({
       ok: false,
       error: errorMsgs.internalError,
     });
@@ -46,8 +46,11 @@ export default function SearchItem() {
   const { data, ok, error } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
-    // TODO: Show toast
-    return <div>Error: {error}</div>;
+    return (
+      <p className='text-center mt-4 text-lg'>
+        Error al obtener los productos. Inténtelo más tarde!
+      </p>
+    );
   }
 
   return (

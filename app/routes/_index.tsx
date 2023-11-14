@@ -11,7 +11,6 @@ import { errorMsgs } from '~/utils/const';
 const Slider2 = Slider.default.default;
 
 const sliderSettings: Slider.Settings = {
-  // autoplay: true,
   infinite: true,
   speed: 500,
   arrows: false,

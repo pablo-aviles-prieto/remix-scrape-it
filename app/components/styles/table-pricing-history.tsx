@@ -6,7 +6,6 @@ type Props = {
   item: TrackingResponse;
 };
 
-// TODO: Add max-height to the "table" and scroll it on overflow y
 export const TablePricingHistory = ({ item }: Props) => {
   const sortedPrices = [...item.prices].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
