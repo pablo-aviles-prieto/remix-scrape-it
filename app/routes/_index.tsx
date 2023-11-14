@@ -14,8 +14,11 @@ const sliderSettings: Slider.Settings = {
   autoplay: true,
   infinite: true,
   speed: 500,
+  arrows: false,
+  swipeToSlide: true,
   slidesToShow: 3,
   slidesToScroll: 1,
+  autoplaySpeed: 2500,
 };
 
 type LoaderResponse = {
@@ -52,19 +55,17 @@ export default function Index() {
 
   return (
     <div className='mt-4 rounded-lg px-1 py-4 text-slate-700 max-w-6xl mx-auto'>
-      <LoaderWrapper>
-        <Suspense fallback={<FallbackLoader />}>
-          <Await resolve={trackedItemsPromise as Promise<TrackingResponse[]>}>
-            {(resolvedData) => (
-              <Slider2 {...sliderSettings}>
-                {resolvedData.map((item) => (
-                  <CarouselItemCard key={item.url} item={item} />
-                ))}
-              </Slider2>
-            )}
-          </Await>
-        </Suspense>
-      </LoaderWrapper>
+      <Suspense fallback={<FallbackLoader />}>
+        <Await resolve={trackedItemsPromise as Promise<TrackingResponse[]>}>
+          {(resolvedData) => (
+            <Slider2 {...sliderSettings}>
+              {resolvedData.map((item) => (
+                <CarouselItemCard key={item.url} item={item} />
+              ))}
+            </Slider2>
+          )}
+        </Await>
+      </Suspense>
     </div>
   );
 }
