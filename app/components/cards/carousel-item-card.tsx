@@ -17,7 +17,7 @@ export const CarouselItemCard = ({ item }: Props) => {
 
   return (
     <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white'>
-      <div className='h-[50%] overflow-hidden rounded-lg'>
+      <div className='h-[50%] overflow-hidden rounded-lg p-1'>
         <img
           className='object-cover w-full h-full hover:scale-105 transition-transform'
           src={item.image}

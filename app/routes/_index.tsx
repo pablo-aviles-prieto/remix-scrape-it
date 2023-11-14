@@ -1,10 +1,9 @@
-import { defer } from '@remix-run/node';
+import { defer, json } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense } from 'react';
 import * as Slider from 'react-slick';
 import { CarouselItemCard } from '~/components/cards/carousel-item-card';
 import { CarouselItemCardSkeleton } from '~/components/styles/carousel-item-card-skeleton';
-import { FallbackLoader } from '~/components/styles/fallback-loader';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getAllTrackedItems } from '~/services/tracking/get-all-tracked-items.service';
 import { errorMsgs } from '~/utils/const';
@@ -37,25 +36,26 @@ export const loader = async () => {
     });
   } catch (err) {
     console.log('ERROR GETTING TRACKED ITEMS', err);
-    return defer({
+    return json({
       ok: false,
       error: errorMsgs.internalError,
     });
   }
 };
 
-// TODO: use react slick and use a carousel of tracked items
-// displaying some last prices, img (link to /item/:id) and name
 export default function Index() {
   const { trackedItemsPromise, ok, error } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
-    // TODO: Show toast
-    return <div>Error: {error}</div>;
+    return (
+      <p className='text-center mt-4 text-lg'>
+        Error al obtener los productos en seguimiento
+      </p>
+    );
   }
 
   return (
-    <div className='mt-4 rounded-lg px-1 py-4 text-slate-700 max-w-6xl mx-auto'>
+    <div className='mt-4 text-slate-700 max-w-6xl mx-auto'>
       <Suspense
         fallback={
           <Slider2 {...sliderSettings}>
@@ -66,13 +66,15 @@ export default function Index() {
         }
       >
         <Await resolve={trackedItemsPromise as Promise<TrackingResponse[]>}>
-          {(resolvedData) => (
-            <Slider2 {...sliderSettings} autoplay={true}>
-              {resolvedData.map((item) => (
-                <CarouselItemCard key={item.url} item={item} />
-              ))}
-            </Slider2>
-          )}
+          {(resolvedData) =>
+            resolvedData.length > 3 ? (
+              <Slider2 {...sliderSettings} autoplay={true}>
+                {resolvedData.map((item) => (
+                  <CarouselItemCard key={item.url} item={item} />
+                ))}
+              </Slider2>
+            ) : null
+          }
         </Await>
       </Suspense>
     </div>
