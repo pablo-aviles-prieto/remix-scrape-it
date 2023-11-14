@@ -17,6 +17,7 @@ import tailwindStylesheet from '~/styles/tailwind.css';
 import globalStylesheet from '~/styles/global.css';
 import slickStylesheet from 'slick-carousel/slick/slick.css';
 import slickThemeStylesheet from 'slick-carousel/slick/slick-theme.css';
+import reactLoadingSkeleton from 'react-loading-skeleton/dist/skeleton.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 import { Toaster } from 'react-hot-toast';
@@ -27,6 +28,7 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: globalStylesheet },
   { rel: 'stylesheet', href: slickStylesheet },
   { rel: 'stylesheet', href: slickThemeStylesheet },
+  { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
 // TODO: Change meta data

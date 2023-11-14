@@ -3,15 +3,16 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense } from 'react';
 import * as Slider from 'react-slick';
 import { CarouselItemCard } from '~/components/cards/carousel-item-card';
-import { LoaderWrapper } from '~/components/loader/loader-wrapper';
+import { CarouselItemCardSkeleton } from '~/components/styles/carousel-item-card-skeleton';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getAllTrackedItems } from '~/services/tracking/get-all-tracked-items.service';
 import { errorMsgs } from '~/utils/const';
+
 const Slider2 = Slider.default.default;
 
 const sliderSettings: Slider.Settings = {
-  autoplay: true,
+  // autoplay: true,
   infinite: true,
   speed: 500,
   arrows: false,
@@ -55,10 +56,18 @@ export default function Index() {
 
   return (
     <div className='mt-4 rounded-lg px-1 py-4 text-slate-700 max-w-6xl mx-auto'>
-      <Suspense fallback={<FallbackLoader />}>
+      <Suspense
+        fallback={
+          <Slider2 {...sliderSettings}>
+            {Array.from({ length: 3 }, (_, index) => (
+              <CarouselItemCardSkeleton key={index} />
+            ))}
+          </Slider2>
+        }
+      >
         <Await resolve={trackedItemsPromise as Promise<TrackingResponse[]>}>
           {(resolvedData) => (
-            <Slider2 {...sliderSettings}>
+            <Slider2 {...sliderSettings} autoplay={true}>
               {resolvedData.map((item) => (
                 <CarouselItemCard key={item.url} item={item} />
               ))}
