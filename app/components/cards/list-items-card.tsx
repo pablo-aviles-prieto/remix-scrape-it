@@ -24,7 +24,7 @@ export const ListItemsCard = ({ item }: Props) => {
         />
         <div
           className='absolute bottom-0 left-0 right-0 h-30 bg-slate-900 bg-opacity-70 
-          backdrop-blur-[3px] text-white p-2 rounded-b-lg'
+          backdrop-blur-[3px] text-white p-2 rounded-b-sm'
         >
           <Tooltip content={item.name} position={Position.TOP}>
             <h1 className='text-sm font-semibold overflow-hidden line-clamp-1'>

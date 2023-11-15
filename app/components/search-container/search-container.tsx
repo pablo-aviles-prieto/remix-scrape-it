@@ -1,6 +1,9 @@
 import { Form, useNavigate } from '@remix-run/react';
-import { Button, Heading, TextInput } from 'evergreen-ui';
+import { Button, Heading, Position, TextInput, Tooltip } from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
+
+const tooltipContent =
+  'Busca entre los artículos de Coolmod para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios!';
 
 export const SearchContainer = () => {
   const navigate = useNavigate();
@@ -10,10 +13,29 @@ export const SearchContainer = () => {
       <button className='mx-auto' type='button' onClick={() => navigate(`/`)}>
         <img src='/images/logo.webp' className='w-[85px] h-auto' />
       </button>
-      {/* TODO: Add info icon with a tooltip explaining the subscribing things */}
-      <Heading color='muted' size={900}>
-        Rastrea los mejores precios
-      </Heading>
+      <div className='flex gap-2 justify-center items-end'>
+        <Heading color='muted' size={900}>
+          Rastrea los mejores precios
+        </Heading>
+        <Tooltip id='info' content={tooltipContent} position={Position.TOP}>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            stroke='currentColor'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            width={25}
+            height={25}
+            className='icon icon-tabler icon-tabler-info-circle text-slate-300 mb-[3px]'
+            viewBox='0 0 24 24'
+          >
+            <path stroke='none' d='M0 0h24v24H0z' />
+            <path d='M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0M12 9h.01' />
+            <path d='M11 12h1v4h1' />
+          </svg>
+        </Tooltip>
+      </div>
       <div className='relative w-[30rem] mx-auto mt-2'>
         <Form id='search-form' method='post'>
           <TextInput
