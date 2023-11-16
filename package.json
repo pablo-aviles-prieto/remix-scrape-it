@@ -19,6 +19,7 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^2.30.0",
     "evergreen-ui": "^7.1.9",
+    "framer-motion": "^10.16.5",
     "isbot": "^3.6.8",
     "mongoose": "^8.0.0",
     "node-cron": "^3.0.2",
