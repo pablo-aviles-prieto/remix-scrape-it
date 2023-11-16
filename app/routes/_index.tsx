@@ -8,6 +8,7 @@ import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getAllTrackedItems } from '~/services/tracking/get-all-tracked-items.service';
 import { errorMsgs } from '~/utils/const';
 
+// @ts-ignore
 const Slider2 = Slider.default.default;
 
 const sliderSettings: Slider.Settings = {
