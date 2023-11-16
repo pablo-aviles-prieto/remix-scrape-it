@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
+import { motion } from 'framer-motion';
 import { Heading } from 'evergreen-ui';
 import { Suspense } from 'react';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
@@ -67,19 +68,26 @@ export default function SearchItem() {
         </Heading>
       </div>
       <div>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
-          <LoaderWrapper>
-            <Suspense fallback={<FallbackLoader />}>
-              <Await resolve={data as Promise<ListItemsCoolmod[]>}>
-                {(resolvedData) =>
-                  resolvedData.map((item) => (
-                    <ListItemsCard key={item.url} item={item} />
-                  ))
-                }
-              </Await>
-            </Suspense>
-          </LoaderWrapper>
-        </div>
+        <LoaderWrapper>
+          <Suspense fallback={<FallbackLoader />}>
+            <Await resolve={data as Promise<ListItemsCoolmod[]>}>
+              {(resolvedData) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 200 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -200 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
+                    {resolvedData.map((item) => (
+                      <ListItemsCard key={item.url} item={item} />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </Await>
+          </Suspense>
+        </LoaderWrapper>
       </div>
     </div>
   );

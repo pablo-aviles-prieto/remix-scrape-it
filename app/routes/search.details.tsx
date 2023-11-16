@@ -2,6 +2,7 @@ import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense } from 'react';
+import { motion } from 'framer-motion';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { ItemCard } from '~/components/cards/item-card';
@@ -58,7 +59,16 @@ export default function SearchIndex() {
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
           <Await resolve={data as Promise<SingleItemCoolmod>}>
-            {(resolvedData) => <ItemCard item={resolvedData} urlItem={url} />}
+            {(resolvedData) => (
+              <motion.div
+                initial={{ opacity: 0, x: 300 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -300 }}
+                transition={{ duration: 0.5 }}
+              >
+                <ItemCard item={resolvedData} urlItem={url} />
+              </motion.div>
+            )}
           </Await>
         </Suspense>
       </LoaderWrapper>
