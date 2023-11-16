@@ -19,10 +19,10 @@ type LoaderResponse = {
 export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
-  if (!queryUrl) {
+  if (!queryUrl || !queryUrl.startsWith('https://')) {
     return defer({
       ok: false,
-      error: errorMsgs.internalError,
+      error: 'Revise la URL introducida',
       url: queryUrl,
     });
   }
@@ -31,7 +31,6 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     const scrapResponsePromise = getCoolmodSingleItem({
       productPage: queryUrl,
     });
-
     return defer({
       ok: true,
       data: scrapResponsePromise,
@@ -51,7 +50,7 @@ export default function SearchIndex() {
   const { data, ok, error, url } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
-    return <div>Error: {error}</div>;
+    return <p className='text-center mt-4 text-lg'>Error: {error}</p>;
   }
 
   return (

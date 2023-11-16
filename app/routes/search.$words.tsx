@@ -55,7 +55,7 @@ export default function SearchItem() {
 
   return (
     <div>
-      <div className='flex gap-1 mb-2 items-center justify-center'>
+      <div className='flex gap-1 my-4 items-center justify-center'>
         <Info
           width={20}
           height={20}
