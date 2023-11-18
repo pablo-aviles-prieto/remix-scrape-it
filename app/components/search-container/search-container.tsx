@@ -1,28 +1,14 @@
 import { Form, useNavigate } from '@remix-run/react';
 import { Button, Heading, Position, TextInput, Tooltip } from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
-import { useEffect, useState } from 'react';
+import useWindowWidth from '~/hooks/use-window-width';
 
 const tooltipContent =
   'Busca entre los artículos de Coolmod para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios!';
 
 export const SearchContainer = () => {
-  const [innerWidth, setInnerWidth] = useState<number | undefined>(undefined);
+  const innerWidth = useWindowWidth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const updateWidth = () => {
-      const viewportWidth = window.innerWidth;
-      setInnerWidth(viewportWidth);
-    };
-
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-
-    return () => {
-      window.removeEventListener('resize', updateWidth);
-    };
-  }, []);
 
   return (
     <div className='text-center'>
@@ -30,10 +16,7 @@ export const SearchContainer = () => {
         <img src='/images/logo.webp' className='w-[85px] h-auto' />
       </button>
       <div className='flex gap-2 justify-center items-end'>
-        <Heading
-          color='muted'
-          size={innerWidth && innerWidth > 640 ? 900 : 800}
-        >
+        <Heading color='muted' size={innerWidth > 640 ? 900 : 800}>
           Rastrea los mejores precios
         </Heading>
         <Tooltip id='info' content={tooltipContent} position={Position.TOP}>
@@ -44,8 +27,8 @@ export const SearchContainer = () => {
             strokeLinecap='round'
             strokeLinejoin='round'
             strokeWidth={2}
-            width={innerWidth && innerWidth > 640 ? 25 : 20}
-            height={innerWidth && innerWidth > 640 ? 25 : 20}
+            width={innerWidth > 640 ? 25 : 20}
+            height={innerWidth > 640 ? 25 : 20}
             className='icon icon-tabler icon-tabler-info-circle text-slate-300 mb-[3px]'
             viewBox='0 0 24 24'
           >
@@ -57,7 +40,7 @@ export const SearchContainer = () => {
       </div>
       <div
         className={`relative ${
-          innerWidth && innerWidth > 640 ? 'w-[30rem]' : 'w-[22rem]'
+          innerWidth > 640 ? 'w-[30rem]' : 'w-[22rem]'
         } mx-auto mt-2`}
       >
         <Form id='search-form' method='post'>
@@ -65,7 +48,7 @@ export const SearchContainer = () => {
             name='search'
             placeholder='Busca o inserta el enlace de un producto'
             className='bg-gray-100 !pr-20 !pl-7 !text-sm'
-            width={innerWidth && innerWidth > 640 ? '30rem' : '22rem'}
+            width={innerWidth > 640 ? '30rem' : '22rem'}
           />
           <SearchIcon
             className='absolute left-1 top-[7px] text-indigo-600'

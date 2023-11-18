@@ -43,7 +43,7 @@ export const RegularButton = ({
       }
       ${removeShadow && 'hover:bg-indigo-500'} active:opacity-[0.85] 
         active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none 
-        flex gap-2 ${overrideClasses}
+        flex gap-2 justify-center ${overrideClasses}
       `}
       type={type}
       data-ripple-light='true'
