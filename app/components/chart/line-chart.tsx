@@ -145,12 +145,14 @@ export const LineChart = ({
         },
         x: {
           ticks: {
-            maxTicksLimit: isModal || innerWidth < 640 ? 4 : 8,
+            maxTicksLimit: isModal || (innerWidth && innerWidth < 640) ? 4 : 8,
             beginAtZero: true,
             padding: 10,
             color: CHART_LABEL_COLORS,
             indexAxis: 'x',
-            font: { size: isModal || innerWidth < 640 ? 10 : 11 },
+            font: {
+              size: isModal || (innerWidth && innerWidth < 640) ? 10 : 11,
+            },
           },
           grid: {
             drawTicks: false,
