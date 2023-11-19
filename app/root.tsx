@@ -32,8 +32,6 @@ export const links: LinksFunction = () => [
 ];
 
 // TODO: Change meta data
-// TODO: Remove extra images stored on public folder
-// TODO: Add error bounderies
 export const meta: MetaFunction = () => {
   return [
     { title: 'New Remix App' },
