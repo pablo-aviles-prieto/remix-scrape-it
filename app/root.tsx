@@ -31,11 +31,14 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
-// TODO: Change meta data
 export const meta: MetaFunction = () => {
   return [
-    { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
+    { title: 'ScrapeIt! - Seguimiento de precios de Coolmod' },
+    {
+      name: 'description',
+      content:
+        'ScrapeIt! te permite rastrear y seguir los precios de los productos de Coolmod. Crea seguimientos para tus productos favoritos y recibe actualizaciones diarias por correo electrónico sobre los últimos precios.',
+    },
   ];
 };
 
