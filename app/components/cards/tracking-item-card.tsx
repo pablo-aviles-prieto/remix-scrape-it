@@ -16,9 +16,9 @@ export const TrackingItemCard = ({ item }: Props) => {
 
   return (
     <>
-      <div className='flex mx-auto max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden'>
-        <img className='w-2/5 object-cover max-h-[280px]' src={item.image} />
-        <div className='w-3/5 p-4 flex flex-col justify-between'>
+      <div className='flex flex-col sm:flex-row mx-auto max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden'>
+        <img className='sm:w-2/5 object-cover max-h-[280px]' src={item.image} />
+        <div className='sm:w-3/5 p-4 flex flex-col justify-between'>
           <div>
             <h1 className='text-gray-900 font-bold text-2xl'>{item.name}</h1>
             <p className='mt-2 text-gray-600 text-sm'>
@@ -33,7 +33,7 @@ export const TrackingItemCard = ({ item }: Props) => {
               </span>
             </h1>
           </div>
-          <div className='flex item-center justify-between mt-3'>
+          <div className='flex gap-2 flex-col sm:flex-row item-center justify-between mt-3'>
             <a
               className='select-none rounded-lg bg-transparent py-3 px-6 text-center align-middle font-sans text-xs font-bold 
               uppercase text-indigo-600 shadow-md shadow-indigo-300/20 transition-all hover:shadow-lg border border-indigo-600

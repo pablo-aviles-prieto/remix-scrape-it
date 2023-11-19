@@ -16,7 +16,7 @@ export const TablePricingHistory = ({ item }: Props) => {
       {sortedPrices.map((priceObj, i) => (
         <div key={String(priceObj.date)} className='flex w-full justify-center'>
           <p
-            className={`min-w-[12rem] py-2 pr-4 border-r-2 border-indigo-700 text-right ${
+            className={`sm:min-w-[12rem] py-2 pr-4 border-r-2 border-indigo-700 text-right ${
               i !== item.prices.length - 1 && 'border-b-2'
             }`}
           >

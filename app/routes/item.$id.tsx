@@ -40,7 +40,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
   if (!params.id || !isValidObjectId(params.id)) {
-    return defer({
+    return json({
       ok: false,
       error: errorMsgs.invalidURL,
     });
@@ -55,7 +55,7 @@ export const loader = async ({ params }: ActionFunctionArgs) => {
     });
   } catch (err) {
     console.log('ERROR ITEM TRACKING BY ID', err);
-    return defer({
+    return json({
       ok: false,
       error: errorMsgs.internalError,
     });
@@ -96,9 +96,9 @@ export default function SearchItem() {
                 <div className='my-4'>
                   <TrackingItemCard item={resolvedData} />
                 </div>
-                <div className='flex gap-2 justify-center'>
+                <div className='xl:flex gap-2 justify-center'>
                   {resolvedData.prices.length >= 5 && (
-                    <div className='w-[65%]'>
+                    <div className='xl:w-[65%] w-full mx-auto'>
                       <Heading
                         color='muted'
                         className='text-center !mb-1'
@@ -113,7 +113,7 @@ export default function SearchItem() {
                       />
                     </div>
                   )}
-                  <div className='w-[35%]'>
+                  <div className='xl:w-[35%] sm:w-[28rem] mx-auto'>
                     <Heading
                       color='muted'
                       className='text-center !mb-5'

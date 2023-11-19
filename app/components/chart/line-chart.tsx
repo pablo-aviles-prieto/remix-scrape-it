@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import { format, parseISO } from 'date-fns';
 import { Line } from 'react-chartjs-2';
+import useWindowWidth from '~/hooks/use-window-width';
 import type { Dataset, LineChartData } from '~/interfaces/line-chart-data';
 import type { IPrices } from '~/interfaces/tracking-schema';
 import { dateFormat } from '~/utils/const';
@@ -27,9 +28,6 @@ ChartJS.register(
 );
 
 const BRAND_COLOR = '#5024ee';
-// const CHART_LABEL_COLORS = 'rgba(255, 255, 255, 0.5)';
-// const CHART_GRID_LINES_COLORS = 'rgba(255, 255, 255, 0.1)';
-// const CHART_BORDERS = 'rgb(100, 116, 139)';
 
 type Props = {
   prices: IPrices[];
@@ -46,6 +44,8 @@ export const LineChart = ({
   theme = 'dark',
   isModal = false,
 }: Props) => {
+  const innerWidth = useWindowWidth();
+
   const CHART_LABEL_COLORS =
     theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(22, 22, 22, 0.7)';
   const CHART_GRID_LINES_COLORS =
@@ -145,12 +145,14 @@ export const LineChart = ({
         },
         x: {
           ticks: {
-            maxTicksLimit: isModal ? 4 : 8,
+            maxTicksLimit: isModal || (innerWidth && innerWidth < 640) ? 4 : 8,
             beginAtZero: true,
             padding: 10,
             color: CHART_LABEL_COLORS,
             indexAxis: 'x',
-            font: { size: isModal ? 10 : 11 },
+            font: {
+              size: isModal || (innerWidth && innerWidth < 640) ? 10 : 11,
+            },
           },
           grid: {
             drawTicks: false,

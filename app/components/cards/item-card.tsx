@@ -14,7 +14,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
 
   return (
     <>
-      <div className='flex w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md overflow-hidden mx-auto'>
+      <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md overflow-hidden mx-auto'>
         <div className='h-[20rem] overflow-hidden'>
           <img
             className='object-cover w-full h-full hover:scale-105 transition-transform'

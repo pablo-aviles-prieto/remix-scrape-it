@@ -11,16 +11,6 @@ import { errorMsgs } from '~/utils/const';
 // @ts-ignore
 const Slider2 = Slider.default.default;
 
-const sliderSettings: Slider.Settings = {
-  infinite: true,
-  speed: 500,
-  arrows: false,
-  swipeToSlide: true,
-  slidesToShow: 3,
-  slidesToScroll: 1,
-  autoplaySpeed: 2500,
-};
-
 type LoaderResponse = {
   ok: boolean;
   error?: string;
@@ -53,6 +43,30 @@ export default function Index() {
       </p>
     );
   }
+
+  const sliderSettings: Slider.Settings = {
+    infinite: true,
+    speed: 500,
+    arrows: false,
+    swipeToSlide: true,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplaySpeed: 2500,
+    responsive: [
+      {
+        breakpoint: 1100,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 800,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
 
   return (
     <div className='mt-4 text-slate-700 max-w-6xl mx-auto'>
