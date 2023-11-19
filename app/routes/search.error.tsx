@@ -1,7 +1,7 @@
 export default function SearchIndex() {
   return (
     <div>
-      <div>Error retrieving the data</div>
+      <p className='text-center mt-4 text-lg'>Error! Inténtelo más tarde.</p>
     </div>
   );
 }
