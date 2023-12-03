@@ -21,7 +21,7 @@ export const updateTrackedPriceAndSendMail = async () => {
   /*
    * Instead of creating a map of promises to resolve them all with a Promise.all
    * I'm executing sequentially each scrap service call to avoid overloading the server
-   * running multiples chromiums in parallel
+   * running multiples chromiums in parallel!
    */
 
   const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
