@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrape-it
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: scrape-it
+  template:
+    metadata:
+      labels:
+        app: scrape-it
+    spec:
+      containers:
+      - name: scrape-it
+        image: ghcr.io/miguel-bermell/remix-scrape-it:0.0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: scrape-it
+      imagePullSecrets:
+      - name: ghcr-login-secret
