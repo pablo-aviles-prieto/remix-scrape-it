@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:18-alpine
 FROM mcr.microsoft.com/playwright:focal
 
 RUN mkdir -p /home/app
