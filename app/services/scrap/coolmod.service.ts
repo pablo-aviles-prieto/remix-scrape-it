@@ -78,28 +78,38 @@ export const getCoolmodListItems = async ({
   const browser = await getBrowser();
 
   const page = await browser.newPage();
-  const url = `${COOLMOD_BASE_RUL}#/dffullscreen/query=${querySearch}`;
+  const url = `${COOLMOD_BASE_RUL}#01cc/fullscreen/m=and&q=${querySearch}`;
+
   await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
+  await page.waitForSelector('div.dfd-results-grid');
 
   const listItems = await page.$$eval(
-    'div.df-card[data-role="result"]',
+    'div.dfd-card.dfd-card-preset-product.dfd-card-type-indiceproductos',
     (items) => {
       const parsedItems = items.map((item) => {
-        const url = item.querySelector('.df-card__main')?.getAttribute('href');
+        const url = item.getAttribute('dfd-value-link');
         const imgPath = item
-          .querySelector('.df-card__image img')
+          .querySelector('.dfd-card-thumbnail img')
           ?.getAttribute('src')
           ?.replace('normal', 'large');
-        const name = item.querySelector('.df-card__title')?.textContent?.trim();
-        const price = item
-          .querySelector('.df-card__price')
-          ?.textContent?.trim();
+        const name = item.querySelector('.dfd-card-title')?.textContent?.trim();
+        const discountedPrice = item
+          .querySelector('.dfd-card-price.dfd-card-price--sale')
+          ?.getAttribute('data-value')
+          ?.trim();
+        const normalPrice = item
+          .querySelector('.dfd-card-price')
+          ?.getAttribute('data-value')
+          ?.trim();
+        // TODO: Provide discounted and normal price if both exist
+        // if not, provide the normalPrice only and check it works fine
+        // TODO: Also extract the discount % and display it on front
         return {
           name,
           url,
-          imgPath: `https:${imgPath}`,
-          price: price?.replace('€', '').trim(),
+          imgPath,
+          price: discountedPrice ?? normalPrice,
           currency: '€',
         };
       });
