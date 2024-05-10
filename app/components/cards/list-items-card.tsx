@@ -55,9 +55,9 @@ export const ListItemsCard = ({ item }: Props) => {
       >
         <ItemModal
           itemName={item.name ?? ''}
-          actualPrice={item.price ?? ''}
+          actualPrice={item.price?.toString() ?? ''}
           imgPath={item.imgPath ?? ''}
-          currency='€'
+          currency={item.currency}
           urlItem={item.url ?? ''}
           onClose={() => setIsShown(false)}
         />

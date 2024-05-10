@@ -1,6 +1,7 @@
-import { COOLMOD_BASE_RUL } from '~/utils/const';
+import { COOLMOD_BASE_RUL, availableCurrency } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
+import { parseAmount } from '~/utils/parse-amount';
 
 export const getCoolmodSingleItem = async ({
   productPage,
@@ -99,18 +100,21 @@ export const getCoolmodListItems = async ({
           ?.getAttribute('data-value')
           ?.trim();
         const normalPrice = item
-          .querySelector('.dfd-card-price')
+          .querySelector('.dfd-card-price:not(.dfd-card-price--sale)')
           ?.getAttribute('data-value')
           ?.trim();
-        // TODO: Provide discounted and normal price if both exist
-        // if not, provide the normalPrice only and check it works fine
-        // TODO: Also extract the discount % and display it on front
+        const discountPercent = item
+          .querySelector('div.dfd-card-flags .dfd-card-flag')
+          ?.getAttribute('data-discount')
+          ?.trim();
+
         return {
           name,
           url,
           imgPath,
-          price: discountedPrice ?? normalPrice,
-          currency: '€',
+          price: normalPrice,
+          ...(discountedPrice ? { discountedPrice } : {}),
+          ...(discountPercent ? { discountPercent } : {}),
         };
       });
       return parsedItems;
@@ -118,5 +122,14 @@ export const getCoolmodListItems = async ({
   );
 
   await browser.close();
-  return listItems;
+
+  const parsedListItems = listItems.map((item) => ({
+    ...item,
+    price: parseAmount(item.price ?? ''),
+    currency: availableCurrency.EUR,
+    ...(item.discountedPrice
+      ? { discountedPrice: parseAmount(item.discountedPrice ?? '') }
+      : {}),
+  }));
+  return parsedListItems;
 };
