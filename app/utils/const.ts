@@ -15,3 +15,19 @@ export const dateFormat = {
 };
 
 export const SIMPLE_REGEX_EMAIL = /\S+@\S+/;
+
+export const formatterUSTwoDecimals = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+});
+export const formatterUSNoDecimals = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 0,
+});
+
+export const availableCurrency = {
+  EUR: '€',
+  USD: '$',
+  GBP: '£',
+  JPY: '¥',
+  INR: '₹',
+} as const;

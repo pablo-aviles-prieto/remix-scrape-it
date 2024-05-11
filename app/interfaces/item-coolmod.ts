@@ -11,6 +11,8 @@ export type ListItemsCoolmod = {
   name: string | undefined;
   url: string | null | undefined;
   imgPath: string | null | undefined;
-  price: string | undefined;
   currency: string;
+  price: number;
+  discountedPrice?: string | number | undefined;
+  discountPercent?: string | undefined;
 };

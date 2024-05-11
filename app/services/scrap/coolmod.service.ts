@@ -1,6 +1,7 @@
-import { COOLMOD_BASE_RUL } from '~/utils/const';
+import { COOLMOD_BASE_RUL, availableCurrency } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
+import { parseAmount } from '~/utils/parse-amount';
 
 export const getCoolmodSingleItem = async ({
   productPage,
@@ -78,29 +79,42 @@ export const getCoolmodListItems = async ({
   const browser = await getBrowser();
 
   const page = await browser.newPage();
-  const url = `${COOLMOD_BASE_RUL}#/dffullscreen/query=${querySearch}`;
+  const url = `${COOLMOD_BASE_RUL}#01cc/fullscreen/m=and&q=${querySearch}`;
+
   await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
+  await page.waitForSelector('div.dfd-results-grid');
 
   const listItems = await page.$$eval(
-    'div.df-card[data-role="result"]',
+    'div.dfd-card.dfd-card-preset-product.dfd-card-type-indiceproductos',
     (items) => {
       const parsedItems = items.map((item) => {
-        const url = item.querySelector('.df-card__main')?.getAttribute('href');
+        const url = item.getAttribute('dfd-value-link');
         const imgPath = item
-          .querySelector('.df-card__image img')
+          .querySelector('.dfd-card-thumbnail img')
           ?.getAttribute('src')
           ?.replace('normal', 'large');
-        const name = item.querySelector('.df-card__title')?.textContent?.trim();
-        const price = item
-          .querySelector('.df-card__price')
-          ?.textContent?.trim();
+        const name = item.querySelector('.dfd-card-title')?.textContent?.trim();
+        const discountedPrice = item
+          .querySelector('.dfd-card-price.dfd-card-price--sale')
+          ?.getAttribute('data-value')
+          ?.trim();
+        const normalPrice = item
+          .querySelector('.dfd-card-price:not(.dfd-card-price--sale)')
+          ?.getAttribute('data-value')
+          ?.trim();
+        const discountPercent = item
+          .querySelector('div.dfd-card-flags .dfd-card-flag')
+          ?.getAttribute('data-discount')
+          ?.trim();
+
         return {
           name,
           url,
-          imgPath: `https:${imgPath}`,
-          price: price?.replace('€', '').trim(),
-          currency: '€',
+          imgPath,
+          price: normalPrice,
+          ...(discountedPrice ? { discountedPrice } : {}),
+          ...(discountPercent ? { discountPercent } : {}),
         };
       });
       return parsedItems;
@@ -108,5 +122,14 @@ export const getCoolmodListItems = async ({
   );
 
   await browser.close();
-  return listItems;
+
+  const parsedListItems = listItems.map((item) => ({
+    ...item,
+    price: parseAmount(item.price ?? ''),
+    currency: availableCurrency.EUR,
+    ...(item.discountedPrice
+      ? { discountedPrice: parseAmount(item.discountedPrice ?? '') }
+      : {}),
+  }));
+  return parsedListItems;
 };
