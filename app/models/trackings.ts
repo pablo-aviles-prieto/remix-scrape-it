@@ -6,7 +6,7 @@ import { modelExists } from '~/utils/check-model-exist';
 const PriceSchema: Schema = new Schema(
   {
     date: { type: Date, required: true },
-    price: { type: Number, required: true },
+    price: { type: String, required: true },
   },
   {
     _id: false,
