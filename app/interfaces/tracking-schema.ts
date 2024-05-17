@@ -2,7 +2,7 @@ import type { Document, ObjectId } from 'mongoose';
 
 export type IPrices = {
   date: Date;
-  price: number;
+  price: string;
 };
 
 export interface ITracking {

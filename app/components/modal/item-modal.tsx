@@ -163,7 +163,7 @@ export const ItemModal = ({
                     <span className='line-through text-red-800 font-bold italic'>
                       {oldPrice}
                     </span>
-                    <span className='text-xs text-slate-900 absolute top-[2px] -right-[25px]'>
+                    <span className='text-xs text-slate-900 absolute -top-[12px] -right-0'>
                       {discount}
                     </span>
                   </span>

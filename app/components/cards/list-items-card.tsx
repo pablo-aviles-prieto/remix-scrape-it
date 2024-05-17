@@ -32,9 +32,25 @@ export const ListItemsCard = ({ item }: Props) => {
             </h1>
           </Tooltip>
           <div className='pt-1 flex items-center justify-between'>
-            <p className='text-xl'>
-              {item.price}
-              {item.currency}
+            <p className='text-lg relative'>
+              <span
+                className={
+                  item.discountedPrice ? 'text-green-300' : 'text-white'
+                }
+              >
+                {item.discountedPrice ?? item.price}
+                {item.currency}
+              </span>
+              {item.discountedPrice && (
+                <>
+                  <span className='ml-1 text-xs line-through text-red-300 font-semibold italic'>
+                    {item.price}
+                  </span>
+                  <span className='text-[10px] absolute -top-[4px] right-0 leading-4'>
+                    {item.discountPercent}
+                  </span>
+                </>
+              )}
             </p>
             <a
               href={item.url ?? ''}
@@ -55,7 +71,13 @@ export const ListItemsCard = ({ item }: Props) => {
       >
         <ItemModal
           itemName={item.name ?? ''}
-          actualPrice={item.price?.toString() ?? ''}
+          actualPrice={
+            item.discountedPrice
+              ? String(item.discountedPrice)
+              : item.price ?? ''
+          }
+          oldPrice={item.discountedPrice ? item.price : undefined}
+          discount={item.discountedPrice ? item.discountPercent : undefined}
           imgPath={item.imgPath ?? ''}
           currency={item.currency}
           urlItem={item.url ?? ''}
