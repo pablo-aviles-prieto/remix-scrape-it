@@ -1,7 +1,25 @@
 import { COOLMOD_BASE_RUL, availableCurrency } from '~/utils/const';
 import { getBrowser } from './browser.service';
-import { transformDecimalOperator } from '~/utils/transform-decimal-operator';
 import { parseAmount } from '~/utils/parse-amount';
+import { type Page } from 'playwright';
+import { formatAmount } from '~/utils/format-amount';
+
+/*
+ ** The discount is calculated like 30 years after the DOM is rendered, so the only
+ ** way to wait for it, is that the element disappears completely (when no discount applied)
+ ** or to the d-none class to disappear in that exact element. If not, the discount retrieved
+ ** is always 0,00 even when no discount exists, CMS things.
+ */
+async function waitForDiscountChange(page: Page) {
+  // Wait for either the `d-none` class to be removed or the element to be removed
+  await page.waitForFunction(
+    () => {
+      const element = document.querySelector('.discount');
+      return !element || !element.classList.contains('d-none');
+    },
+    { timeout: 30000 }
+  ); // is the default timeout
+}
 
 export const getCoolmodSingleItem = async ({
   productPage,
@@ -13,6 +31,7 @@ export const getCoolmodSingleItem = async ({
   const page = await browser.newPage();
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
+  await waitForDiscountChange(page);
 
   let itemData = undefined;
   const inputElement = await page.$('#layerdt');
@@ -27,8 +46,7 @@ export const getCoolmodSingleItem = async ({
       '#discountProductPrice .crossout',
       (el) => {
         const amount = el.querySelector('#oldprice')?.textContent?.trim();
-        const currency = el.textContent?.replace(amount ?? '', '').trim();
-        return { amount, currency };
+        return { amount };
       }
     );
     const actualPrice =
@@ -40,9 +58,9 @@ export const getCoolmodSingleItem = async ({
 
     itemData = {
       oldPrice: oldPrice.amount,
-      actualPrice, // Returned in JS number (2399.95 instead of 2.399,95)
+      actualPrice,
       itemName,
-      currency: oldPrice.currency,
+      currency: availableCurrency.EUR,
       imgPath,
       discount,
     };
@@ -60,15 +78,21 @@ export const getCoolmodSingleItem = async ({
     });
 
     itemData = {
-      actualPrice: transformDecimalOperator(actualPrice.amount ?? ''),
+      actualPrice: actualPrice.amount,
       itemName,
-      currency: actualPrice.currency,
+      currency: availableCurrency.EUR,
       imgPath,
     };
   }
 
   await browser.close();
-  return itemData;
+  return {
+    ...itemData,
+    ...(itemData?.oldPrice
+      ? { oldPrice: formatAmount(parseAmount(itemData.oldPrice)) }
+      : {}),
+    actualPrice: formatAmount(parseAmount(itemData.actualPrice ?? '')),
+  };
 };
 
 export const getCoolmodListItems = async ({
@@ -125,10 +149,12 @@ export const getCoolmodListItems = async ({
 
   const parsedListItems = listItems.map((item) => ({
     ...item,
-    price: parseAmount(item.price ?? ''),
+    price: formatAmount(parseAmount(item.price ?? '')),
     currency: availableCurrency.EUR,
     ...(item.discountedPrice
-      ? { discountedPrice: parseAmount(item.discountedPrice ?? '') }
+      ? {
+          discountedPrice: formatAmount(parseAmount(item.discountedPrice)),
+        }
       : {}),
   }));
   return parsedListItems;
