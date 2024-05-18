@@ -9,7 +9,7 @@ import {
   Title,
   Tooltip,
 } from 'chart.js';
-import { format, parseISO } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 import { Line } from 'react-chartjs-2';
 import useWindowWidth from '~/hooks/use-window-width';
 import type { Dataset, LineChartData } from '~/interfaces/line-chart-data';
@@ -66,14 +66,24 @@ export const LineChart = ({
   }): LineChartData => {
     const dataset: Dataset = {
       label: breakLabel(itemName, 30),
-      data: prices.map((item) => item.price),
+      data: prices.map((item) => parseFloat(item.price)),
       backgroundColor: BRAND_COLOR,
       borderColor: BRAND_COLOR,
     };
+    const labels = prices
+      .map((priceObj) => {
+        const date = parseISO(priceObj.date.toString());
+        if (!isValid(date)) {
+          console.log('Invalid date:', priceObj.date);
+          return null;
+        } else {
+          return format(date, dateFormat.euWithTime);
+        }
+      })
+      .filter((date): date is string => date !== null);
+
     return {
-      labels: prices.map((priceObj) =>
-        format(parseISO(priceObj.date.toString()), dateFormat.euWithTime)
-      ),
+      labels,
       datasets: [dataset],
     };
   };
