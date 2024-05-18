@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
-import { Await, useLoaderData } from '@remix-run/react';
+import { Await, useLoaderData, useNavigate } from '@remix-run/react';
 import { motion } from 'framer-motion';
 import { Heading } from 'evergreen-ui';
 import { Suspense } from 'react';
@@ -11,11 +11,12 @@ import { ListItemsCard } from '~/components/cards/list-items-card';
 import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
+import toast from 'react-hot-toast';
 
 type LoaderResponse = {
   ok: boolean;
   error?: string;
-  data?: Promise<ListItemsCoolmod[]>;
+  data?: Promise<ListItemsCoolmod[] | null>;
 };
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
@@ -44,6 +45,7 @@ export const loader = async ({ params }: ActionFunctionArgs) => {
 };
 
 export default function SearchItem() {
+  const navigate = useNavigate();
   const { data, ok, error } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
@@ -70,21 +72,31 @@ export default function SearchItem() {
       <div>
         <LoaderWrapper>
           <Suspense fallback={<FallbackLoader />}>
-            <Await resolve={data as Promise<ListItemsCoolmod[]>}>
-              {(resolvedData) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 200 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -200 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
-                    {resolvedData.map((item) => (
-                      <ListItemsCard key={item.url} item={item} />
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+            <Await resolve={data as Promise<ListItemsCoolmod[] | null>}>
+              {(resolvedData) => {
+                if (!resolvedData) {
+                  toast.error(
+                    `No se pudo obtener los datos de los productos, revise los datos introducidos.`,
+                    { id: 'list-not-found' }
+                  );
+                  navigate('/');
+                  return;
+                }
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: 200 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -200 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
+                      {resolvedData.map((item) => (
+                        <ListItemsCard key={item.url} item={item} />
+                      ))}
+                    </div>
+                  </motion.div>
+                );
+              }}
             </Await>
           </Suspense>
         </LoaderWrapper>

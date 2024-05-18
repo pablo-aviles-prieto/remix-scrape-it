@@ -18,8 +18,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     return json({ ok: false, error: errorMsgs.internalError }, 500);
   }
 
-  let scrapResponse: SingleItemCoolmod | ListItemsCoolmod[] | undefined =
-    undefined;
+  let scrapResponse: SingleItemCoolmod | ListItemsCoolmod[] | null = null;
 
   if (queryUrl) {
     try {

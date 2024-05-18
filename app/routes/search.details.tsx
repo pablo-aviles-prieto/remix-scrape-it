@@ -64,7 +64,7 @@ export default function SearchIndex() {
             {(resolvedData) => {
               if (!resolvedData) {
                 toast.error(
-                  `No se pudo obtener los datos del producto, revisa el enlace proporcionado.`,
+                  `No se pudo obtener los datos del producto, revise el enlace proporcionado.`,
                   { id: 'product-not-found' }
                 );
                 navigate('/');
