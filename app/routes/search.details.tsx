@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
-import { Await, useLoaderData } from '@remix-run/react';
+import { Await, useLoaderData, useNavigate } from '@remix-run/react';
 import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
@@ -9,11 +9,12 @@ import { ItemCard } from '~/components/cards/item-card';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs } from '~/utils/const';
+import toast from 'react-hot-toast';
 
 type LoaderResponse = {
   ok: boolean;
   error?: string;
-  data?: Promise<SingleItemCoolmod>;
+  data?: Promise<SingleItemCoolmod | null>;
   url: URL;
 };
 
@@ -48,6 +49,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function SearchIndex() {
+  const navigate = useNavigate();
   const { data, ok, error, url } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
@@ -58,17 +60,27 @@ export default function SearchIndex() {
     <div>
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
-          <Await resolve={data as Promise<SingleItemCoolmod>}>
-            {(resolvedData) => (
-              <motion.div
-                initial={{ opacity: 0, x: 300 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -300 }}
-                transition={{ duration: 0.5 }}
-              >
-                <ItemCard item={resolvedData} urlItem={url} />
-              </motion.div>
-            )}
+          <Await resolve={data as Promise<SingleItemCoolmod | null>}>
+            {(resolvedData) => {
+              if (!resolvedData) {
+                toast.error(
+                  `No se pudo obtener los datos del producto, revisa el enlace proporcionado.`,
+                  { id: 'product-not-found' }
+                );
+                navigate('/');
+                return;
+              }
+              return (
+                <motion.div
+                  initial={{ opacity: 0, x: 300 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -300 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <ItemCard item={resolvedData} urlItem={url} />
+                </motion.div>
+              );
+            }}
           </Await>
         </Suspense>
       </LoaderWrapper>

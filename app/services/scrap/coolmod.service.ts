@@ -31,6 +31,15 @@ export const getCoolmodSingleItem = async ({
   const page = await browser.newPage();
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
+
+  // Check if the class productrightpadding exists, if not it means that
+  // there is no price info for the product
+  const productRightPaddingExists = await page.$('.productrightpadding');
+  if (!productRightPaddingExists) {
+    await browser.close();
+    return null;
+  }
+
   await waitForDiscountChange(page);
 
   let itemData = undefined;
@@ -68,21 +77,29 @@ export const getCoolmodSingleItem = async ({
     // Meaning the product doesnt have a discount
   }
 
-  if (!itemData?.oldPrice) {
-    const actualPrice = await page.$eval('#normalpriceproduct', (el) => {
-      const amount = el
-        .querySelector('#normalpricenumber')
-        ?.textContent?.trim();
-      const currency = el.textContent?.replace(amount ?? '', '').trim();
-      return { amount, currency };
-    });
+  try {
+    if (!itemData?.oldPrice) {
+      const actualPrice = await page.$eval('#normalpriceproduct', (el) => {
+        const amount = el
+          .querySelector('#normalpricenumber')
+          ?.textContent?.trim();
+        const currency = el.textContent?.replace(amount ?? '', '').trim();
+        return { amount, currency };
+      });
 
-    itemData = {
-      actualPrice: actualPrice.amount,
-      itemName,
-      currency: availableCurrency.EUR,
-      imgPath,
-    };
+      itemData = {
+        actualPrice: actualPrice.amount,
+        itemName,
+        currency: availableCurrency.EUR,
+        imgPath,
+      };
+    }
+  } catch (err) {
+    // If this error happens it means that didnt find an oldPrice (#discountProductPrice .crossout)
+    // and also, didnt find the selector for actualPrice (#normalpriceproduct), so we just close the browser
+    console.log('ERROR SCRAPPING SINGLE ITEM', err);
+    await browser.close();
+    return null;
   }
 
   await browser.close();
@@ -91,7 +108,7 @@ export const getCoolmodSingleItem = async ({
     ...(itemData?.oldPrice
       ? { oldPrice: formatAmount(parseAmount(itemData.oldPrice)) }
       : {}),
-    actualPrice: formatAmount(parseAmount(itemData.actualPrice ?? '')),
+    actualPrice: formatAmount(parseAmount(itemData?.actualPrice ?? '')),
   };
 };
 
