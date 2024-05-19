@@ -17,8 +17,9 @@ async function waitForDiscountChange(page: Page) {
       const element = document.querySelector('.discount');
       return !element || !element.classList.contains('d-none');
     },
-    { timeout: 30000 }
-  ); // is the default timeout
+    undefined, // The 2nd argument is an arg passed to the function of the 1st arg
+    { timeout: 10000 } // the timeout option obj is the 3rd arg
+  );
 }
 
 export const getCoolmodSingleItem = async ({
@@ -40,7 +41,11 @@ export const getCoolmodSingleItem = async ({
     return null;
   }
 
-  await waitForDiscountChange(page);
+  try {
+    await waitForDiscountChange(page);
+  } catch (err) {
+    console.log('discount change didnt happens', err);
+  }
 
   let itemData = undefined;
   const inputElement = await page.$('#layerdt');

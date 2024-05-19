@@ -27,16 +27,17 @@ export const updateTrackedPriceAndSendMail = async () => {
   const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
 
   for (const item of trackedItems) {
-    const updatedData = await getCoolmodSingleItem({ productPage: item.url });
-    const updatedPrice = updatedData.actualPrice; // Returned in JS number (2399.95 instead of 2.399,95)
+    let updatedPrice: string | undefined;
 
     try {
+      const updatedData = await getCoolmodSingleItem({ productPage: item.url });
+      updatedPrice = updatedData?.actualPrice;
       await TrackingModel.updateOne(
         { _id: item._id },
         {
           $push: {
             prices: {
-              price: parseFloat(updatedPrice ?? '0'),
+              price: updatedPrice ?? '0',
               date: new Date(),
             },
           },
@@ -46,7 +47,7 @@ export const updateTrackedPriceAndSendMail = async () => {
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
-    if (item.subscribers && item.subscribers.length) {
+    if (item.subscribers && item.subscribers.length > 0) {
       const sortedPrices = [...item.prices].sort((a, b) =>
         b.date.toISOString().localeCompare(a.date.toISOString())
       );
@@ -57,7 +58,7 @@ export const updateTrackedPriceAndSendMail = async () => {
         },
         ...sortedPrices.slice(0, 4).map((p) => ({
           date: format(p.date, dateFormat.euWithTime),
-          price: String(p.price),
+          price: p.price,
         })),
       ];
 

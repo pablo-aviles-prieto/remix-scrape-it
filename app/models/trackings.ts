@@ -21,6 +21,7 @@ const TrackingSchema: Schema = new Schema(
     prices: [PriceSchema],
     subscribers: { type: [String], default: [] },
     currency: { type: String, required: true },
+    lastSubscriberUpdate: { type: Date, required: true },
   },
   { timestamps: true }
 );
