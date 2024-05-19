@@ -36,6 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
           price: actualPrice,
         },
       ],
+      lastSubscriberUpdate: new Date(),
     });
     return json({ ok: true, insertedId: createdTracking.id }, 201);
   } else {

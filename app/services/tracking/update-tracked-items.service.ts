@@ -32,6 +32,11 @@ export const updateTrackedPriceAndSendMail = async () => {
     try {
       const updatedData = await getCoolmodSingleItem({ productPage: item.url });
       updatedPrice = updatedData?.actualPrice;
+      if (!updatedPrice) {
+        console.log(`No updated price found for item ${item.name}, skipping.`);
+        continue;
+      }
+
       await TrackingModel.updateOne(
         { _id: item._id },
         {
@@ -98,6 +103,9 @@ export const updateTrackedItemSubscribers = async ({
     {
       $addToSet: {
         subscribers: email,
+      },
+      $set: {
+        lastSubscriberUpdate: new Date(),
       },
     }
   );

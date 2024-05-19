@@ -13,6 +13,7 @@ export interface ITracking {
   prices: IPrices[];
   subscribers: string[];
   currency: string;
+  lastSubscriberUpdate: Date;
   createdAt: Date;
   updatedAt: Date;
 }
