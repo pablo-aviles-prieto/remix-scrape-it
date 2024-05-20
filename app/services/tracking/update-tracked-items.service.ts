@@ -15,6 +15,12 @@ type UpdateItemSubscriber = {
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
+// TODO: Add an if condition to check if the price met any desiredPrice (if exist for that item)
+// and send the email to that user. In this case, remove that object from the desiredPriceSubscribers
+// also updating the lastSubscriberUpdate date
+// TODO: To do this, im gonna have to create a new template for the emails, or change the content
+// that is being passed
+// TODO: Gonna have to allow the unsubscribe for the desiredPriceSubscribers in concrete
 export const updateTrackedPriceAndSendMail = async () => {
   const trackedItems = await getAllTrackedItems();
 

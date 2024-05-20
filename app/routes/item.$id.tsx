@@ -23,7 +23,11 @@ type LoaderResponse = {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const email = formData.get('subscribe')?.toString()?.trim();
+  // TODO: accept a new formData of radio button to know if its subscribed to daily updates
+  // or to a price, and get that price
+  // TODO: Return in the response an array with the fields that have error since now i can have
+  // an input with the email and a price, one or both with error
+  const email = formData.get('subscribe-email')?.toString()?.trim();
   const itemId = formData.get('item-id')?.toString();
 
   if (!email || !email.match(SIMPLE_REGEX_EMAIL)) {
