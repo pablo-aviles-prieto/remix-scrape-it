@@ -22,7 +22,7 @@ const TrackingSchema: Schema = new Schema(
     subscribers: { type: [String], default: [] },
     currency: { type: String, required: true },
     lastSubscriberUpdate: { type: Date, required: true },
-    // TODO: Add a property called priceSubscribers, thats gonna be an array of objects
+    // TODO: Add a property called desiredPriceSubscribers, thats gonna be an array of objects
     // with the email and the desiredPrice
   },
   { timestamps: true }

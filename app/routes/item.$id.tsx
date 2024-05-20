@@ -28,17 +28,41 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // TODO: Return in the response an array with the fields that have error since now i can have
   // an input with the email and a price, one or both with error
   const email = formData.get('subscribe-email')?.toString()?.trim();
+  const switchState = formData.get('switch-subscription-state');
+  const desiredPrice = formData.get('desired-price')?.toString();
   const itemId = formData.get('item-id')?.toString();
+  const isSubscribedToAPrice = switchState === 'on';
+  console.log('email', email);
+  console.log('isSubscribedToAPrice', isSubscribedToAPrice);
+  console.log('desiredPrice', desiredPrice);
+  console.log('itemId', itemId);
+
+  const errors: { field: string; message: string }[] = [];
+
+  let parsedPrice;
+  if (isSubscribedToAPrice && desiredPrice) {
+    parsedPrice = parseFloat(desiredPrice);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      errors.push({ field: 'desired-price', message: errorMsgs.invalidPrice });
+    }
+  }
 
   if (!email || !email.match(SIMPLE_REGEX_EMAIL)) {
-    return json({ ok: false, error: errorMsgs.invalidEmail });
+    errors.push({ field: 'subscribe-email', message: errorMsgs.invalidEmail });
+  }
+
+  console.log('errors', errors);
+
+  if (errors.length > 0) {
+    return json({ ok: false, errors }, { status: 400 });
   }
 
   const updatedSubscribers = await updateTrackedItemSubscribers({
-    email,
+    email: email ?? '',
     id: itemId ?? '',
   });
 
+  // return json({ ok: true, email });
   return json({ ok: true, email, updatedSubscribers });
 };
 

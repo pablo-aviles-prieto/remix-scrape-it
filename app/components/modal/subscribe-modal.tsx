@@ -77,10 +77,13 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
           {/* TODO: Add a checkbox input */}
           <div className='flex items-center gap-x-2 mb-6'>
             <Switch
-              onChange={(e) => setIsSubscribedDaily((prevState) => !prevState)}
+              className={`custom-switch ${
+                isSubscribedDaily ? 'is-selected' : ''
+              }`}
+              onChange={(e) => setIsSubscribedDaily(e.target.checked)}
               checked={isSubscribedDaily}
+              value={isSubscribedDaily.toString()}
               name='switch-subscription-state'
-              className='text-indigo-500'
             />
             <p className='text-sm'>
               {!isSubscribedDaily
@@ -90,7 +93,7 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
           </div>
           <TextInputField
             description={
-              isSubscribedDaily
+              !isSubscribedDaily
                 ? 'Introduce tu email para que te llegue un correo diario'
                 : 'Introduce tu email para que te notifiquemos con el precio deseado'
             }
@@ -113,7 +116,7 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
                 min={0}
                 step={0.01}
               />
-              {/* TODO: Add a checkbox so it also subscribe daily */}
+              {/* TODO: Add a checkbox so it also subscribe daily? */}
             </>
           ) : null}
           <input hidden name='item-id' value={itemId} readOnly />
