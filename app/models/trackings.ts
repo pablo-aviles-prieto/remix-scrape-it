@@ -13,6 +13,16 @@ const PriceSchema: Schema = new Schema(
   }
 );
 
+const DesiredPriceSubscribersSchema: Schema = new Schema(
+  {
+    email: { type: String, required: true },
+    price: { type: Number, required: true },
+  },
+  {
+    _id: false,
+  }
+);
+
 const TrackingSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
@@ -22,8 +32,7 @@ const TrackingSchema: Schema = new Schema(
     subscribers: { type: [String], default: [] },
     currency: { type: String, required: true },
     lastSubscriberUpdate: { type: Date, required: true },
-    // TODO: Add a property called desiredPriceSubscribers, thats gonna be an array of objects
-    // with the email and the desiredPrice
+    desiredPriceSubscribers: [DesiredPriceSubscribersSchema],
   },
   { timestamps: true }
 );

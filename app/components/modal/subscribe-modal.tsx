@@ -14,39 +14,55 @@ type Props = {
 type Fetcher = {
   ok: boolean;
   email?: string;
-  error?: string;
+  desiredPrice?: number;
+  errors?: { field: string; message: string }[];
 };
 
-// TODO: Change the message and add a button to subscribe to a desired price
-// TODO: Add a radio button to select between the subscribers (daily) or the priceSubscribers
-// (desiredPrice), and in the last case, add a input with the price
-// TODO: Permitir que si elige un desiredPrice, que el usuario peuda marcar un checkbox con
-// la opción de recibir notificaciones diarias sobre el producto también, y así agregarlo en ambas
-// TODO: Receive an array with the inputs that has errors
+const getFieldError = (errors: Fetcher['errors'], field: string) => {
+  return errors?.find((error) => error.field === field)?.message;
+};
+
 export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
   const {
     data: fetcherData,
     Form: FetcherForm,
     state: fetcherState,
   } = useFetcher<Fetcher>();
-  const [displayError, setDisplayError] = useState(false);
-  const [isSubscribedDaily, setIsSubscribedDaily] = useState(false);
-  const email = useMemo(() => fetcherData?.email, [fetcherData]);
-  const hasError = useMemo(() => fetcherData?.error, [fetcherData]);
+  const [hasErrors, setHasErrors] = useState(fetcherData?.errors);
+  const [isSubscribedToPrice, setIsSubscribedToPrice] = useState(false);
+  const emailError = useMemo(
+    () => getFieldError(fetcherData?.errors, 'subscribe-email'),
+    [fetcherData]
+  );
+  const priceError = useMemo(
+    () => getFieldError(fetcherData?.errors, 'desired-price'),
+    [fetcherData]
+  );
 
   useEffect(() => {
-    if (!email && hasError) {
-      toast.error(`Revisa el email facilitado e inténtalo nuevamente`);
-      setDisplayError(true);
-      return;
+    if (fetcherData?.errors) {
+      setHasErrors(fetcherData.errors);
     }
-    if (email && !hasError) {
+  }, [fetcherData]);
+
+  useEffect(() => {
+    if (hasErrors) {
+      hasErrors.forEach((error) => {
+        toast.error(error.message, { id: error.field });
+      });
+    }
+    if (fetcherData?.ok) {
       toast.success(
-        `Recibirás notificaciones diarias sobre este producto en ${email}`
+        `${
+          !isSubscribedToPrice
+            ? 'Recibirás notificaciones diarias sobre este producto'
+            : `Te notificaremos cuando llegue a ${fetcherData?.desiredPrice}€`
+        } en ${fetcherData.email}`,
+        { id: 'toast-success' }
       );
       onClose();
     }
-  }, [email, hasError]);
+  }, [fetcherData, onClose, isSubscribedToPrice]);
 
   return (
     <div>
@@ -63,61 +79,68 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
           />
         </div>
         <div className='my-16'>
-          <div className='mb-8 space-y-2'>
+          <div className='mb-6 space-y-2'>
             <p>
-              ¡Recibe en tu correo información sobre{' '}
-              <span className='text-sm font-semibold'>{itemName}</span>!
+              ¡Reciba en su correo información sobre{' '}
+              <span className='text-sm font-bold'>{itemName.trim()}</span>!
             </p>
-            <p>
-              Recibe un correo diario con los precios actualizados del producto
-              o bien selecciona el precio al que deseas que te avisemos
+            <p className='text-sm'>
+              Puede <span className='font-medium'>elegir</span> entre recibir un{' '}
+              <span className='font-medium'>
+                correo diario con los precios actualizados
+              </span>{' '}
+              del producto o recibir un{' '}
+              <span className='font-medium'>
+                correo cuando el producto llegue al precio
+              </span>{' '}
+              deseado
             </p>
           </div>
 
-          {/* TODO: Add a checkbox input */}
-          <div className='flex items-center gap-x-2 mb-6'>
+          <div className='flex items-center gap-x-2 mb-2'>
             <Switch
               className={`custom-switch ${
-                isSubscribedDaily ? 'is-selected' : ''
+                isSubscribedToPrice ? 'is-selected' : ''
               }`}
-              onChange={(e) => setIsSubscribedDaily(e.target.checked)}
-              checked={isSubscribedDaily}
-              value={isSubscribedDaily.toString()}
+              onChange={(e) => setIsSubscribedToPrice(e.target.checked)}
+              checked={isSubscribedToPrice}
+              value={isSubscribedToPrice.toString()}
               name='switch-subscription-state'
             />
             <p className='text-sm'>
-              {!isSubscribedDaily
-                ? 'Subscríbete a los últimos precios del producto'
-                : 'Te notificaremos cuando llegue al precio deseado'}
+              {!isSubscribedToPrice
+                ? 'Reciba a diario un correo con los precios de este artículo'
+                : 'Indique el precio deseado al que quiere que le notifiquemos'}
             </p>
           </div>
           <TextInputField
             description={
-              !isSubscribedDaily
+              !isSubscribedToPrice
                 ? 'Introduce tu email para que te llegue un correo diario'
                 : 'Introduce tu email para que te notifiquemos con el precio deseado'
             }
             name='subscribe-email'
             placeholder='Introduce tu email'
             className={`bg-gray-100 !text-sm !mt-1 !w-full ${
-              hasError && displayError ? '!border-red-400 !border-2' : ''
+              emailError && hasErrors ? '!border-red-400 !border-2' : ''
             }`}
             width='25rem'
-            onChange={() => setDisplayError(false)}
+            onChange={() => setHasErrors(undefined)}
           />
-          {isSubscribedDaily ? (
-            <>
-              <TextInputField
-                description='Introduce un precio para que te avisemos'
-                name='desired-price'
-                placeholder='Introduce el precio deseado'
-                width='25rem'
-                type='number'
-                min={0}
-                step={0.01}
-              />
-              {/* TODO: Add a checkbox so it also subscribe daily? */}
-            </>
+          {isSubscribedToPrice ? (
+            <TextInputField
+              description='Introduce un precio para que te avisemos'
+              name='desired-price'
+              placeholder='Introduce el precio deseado'
+              width='25rem'
+              type='number'
+              min={0}
+              step={0.01}
+              onChange={() => setHasErrors(undefined)}
+              className={`bg-gray-100 !text-sm !mt-1 !w-full ${
+                priceError && hasErrors ? '!border-red-400 !border-2' : ''
+              }`}
+            />
           ) : null}
           <input hidden name='item-id' value={itemId} readOnly />
         </div>

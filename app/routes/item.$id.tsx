@@ -21,29 +21,42 @@ type LoaderResponse = {
   trackedItem?: Promise<TrackingResponse>;
 };
 
+const validateDesiredPrice = (desiredPrice: string | undefined) => {
+  if (!desiredPrice) {
+    return {
+      parsedPrice: null,
+      error: { field: 'desired-price', message: errorMsgs.invalidPrice },
+    };
+  }
+  const parsedPrice = parseFloat(desiredPrice);
+  if (isNaN(parsedPrice) || parsedPrice <= 0) {
+    return {
+      parsedPrice: null,
+      error: { field: 'desired-price', message: errorMsgs.invalidPrice },
+    };
+  }
+  return { parsedPrice, error: null };
+};
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  // TODO: accept a new formData of radio button to know if its subscribed to daily updates
-  // or to a price, and get that price
-  // TODO: Return in the response an array with the fields that have error since now i can have
-  // an input with the email and a price, one or both with error
   const email = formData.get('subscribe-email')?.toString()?.trim();
   const switchState = formData.get('switch-subscription-state');
   const desiredPrice = formData.get('desired-price')?.toString();
   const itemId = formData.get('item-id')?.toString();
   const isSubscribedToAPrice = switchState === 'on';
-  console.log('email', email);
-  console.log('isSubscribedToAPrice', isSubscribedToAPrice);
-  console.log('desiredPrice', desiredPrice);
-  console.log('itemId', itemId);
 
   const errors: { field: string; message: string }[] = [];
 
-  let parsedPrice;
-  if (isSubscribedToAPrice && desiredPrice) {
-    parsedPrice = parseFloat(desiredPrice);
-    if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      errors.push({ field: 'desired-price', message: errorMsgs.invalidPrice });
+  let parsedPrice: number | undefined;
+  // Validate desired price if the switch is on
+  if (isSubscribedToAPrice) {
+    const { parsedPrice: price, error: priceError } =
+      validateDesiredPrice(desiredPrice);
+    if (priceError) {
+      errors.push(priceError);
+    } else {
+      parsedPrice = price;
     }
   }
 
@@ -51,19 +64,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     errors.push({ field: 'subscribe-email', message: errorMsgs.invalidEmail });
   }
 
-  console.log('errors', errors);
-
   if (errors.length > 0) {
     return json({ ok: false, errors }, { status: 400 });
   }
 
-  const updatedSubscribers = await updateTrackedItemSubscribers({
-    email: email ?? '',
-    id: itemId ?? '',
-  });
+  if (isSubscribedToAPrice) {
+    // TODO: Call the helper to update the desiredPriceSubscribers with the email and the desiredPrice
+  } else {
+    await updateTrackedItemSubscribers({
+      email: email ?? '',
+      id: itemId ?? '',
+    });
+  }
 
-  // return json({ ok: true, email });
-  return json({ ok: true, email, updatedSubscribers });
+  return json({ ok: true, email, desiredPrice: parsedPrice });
 };
 
 export const loader = async ({ params }: ActionFunctionArgs) => {
