@@ -4,10 +4,12 @@ import { RegularButton } from '../styles/regular-button';
 import { Switch, TextInputField } from 'evergreen-ui';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { formatAmount } from '~/utils/format-amount';
 
 type Props = {
   itemName: string;
   itemId: string;
+  itemLastPrice: string;
   onClose: () => void;
 };
 
@@ -22,7 +24,12 @@ const getFieldError = (errors: Fetcher['errors'], field: string) => {
   return errors?.find((error) => error.field === field)?.message;
 };
 
-export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
+export const SubscribeModal = ({
+  itemName,
+  itemId,
+  itemLastPrice,
+  onClose,
+}: Props) => {
   const {
     data: fetcherData,
     Form: FetcherForm,
@@ -56,7 +63,9 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
         `${
           !isSubscribedToPrice
             ? 'Recibirás notificaciones diarias sobre este producto'
-            : `Te notificaremos cuando llegue a ${fetcherData?.desiredPrice}€`
+            : `Te notificaremos cuando llegue a ${formatAmount(
+                fetcherData?.desiredPrice ?? 0
+              )}€`
         } en ${fetcherData.email}`,
         { id: 'toast-success' }
       );
@@ -143,6 +152,7 @@ export const SubscribeModal = ({ itemName, itemId, onClose }: Props) => {
             />
           ) : null}
           <input hidden name='item-id' value={itemId} readOnly />
+          <input hidden name='item-last-price' value={itemLastPrice} readOnly />
         </div>
         <div className='flex justify-between mb-1'>
           <RegularButton content='Cerrar' onClick={onClose} color='secondary' />

@@ -77,7 +77,7 @@ export default function App() {
           <section className='mt-4'>
             <Outlet />
           </section>
-          <Toaster position='bottom-right' />
+          <Toaster position='bottom-right' toastOptions={{ duration: 5000 }} />
           <ScrollRestoration />
           <Scripts />
           <LiveReload />

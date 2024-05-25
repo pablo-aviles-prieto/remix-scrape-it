@@ -62,6 +62,7 @@ export const TrackingItemCard = ({ item }: Props) => {
         <SubscribeModal
           itemName={item.name}
           itemId={item.id}
+          itemLastPrice={item.prices[item.prices.length - 1].price}
           onClose={() => setIsShown(false)}
         />
       </Dialog>

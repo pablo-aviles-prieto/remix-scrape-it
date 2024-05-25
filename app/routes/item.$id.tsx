@@ -14,6 +14,7 @@ import { LineChart } from '~/components/chart/line-chart';
 import { Heading } from 'evergreen-ui';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 import { RegularButton } from '~/components/styles/regular-button';
+import { parseAmount } from '~/utils/parse-amount';
 
 type LoaderResponse = {
   ok: boolean;
@@ -21,21 +22,33 @@ type LoaderResponse = {
   trackedItem?: Promise<TrackingResponse>;
 };
 
-const validateDesiredPrice = (desiredPrice: string | undefined) => {
+const validateDesiredPrice = (
+  desiredPrice: string | undefined,
+  itemPrice: string | undefined
+) => {
   if (!desiredPrice) {
     return {
       parsedPrice: null,
       error: { field: 'desired-price', message: errorMsgs.invalidPrice },
     };
   }
-  const parsedPrice = parseFloat(desiredPrice);
-  if (isNaN(parsedPrice) || parsedPrice <= 0) {
+  const parsedDesiredPrice = parseFloat(desiredPrice);
+  if (isNaN(parsedDesiredPrice) || parsedDesiredPrice <= 0) {
     return {
       parsedPrice: null,
       error: { field: 'desired-price', message: errorMsgs.invalidPrice },
     };
   }
-  return { parsedPrice, error: null };
+
+  const parsedItemPrice = parseAmount(itemPrice ?? '0');
+  if (parsedItemPrice <= parsedDesiredPrice) {
+    return {
+      parsedPrice: null,
+      error: { field: 'desired-price', message: errorMsgs.invalidDesiredPrice },
+    };
+  }
+
+  return { parsedPrice: parsedDesiredPrice, error: null };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -44,15 +57,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const switchState = formData.get('switch-subscription-state');
   const desiredPrice = formData.get('desired-price')?.toString();
   const itemId = formData.get('item-id')?.toString();
+  const itemLastPrice = formData.get('item-last-price')?.toString();
   const isSubscribedToAPrice = switchState === 'on';
-
   const errors: { field: string; message: string }[] = [];
 
   let parsedPrice: number | undefined;
   // Validate desired price if the switch is on
   if (isSubscribedToAPrice) {
-    const { parsedPrice: price, error: priceError } =
-      validateDesiredPrice(desiredPrice);
+    const { parsedPrice: price, error: priceError } = validateDesiredPrice(
+      desiredPrice,
+      itemLastPrice
+    );
     if (priceError) {
       errors.push(priceError);
     } else {
@@ -69,6 +84,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   if (isSubscribedToAPrice) {
+    console.log('subscrfibed to a price');
     // TODO: Call the helper to update the desiredPriceSubscribers with the email and the desiredPrice
   } else {
     await updateTrackedItemSubscribers({
