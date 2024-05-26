@@ -13,6 +13,12 @@ type UpdateItemSubscriber = {
   id: string;
 };
 
+type UpdateDesiredPriceSubscriber = {
+  id: string;
+  email: string;
+  desiredPrice: string;
+};
+
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
 // TODO: Add an if condition to check if the price met any desiredPrice (if exist for that item)
@@ -109,6 +115,24 @@ export const updateTrackedItemSubscribers = async ({
     {
       $addToSet: {
         subscribers: email,
+      },
+      $set: {
+        lastSubscriberUpdate: new Date(),
+      },
+    }
+  );
+};
+
+export const updateTrackedItemDesiredPriceSubscribers = async ({
+  email,
+  id,
+  desiredPrice,
+}: UpdateDesiredPriceSubscriber) => {
+  return TrackingModel.updateOne(
+    { _id: id },
+    {
+      $addToSet: {
+        desiredPriceSubscribers: { email, desiredPrice },
       },
       $set: {
         lastSubscriberUpdate: new Date(),

@@ -8,13 +8,17 @@ import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/tracking/get-tracked-item.service';
 import { SIMPLE_REGEX_EMAIL, errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
-import { updateTrackedItemSubscribers } from '~/services/tracking/update-tracked-items.service';
+import {
+  updateTrackedItemDesiredPriceSubscribers,
+  updateTrackedItemSubscribers,
+} from '~/services/tracking/update-tracked-items.service';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { LineChart } from '~/components/chart/line-chart';
 import { Heading } from 'evergreen-ui';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 import { RegularButton } from '~/components/styles/regular-button';
 import { parseAmount } from '~/utils/parse-amount';
+import { formatAmount } from '~/utils/format-amount';
 
 type LoaderResponse = {
   ok: boolean;
@@ -85,7 +89,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (isSubscribedToAPrice) {
     console.log('subscrfibed to a price');
-    // TODO: Call the helper to update the desiredPriceSubscribers with the email and the desiredPrice
+    await updateTrackedItemDesiredPriceSubscribers({
+      id: itemId ?? '',
+      email: email ?? '',
+      desiredPrice: formatAmount(parsedPrice ?? 0),
+    });
   } else {
     await updateTrackedItemSubscribers({
       email: email ?? '',

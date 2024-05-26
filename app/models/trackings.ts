@@ -16,7 +16,7 @@ const PriceSchema: Schema = new Schema(
 const DesiredPriceSubscribersSchema: Schema = new Schema(
   {
     email: { type: String, required: true },
-    price: { type: Number, required: true },
+    desiredPrice: { type: String, required: true },
   },
   {
     _id: false,
