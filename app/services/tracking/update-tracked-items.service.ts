@@ -64,6 +64,7 @@ export const updateTrackedPriceAndSendMail = async () => {
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
+    // TODO: Check if the flag sendSubscriberMail is true
     if (item.subscribers && item.subscribers.length > 0) {
       const sortedPrices = [...item.prices].sort((a, b) =>
         b.date.toISOString().localeCompare(a.date.toISOString())

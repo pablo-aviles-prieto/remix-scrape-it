@@ -4,6 +4,11 @@ import { schedules } from './schedules';
 
 const jobs: Map<string, cron.ScheduledTask> = new Map();
 
+/*
+ * TODO: Create 2 jobs, one at 12 to update price and send the email to the simple subscribers
+ * and check if any desiredPrice is met (if yes, send the mail and remove it from the array, updating lastSubscriberUpdate)
+ * AND the other job at 00, just update prices and only check for desiredPrice again
+ */
 const updatePrices = cron.schedule(
   schedules.updatePrices,
   async () => {

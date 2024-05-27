@@ -81,7 +81,7 @@ export default function Index() {
       >
         <Await resolve={trackedItemsPromise as Promise<TrackingResponse[]>}>
           {(resolvedData) =>
-            resolvedData.length > 3 ? (
+            resolvedData.length >= 3 ? (
               <Slider2 {...sliderSettings} autoplay={true}>
                 {resolvedData.map((item) => (
                   <CarouselItemCard key={item.url} item={item} />
