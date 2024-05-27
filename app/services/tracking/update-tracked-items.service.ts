@@ -27,7 +27,16 @@ const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 // TODO: To do this, im gonna have to create a new template for the emails, or change the content
 // that is being passed
 // TODO: Gonna have to allow the unsubscribe for the desiredPriceSubscribers in concrete
-export const updateTrackedPriceAndSendMail = async () => {
+
+// TODO: Create a helper to check if there is no subscribers and priceSubscribers in the array,
+// also checking the lastSubscriberUpdate to remove (or not) the item from the trackings
+// Taking in mind that it should pass like 7? days from the lastSubscriberUpdate, and only if there
+// is more than 10? items in the tracking of DB
+export const updateTrackedPriceAndSendMail = async ({
+  sendSubscriberMail = false,
+}: {
+  sendSubscriberMail?: boolean;
+}) => {
   const trackedItems = await getAllTrackedItems();
 
   /*
@@ -64,8 +73,7 @@ export const updateTrackedPriceAndSendMail = async () => {
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
-    // TODO: Check if the flag sendSubscriberMail is true
-    if (item.subscribers && item.subscribers.length > 0) {
+    if (sendSubscriberMail && item.subscribers && item.subscribers.length > 0) {
       const sortedPrices = [...item.prices].sort((a, b) =>
         b.date.toISOString().localeCompare(a.date.toISOString())
       );
@@ -99,6 +107,8 @@ export const updateTrackedPriceAndSendMail = async () => {
 
       allEmailPromises.push(...emailPromises);
     }
+    // TODO: Check the desiredPriceSubscribers array and if updatedPrice is equal or less the subscribed desired prices
+    // send the email, and delete it from the array.
   }
   try {
     await Promise.all(allEmailPromises);
