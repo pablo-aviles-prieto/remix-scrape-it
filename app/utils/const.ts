@@ -5,7 +5,10 @@ export const errorMsgs = {
   invalidParams: 'Check the params provided',
   invalidId: 'Check the ID provided',
   invalidURL: 'Check the URL provided',
-  invalidEmail: 'Check the email provided',
+  invalidEmail: 'Revise el email facilitado',
+  invalidPrice: 'Revise el precio indicado',
+  invalidDesiredPrice:
+    'El precio indicado es mayor o igual al precio actual del producto',
 };
 
 export const COOLMOD_BASE_RUL = 'https://www.coolmod.com/';

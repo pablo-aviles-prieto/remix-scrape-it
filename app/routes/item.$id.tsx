@@ -8,12 +8,17 @@ import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getTrackedItem } from '~/services/tracking/get-tracked-item.service';
 import { SIMPLE_REGEX_EMAIL, errorMsgs } from '~/utils/const';
 import { isValidObjectId } from 'mongoose';
-import { updateTrackedItemSubscribers } from '~/services/tracking/update-tracked-items.service';
+import {
+  updateTrackedItemDesiredPriceSubscribers,
+  updateTrackedItemSubscribers,
+} from '~/services/tracking/update-tracked-items.service';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { LineChart } from '~/components/chart/line-chart';
 import { Heading } from 'evergreen-ui';
 import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 import { RegularButton } from '~/components/styles/regular-button';
+import { parseAmount } from '~/utils/parse-amount';
+import { formatAmount } from '~/utils/format-amount';
 
 type LoaderResponse = {
   ok: boolean;
@@ -21,21 +26,82 @@ type LoaderResponse = {
   trackedItem?: Promise<TrackingResponse>;
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const email = formData.get('subscribe')?.toString()?.trim();
-  const itemId = formData.get('item-id')?.toString();
-
-  if (!email || !email.match(SIMPLE_REGEX_EMAIL)) {
-    return json({ ok: false, error: errorMsgs.invalidEmail });
+const validateDesiredPrice = (
+  desiredPrice: string | undefined,
+  itemPrice: string | undefined
+) => {
+  if (!desiredPrice) {
+    return {
+      parsedPrice: null,
+      error: { field: 'desired-price', message: errorMsgs.invalidPrice },
+    };
+  }
+  const parsedDesiredPrice = parseFloat(desiredPrice);
+  if (isNaN(parsedDesiredPrice) || parsedDesiredPrice <= 0) {
+    return {
+      parsedPrice: null,
+      error: { field: 'desired-price', message: errorMsgs.invalidPrice },
+    };
   }
 
-  const updatedSubscribers = await updateTrackedItemSubscribers({
-    email,
-    id: itemId ?? '',
-  });
+  const parsedItemPrice = parseAmount(itemPrice ?? '0');
+  if (parsedItemPrice <= parsedDesiredPrice) {
+    return {
+      parsedPrice: null,
+      error: { field: 'desired-price', message: errorMsgs.invalidDesiredPrice },
+    };
+  }
 
-  return json({ ok: true, email, updatedSubscribers });
+  return { parsedPrice: parsedDesiredPrice, error: null };
+};
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const email = formData.get('subscribe-email')?.toString()?.trim();
+  const switchState = formData.get('switch-subscription-state');
+  const desiredPrice = formData.get('desired-price')?.toString();
+  const itemId = formData.get('item-id')?.toString();
+  const itemLastPrice = formData.get('item-last-price')?.toString();
+  const isSubscribedToAPrice = switchState === 'on';
+  const errors: { field: string; message: string }[] = [];
+
+  let parsedPrice: number | undefined;
+  // Validate desired price if the switch is on
+  if (isSubscribedToAPrice) {
+    const { parsedPrice: price, error: priceError } = validateDesiredPrice(
+      desiredPrice,
+      itemLastPrice
+    );
+    if (priceError) {
+      errors.push(priceError);
+    } else {
+      parsedPrice = price;
+    }
+  }
+
+  if (!email || !email.match(SIMPLE_REGEX_EMAIL)) {
+    errors.push({ field: 'subscribe-email', message: errorMsgs.invalidEmail });
+  }
+
+  if (errors.length > 0) {
+    return json({ ok: false, errors }, { status: 400 });
+  }
+
+  if (isSubscribedToAPrice) {
+    console.log('subscrfibed to a price');
+    await updateTrackedItemDesiredPriceSubscribers({
+      id: itemId ?? '',
+      email: email ?? '',
+      desiredPrice: formatAmount(parsedPrice ?? 0),
+    });
+  } else {
+    await updateTrackedItemSubscribers({
+      email: email ?? '',
+      id: itemId ?? '',
+    });
+  }
+
+  return json({ ok: true, email, desiredPrice: parsedPrice });
 };
 
 export const loader = async ({ params }: ActionFunctionArgs) => {

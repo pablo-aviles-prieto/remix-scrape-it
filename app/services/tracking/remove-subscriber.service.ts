@@ -6,6 +6,7 @@ type Params = {
   emailToRemove: string;
 };
 
+// TODO: Create another service to remove the user from the desiredPriceSubscribers array
 export const removeSubscriber = async ({
   trackingId,
   emailToRemove,
@@ -23,6 +24,7 @@ export const removeSubscriber = async ({
       doc.subscribers = doc.subscribers.filter(
         (email) => email !== emailToRemove
       );
+      doc.lastSubscriberUpdate = new Date();
       await doc.save();
       return {
         ok: true,

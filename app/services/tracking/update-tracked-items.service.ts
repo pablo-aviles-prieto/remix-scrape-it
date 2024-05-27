@@ -13,8 +13,20 @@ type UpdateItemSubscriber = {
   id: string;
 };
 
+type UpdateDesiredPriceSubscriber = {
+  id: string;
+  email: string;
+  desiredPrice: string;
+};
+
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
+// TODO: Add an if condition to check if the price met any desiredPrice (if exist for that item)
+// and send the email to that user. In this case, remove that object from the desiredPriceSubscribers
+// also updating the lastSubscriberUpdate date
+// TODO: To do this, im gonna have to create a new template for the emails, or change the content
+// that is being passed
+// TODO: Gonna have to allow the unsubscribe for the desiredPriceSubscribers in concrete
 export const updateTrackedPriceAndSendMail = async () => {
   const trackedItems = await getAllTrackedItems();
 
@@ -27,16 +39,22 @@ export const updateTrackedPriceAndSendMail = async () => {
   const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
 
   for (const item of trackedItems) {
-    const updatedData = await getCoolmodSingleItem({ productPage: item.url });
-    const updatedPrice = updatedData.actualPrice; // Returned in JS number (2399.95 instead of 2.399,95)
+    let updatedPrice: string | undefined;
 
     try {
+      const updatedData = await getCoolmodSingleItem({ productPage: item.url });
+      updatedPrice = updatedData?.actualPrice;
+      if (!updatedPrice) {
+        console.log(`No updated price found for item ${item.name}, skipping.`);
+        continue;
+      }
+
       await TrackingModel.updateOne(
         { _id: item._id },
         {
           $push: {
             prices: {
-              price: parseFloat(updatedPrice ?? '0'),
+              price: updatedPrice ?? '0',
               date: new Date(),
             },
           },
@@ -46,7 +64,8 @@ export const updateTrackedPriceAndSendMail = async () => {
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
-    if (item.subscribers && item.subscribers.length) {
+    // TODO: Check if the flag sendSubscriberMail is true
+    if (item.subscribers && item.subscribers.length > 0) {
       const sortedPrices = [...item.prices].sort((a, b) =>
         b.date.toISOString().localeCompare(a.date.toISOString())
       );
@@ -57,7 +76,7 @@ export const updateTrackedPriceAndSendMail = async () => {
         },
         ...sortedPrices.slice(0, 4).map((p) => ({
           date: format(p.date, dateFormat.euWithTime),
-          price: String(p.price),
+          price: p.price,
         })),
       ];
 
@@ -97,6 +116,27 @@ export const updateTrackedItemSubscribers = async ({
     {
       $addToSet: {
         subscribers: email,
+      },
+      $set: {
+        lastSubscriberUpdate: new Date(),
+      },
+    }
+  );
+};
+
+export const updateTrackedItemDesiredPriceSubscribers = async ({
+  email,
+  id,
+  desiredPrice,
+}: UpdateDesiredPriceSubscriber) => {
+  return TrackingModel.updateOne(
+    { _id: id },
+    {
+      $addToSet: {
+        desiredPriceSubscribers: { email, desiredPrice },
+      },
+      $set: {
+        lastSubscriberUpdate: new Date(),
       },
     }
   );
