@@ -19,11 +19,15 @@ const updatePricesAndSendSubscriberMail = cron.schedule(
 );
 
 const updatePrices = cron.schedule(
-  schedules.updatePricesMidnight,
+  schedules.updatePricesNoon,
   async () => {
-    console.log(`JOB :: Coolmod updating tracked items ${new Date()}`);
+    console.log(
+      `JOB :: Coolmod updating tracked items started at ${new Date()}`
+    );
     await updateTrackedPriceAndSendMail({ sendSubscriberMail: false });
-    console.log(`JOB :: Coolmod updating tracked items ${new Date()}`);
+    console.log(
+      `JOB :: Coolmod updating tracked items finished at ${new Date()}`
+    );
   },
   { scheduled: false }
 );
