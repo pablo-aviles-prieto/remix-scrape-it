@@ -1,11 +1,11 @@
 import TrackingModel from '~/models/trackings';
 import { getCoolmodSingleItem } from '../scrap/coolmod.service';
 import { getAllTrackedItems } from './get-all-tracked-items.service';
-import { mailSender } from '../mail/mail-sender.service';
+import { dailyMailSender } from '../mail/daily-mail-sender.service';
 import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
-import type { MailDynamicData } from '~/interfaces/mail-dynamic-data';
+import type { DailyMailDynamicData } from '~/interfaces/mail-dynamic-data';
 import CryptoJS from 'crypto-js';
 
 type UpdateItemSubscriber = {
@@ -94,7 +94,7 @@ export const updateTrackedPriceAndSendMail = async ({
           SECRET_UNSUBSCRIBE ?? ''
         ).toString();
 
-        const dynamicData: MailDynamicData = {
+        const dynamicData: DailyMailDynamicData = {
           productName: item.name,
           productImage: item.image,
           productUrl: `${APP_BASE_URL}/item/${item.id}`,
@@ -102,7 +102,7 @@ export const updateTrackedPriceAndSendMail = async ({
           prices: pricesData,
         };
 
-        return mailSender({ emailReceiver: email, dynamicData });
+        return dailyMailSender({ emailReceiver: email, dynamicData });
       });
 
       allEmailPromises.push(...emailPromises);
@@ -139,15 +139,35 @@ export const updateTrackedItemDesiredPriceSubscribers = async ({
   id,
   desiredPrice,
 }: UpdateDesiredPriceSubscriber) => {
-  return TrackingModel.updateOne(
-    { _id: id },
-    {
-      $addToSet: {
-        desiredPriceSubscribers: { email, desiredPrice },
-      },
-      $set: {
-        lastSubscriberUpdate: new Date(),
-      },
-    }
-  );
+  const trackingItem = await TrackingModel.findOne({
+    _id: id,
+    'desiredPriceSubscribers.email': email,
+  });
+
+  if (trackingItem) {
+    // Email exists, update the desiredPrice
+    // The $ operator is used to refer to the first array element that matches the query condition
+    return TrackingModel.updateOne(
+      { _id: id, 'desiredPriceSubscribers.email': email },
+      {
+        $set: {
+          'desiredPriceSubscribers.$.desiredPrice': desiredPrice,
+          lastSubscriberUpdate: new Date(),
+        },
+      }
+    );
+  } else {
+    // Email does not exist, add new entry
+    return TrackingModel.updateOne(
+      { _id: id },
+      {
+        $addToSet: {
+          desiredPriceSubscribers: { email, desiredPrice },
+        },
+        $set: {
+          lastSubscriberUpdate: new Date(),
+        },
+      }
+    );
+  }
 };
