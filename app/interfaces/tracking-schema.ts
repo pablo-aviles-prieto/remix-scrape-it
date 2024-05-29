@@ -5,6 +5,11 @@ export type IPrices = {
   price: string;
 };
 
+export type IDesiredPriceSubscribers = {
+  email: string;
+  desiredPrice: string;
+};
+
 export interface ITracking {
   _id: ObjectId;
   name: string;
@@ -14,6 +19,7 @@ export interface ITracking {
   subscribers: string[];
   currency: string;
   lastSubscriberUpdate: Date;
+  desiredPriceSubscribers: IDesiredPriceSubscribers[];
   createdAt: Date;
   updatedAt: Date;
 }

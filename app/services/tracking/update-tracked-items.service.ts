@@ -5,8 +5,13 @@ import { dailyMailSender } from '../mail/daily-mail-sender.service';
 import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
-import type { DailyMailDynamicData } from '~/interfaces/mail-dynamic-data';
+import type {
+  DailyMailDynamicData,
+  ProductAvailableMailDynamicData,
+} from '~/interfaces/mail-dynamic-data';
 import CryptoJS from 'crypto-js';
+import { parseAmount } from '~/utils/parse-amount';
+import { productAvailableMail } from '../mail/product-available-mail.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -20,13 +25,6 @@ type UpdateDesiredPriceSubscriber = {
 };
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
-
-// TODO: Add an if condition to check if the price met any desiredPrice (if exist for that item)
-// and send the email to that user. In this case, remove that object from the desiredPriceSubscribers
-// also updating the lastSubscriberUpdate date
-// TODO: To do this, im gonna have to create a new template for the emails, or change the content
-// that is being passed
-// TODO: Gonna have to allow the unsubscribe for the desiredPriceSubscribers in concrete
 
 // TODO: Create a helper to check if there is no subscribers and priceSubscribers in the array,
 // also checking the lastSubscriberUpdate to remove (or not) the item from the trackings
@@ -107,14 +105,57 @@ export const updateTrackedPriceAndSendMail = async ({
 
       allEmailPromises.push(...emailPromises);
     }
-    // TODO: Check the desiredPriceSubscribers array and if updatedPrice is equal or less the subscribed desired prices
-    // send the email, and delete it from the array.
+
+    if (
+      updatedPrice &&
+      item.desiredPriceSubscribers &&
+      item.desiredPriceSubscribers.length > 0
+    ) {
+      const metSubscribers = item.desiredPriceSubscribers.filter(
+        (subscriber) => {
+          return (
+            parseAmount(updatedPrice) <= parseAmount(subscriber.desiredPrice)
+          );
+        }
+      );
+
+      const desiredPriceEmailPromises = metSubscribers.map((subscriber) => {
+        const dynamicData: ProductAvailableMailDynamicData = {
+          productName: item.name,
+          productImage: item.image,
+          productUrl: item.url,
+          productPrice: updatedPrice,
+        };
+        return productAvailableMail({
+          dynamicData,
+          emailReceiver: subscriber.email,
+        });
+      });
+
+      if (metSubscribers.length > 0) {
+        await TrackingModel.updateOne(
+          { _id: item._id },
+          {
+            $pull: {
+              desiredPriceSubscribers: {
+                email: { $in: metSubscribers.map((sub) => sub.email) },
+              },
+            },
+            $set: {
+              lastSubscriberUpdate: new Date(),
+            },
+          }
+        );
+      }
+      allEmailPromises.push(...desiredPriceEmailPromises);
+    }
   }
   try {
     await Promise.all(allEmailPromises);
   } catch (err) {
     console.log('ERROR SENDING MAILS TO SUBSCRIBERS', err);
   }
+  // TODO: Create a helper to check if there is no subscribers and priceSubscribers in the array
 };
 
 export const updateTrackedItemSubscribers = async ({
