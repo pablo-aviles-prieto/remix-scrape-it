@@ -65,7 +65,7 @@ export const cleanUnusedTrackedItems = async ({
     (item) => !remainingItemIds.includes(item._id.toString())
   );
 
-  // Log the info of items to be deleted
+  // Log the info of items to be deleted!
   itemsToDelete.forEach((item) => {
     console.log(
       `Deleting item: ${item.name}, with url: ${item.url}, where last subscriber was the: ${item.lastSubscriberUpdate}, created on ${item.createdAt}`
