@@ -150,12 +150,13 @@ export const updateTrackedPriceAndSendMail = async ({
 
   try {
     await Promise.all(allEmailPromises);
+  } catch (err) {
+    console.log('ERROR SENDING MAILS TO SUBSCRIBERS', err);
+  }
+  try {
     await cleanUnusedTrackedItems({ trackedItems });
   } catch (err) {
-    console.log(
-      'ERROR SENDING MAILS TO SUBSCRIBERS AND CLEANING UNUSED TRACKED ITEMS',
-      err
-    );
+    console.log('ERROR CLEANING UNUSED TRACKED ITEMS', err);
   }
 };
 
