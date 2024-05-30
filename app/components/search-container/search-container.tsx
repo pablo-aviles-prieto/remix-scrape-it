@@ -3,6 +3,7 @@ import { Button, Heading, Position, TextInput, Tooltip } from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
 import useWindowWidth from '~/hooks/use-window-width';
 
+// TODO: Change the content of the tooltip to include aliexpress
 const tooltipContent =
   'Busca entre los artículos de Coolmod para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios!';
 

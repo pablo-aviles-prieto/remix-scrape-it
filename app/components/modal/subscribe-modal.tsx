@@ -36,7 +36,7 @@ export const SubscribeModal = ({
     state: fetcherState,
   } = useFetcher<Fetcher>();
   const [hasErrors, setHasErrors] = useState(fetcherData?.errors);
-  const [isSubscribedToPrice, setIsSubscribedToPrice] = useState(false);
+  const [isSubscribedToPrice, setIsSubscribedToPrice] = useState(true);
   const emailError = useMemo(
     () => getFieldError(fetcherData?.errors, 'subscribe-email'),
     [fetcherData]
@@ -123,6 +123,7 @@ export const SubscribeModal = ({
             </p>
           </div>
           <TextInputField
+            label=''
             description={
               !isSubscribedToPrice
                 ? 'Introduce tu email para que te llegue un correo diario'
@@ -133,15 +134,14 @@ export const SubscribeModal = ({
             className={`bg-gray-100 !text-sm !mt-1 !w-full ${
               emailError && hasErrors ? '!border-red-400 !border-2' : ''
             }`}
-            width='25rem'
             onChange={() => setHasErrors(undefined)}
           />
           {isSubscribedToPrice ? (
             <TextInputField
+              label=''
               description='Introduce un precio para que te avisemos'
               name='desired-price'
               placeholder='Introduce el precio deseado'
-              width='25rem'
               type='number'
               min={0}
               step={0.01}

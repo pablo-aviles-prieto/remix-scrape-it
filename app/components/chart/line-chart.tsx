@@ -74,7 +74,6 @@ export const LineChart = ({
       .map((priceObj) => {
         const date = parseISO(priceObj.date.toString());
         if (!isValid(date)) {
-          console.log('Invalid date:', priceObj.date);
           return null;
         } else {
           return format(date, dateFormat.euWithTime);
