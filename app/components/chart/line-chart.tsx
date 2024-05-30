@@ -15,6 +15,8 @@ import useWindowWidth from '~/hooks/use-window-width';
 import type { Dataset, LineChartData } from '~/interfaces/line-chart-data';
 import type { IPrices } from '~/interfaces/tracking-schema';
 import { dateFormat } from '~/utils/const';
+import { formatAmount } from '~/utils/format-amount';
+import { parseAmount } from '~/utils/parse-amount';
 
 ChartJS.register(
   CategoryScale,
@@ -66,7 +68,7 @@ export const LineChart = ({
   }): LineChartData => {
     const dataset: Dataset = {
       label: breakLabel(itemName, 30),
-      data: prices.map((item) => parseFloat(item.price)),
+      data: prices.map((item) => parseAmount(item.price)),
       backgroundColor: BRAND_COLOR,
       borderColor: BRAND_COLOR,
     };
@@ -125,9 +127,10 @@ export const LineChart = ({
           boxHeight: 10,
           callbacks: {
             label: (context: any) => {
-              return `${context.dataset.label} ${context.dataset.data.at(
-                context.dataIndex
-              )}${currency}`;
+              const parsedAmount = formatAmount(
+                context.dataset.data.at(context.dataIndex)
+              );
+              return `${context.dataset.label} ${parsedAmount}${currency}`;
             },
           },
         },
