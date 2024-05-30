@@ -12,6 +12,7 @@ import type {
 import CryptoJS from 'crypto-js';
 import { parseAmount } from '~/utils/parse-amount';
 import { productAvailableMail } from '../mail/product-available-mail.service';
+import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -26,10 +27,6 @@ type UpdateDesiredPriceSubscriber = {
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
-// TODO: Create a helper to check if there is no subscribers and priceSubscribers in the array,
-// also checking the lastSubscriberUpdate to remove (or not) the item from the trackings
-// Taking in mind that it should pass like 7? days from the lastSubscriberUpdate, and only if there
-// is more than 10? items in the tracking of DB
 export const updateTrackedPriceAndSendMail = async ({
   sendSubscriberMail = false,
 }: {
@@ -150,12 +147,16 @@ export const updateTrackedPriceAndSendMail = async ({
       allEmailPromises.push(...desiredPriceEmailPromises);
     }
   }
+
   try {
     await Promise.all(allEmailPromises);
+    await cleanUnusedTrackedItems({ trackedItems });
   } catch (err) {
-    console.log('ERROR SENDING MAILS TO SUBSCRIBERS', err);
+    console.log(
+      'ERROR SENDING MAILS TO SUBSCRIBERS AND CLEANING UNUSED TRACKED ITEMS',
+      err
+    );
   }
-  // TODO: Create a helper to check if there is no subscribers and priceSubscribers in the array
 };
 
 export const updateTrackedItemSubscribers = async ({
