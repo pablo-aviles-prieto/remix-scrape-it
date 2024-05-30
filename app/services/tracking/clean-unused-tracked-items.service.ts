@@ -47,7 +47,7 @@ export const cleanUnusedTrackedItems = async ({
   // Ensure at least 6 items remain, filling it with the inactiveItems sorted by newest
   if (remainingItems.length < MIN_ITEMS_NEEDED) {
     // Sort the inactive items by creation date (newest first)
-    const sortedInactiveItems = inactiveItems.sort(
+    const sortedInactiveItems = [...inactiveItems].sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
 

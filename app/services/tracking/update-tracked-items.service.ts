@@ -144,6 +144,13 @@ export const updateTrackedPriceAndSendMail = async ({
           }
         );
       }
+      // Log the emails sent and removed from desiredPriceSubscribers
+      metSubscribers.forEach((sub) => {
+        console.log(
+          `Email sent to ${sub.email}, at price ${updatedPrice} (desired price: ${sub.desiredPrice}) and removed from the desiredPriceSubscribers`
+        );
+      });
+
       allEmailPromises.push(...desiredPriceEmailPromises);
     }
   }
