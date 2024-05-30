@@ -51,7 +51,7 @@ export const SearchContainer = () => {
       </div>
       <div
         className={`relative ${
-          innerWidth && innerWidth > 640 ? 'w-[30rem]' : 'w-[22rem]'
+          innerWidth && innerWidth > 640 ? 'w-[35rem]' : 'w-[22rem]'
         } mx-auto mt-2`}
       >
         <Form id='search-form' method='post'>
@@ -67,7 +67,7 @@ export const SearchContainer = () => {
             name='search'
             placeholder='Busca o inserta el enlace de un producto'
             className='bg-gray-100 !pr-20 !pl-[122px] !text-sm'
-            width={innerWidth && innerWidth > 640 ? '30rem' : '22rem'}
+            width={innerWidth && innerWidth > 640 ? '35rem' : '22rem'}
           />
           <SearchIcon
             className='absolute left-[100px] top-[6px] text-indigo-600'
