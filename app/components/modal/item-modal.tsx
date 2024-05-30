@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { LineChart } from '../chart/line-chart';
 import toast from 'react-hot-toast';
+import { getEllipsed } from '~/utils/const';
 
 type Props = {
   itemName: string;
@@ -143,8 +144,10 @@ export const ItemModal = ({
               className='object-cover w-full h-full'
             />
           </div>
-          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col gap-3'>
-            <p className='text-base'>{itemName}</p>
+          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col sm:gap-3'>
+            <p className={`text-sm sm:text-base max-h-[100px] overflow-hidden`}>
+              {itemName}
+            </p>
             <p>
               Precio:{' '}
               <span
@@ -156,14 +159,14 @@ export const ItemModal = ({
                 {currency}
               </span>
               {oldPrice && discount && (
-                <span>
+                <span className='block sm:inline'>
                   {' '}
                   sin dto:{' '}
                   <span className='text-base relative font-semibold'>
                     <span className='line-through text-red-800 font-bold italic'>
                       {oldPrice}
                     </span>
-                    <span className='text-xs text-slate-900 absolute -top-[12px] -right-0'>
+                    <span className='text-xs ml-1 sm:ml-0 text-slate-900 sm:absolute sm:-top-[12px] sm:right-0'>
                       {discount}
                     </span>
                   </span>

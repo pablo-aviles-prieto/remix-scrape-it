@@ -31,3 +31,5 @@ export const availableCurrency = {
   JPY: '¥',
   INR: '₹',
 } as const;
+
+export const getEllipsed = 'overflow-hidden text-ellipsis whitespace-nowrap';
