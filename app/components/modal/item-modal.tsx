@@ -123,7 +123,7 @@ export const ItemModal = ({
           onClick={onClose}
         />
       </div>
-      <div className='my-8'>
+      <div className='my-6'>
         <div className='mr-8'>
           {trackingData && trackingData.prices.length >= 5 && (
             <LineChart
@@ -173,10 +173,10 @@ export const ItemModal = ({
           </div>
         </div>
         <div>
-          <p className='text-center text-indigo-700 font-semibold'>
+          <p className='text-center text-indigo-700 font-semibold text-sm'>
             {!trackingData && !trackingId
-              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para estar actualizado de los últimos precios'
-              : 'Acceda al seguimiento de este producto para subscribirse y estar actualizado de los últimos precios'}
+              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para ser notificado cuando llegue al precio indicado o para recibir diariamente en el correo el seguimiento de este producto'
+              : 'Acceda al seguimiento de este producto para subscribirse y ser notificado cuando llegue al precio indicado o para recibir diariamente en el correo el seguimiento de este producto'}
           </p>
         </div>
       </div>
