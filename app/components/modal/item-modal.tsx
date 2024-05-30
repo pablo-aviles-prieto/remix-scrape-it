@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { LineChart } from '../chart/line-chart';
 import toast from 'react-hot-toast';
-import { getEllipsed } from '~/utils/const';
 
 type Props = {
   itemName: string;

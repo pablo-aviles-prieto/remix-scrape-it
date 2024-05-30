@@ -21,6 +21,7 @@ import reactLoadingSkeleton from 'react-loading-skeleton/dist/skeleton.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 import { Toaster } from 'react-hot-toast';
+import { stores } from './utils/const';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -31,6 +32,8 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
+// TODO: Change the metadata for aliexpress and coolmod.
+// add metadata on different pages for SEO
 export const meta: MetaFunction = () => {
   return [
     { title: 'ScrapeIt! - Seguimiento de precios de Coolmod' },
@@ -44,9 +47,15 @@ export const meta: MetaFunction = () => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
+  const selectedStore = formData.get('selected-store')?.toString();
   const searchWord = formData.get('search')?.toString();
 
   if (!searchWord) {
+    return null;
+  }
+
+  if (selectedStore === stores.ALIEXPRESS) {
+    // TODO: Logic to redirect to scrap to aliexpress
     return null;
   }
 

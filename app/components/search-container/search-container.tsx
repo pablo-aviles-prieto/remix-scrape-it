@@ -9,6 +9,7 @@ import {
 } from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
 import useWindowWidth from '~/hooks/use-window-width';
+import { stores } from '~/utils/const';
 
 const tooltipContent =
   'Busca entre los artículos de Coolmod para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios o una notificación cuando llegue al precio indicado!';
@@ -55,15 +56,11 @@ export const SearchContainer = () => {
       >
         <Form id='search-form' method='post'>
           <div className='absolute left-[1px] top-[2px] h-[28px]'>
-            <Select
-              className='!h-[28px]'
-              name='selected-store'
-              onChange={(e) => console.log(e.target.value)}
-            >
-              <option value='aliexpress' selected>
-                Aliexpress
+            <Select className='!h-[28px]' name='selected-store'>
+              <option value={stores.ALIEXPRESS} selected>
+                {stores.ALIEXPRESS}
               </option>
-              <option value='coolmod'>Coolmod</option>
+              <option value={stores.COOLMOD}>{stores.COOLMOD}</option>
             </Select>
           </div>
           <TextInput

@@ -33,3 +33,8 @@ export const availableCurrency = {
 } as const;
 
 export const getEllipsed = 'overflow-hidden text-ellipsis whitespace-nowrap';
+
+export enum stores {
+  COOLMOD = 'Coolmod',
+  ALIEXPRESS = 'Aliexpress',
+}
