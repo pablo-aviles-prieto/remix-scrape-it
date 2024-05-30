@@ -88,7 +88,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   if (isSubscribedToAPrice) {
-    console.log('subscrfibed to a price');
     await updateTrackedItemDesiredPriceSubscribers({
       id: itemId ?? '',
       email: email ?? '',

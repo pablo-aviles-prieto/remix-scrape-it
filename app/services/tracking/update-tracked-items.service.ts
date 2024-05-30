@@ -1,12 +1,18 @@
 import TrackingModel from '~/models/trackings';
 import { getCoolmodSingleItem } from '../scrap/coolmod.service';
 import { getAllTrackedItems } from './get-all-tracked-items.service';
-import { mailSender } from '../mail/mail-sender.service';
+import { dailyMailSender } from '../mail/daily-mail-sender.service';
 import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
-import type { MailDynamicData } from '~/interfaces/mail-dynamic-data';
+import type {
+  DailyMailDynamicData,
+  ProductAvailableMailDynamicData,
+} from '~/interfaces/mail-dynamic-data';
 import CryptoJS from 'crypto-js';
+import { parseAmount } from '~/utils/parse-amount';
+import { productAvailableMail } from '../mail/product-available-mail.service';
+import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -21,13 +27,11 @@ type UpdateDesiredPriceSubscriber = {
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
-// TODO: Add an if condition to check if the price met any desiredPrice (if exist for that item)
-// and send the email to that user. In this case, remove that object from the desiredPriceSubscribers
-// also updating the lastSubscriberUpdate date
-// TODO: To do this, im gonna have to create a new template for the emails, or change the content
-// that is being passed
-// TODO: Gonna have to allow the unsubscribe for the desiredPriceSubscribers in concrete
-export const updateTrackedPriceAndSendMail = async () => {
+export const updateTrackedPriceAndSendMail = async ({
+  sendSubscriberMail = false,
+}: {
+  sendSubscriberMail?: boolean;
+}) => {
   const trackedItems = await getAllTrackedItems();
 
   /*
@@ -64,8 +68,7 @@ export const updateTrackedPriceAndSendMail = async () => {
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
-    // TODO: Check if the flag sendSubscriberMail is true
-    if (item.subscribers && item.subscribers.length > 0) {
+    if (sendSubscriberMail && item.subscribers && item.subscribers.length > 0) {
       const sortedPrices = [...item.prices].sort((a, b) =>
         b.date.toISOString().localeCompare(a.date.toISOString())
       );
@@ -86,7 +89,7 @@ export const updateTrackedPriceAndSendMail = async () => {
           SECRET_UNSUBSCRIBE ?? ''
         ).toString();
 
-        const dynamicData: MailDynamicData = {
+        const dynamicData: DailyMailDynamicData = {
           productName: item.name,
           productImage: item.image,
           productUrl: `${APP_BASE_URL}/item/${item.id}`,
@@ -94,16 +97,73 @@ export const updateTrackedPriceAndSendMail = async () => {
           prices: pricesData,
         };
 
-        return mailSender({ emailReceiver: email, dynamicData });
+        return dailyMailSender({ emailReceiver: email, dynamicData });
       });
 
       allEmailPromises.push(...emailPromises);
     }
+
+    if (
+      updatedPrice &&
+      item.desiredPriceSubscribers &&
+      item.desiredPriceSubscribers.length > 0
+    ) {
+      const metSubscribers = item.desiredPriceSubscribers.filter(
+        (subscriber) => {
+          return (
+            parseAmount(updatedPrice) <= parseAmount(subscriber.desiredPrice)
+          );
+        }
+      );
+
+      const desiredPriceEmailPromises = metSubscribers.map((subscriber) => {
+        const dynamicData: ProductAvailableMailDynamicData = {
+          productName: item.name,
+          productImage: item.image,
+          productUrl: item.url,
+          productPrice: updatedPrice,
+        };
+        return productAvailableMail({
+          dynamicData,
+          emailReceiver: subscriber.email,
+        });
+      });
+
+      if (metSubscribers.length > 0) {
+        await TrackingModel.updateOne(
+          { _id: item._id },
+          {
+            $pull: {
+              desiredPriceSubscribers: {
+                email: { $in: metSubscribers.map((sub) => sub.email) },
+              },
+            },
+            $set: {
+              lastSubscriberUpdate: new Date(),
+            },
+          }
+        );
+      }
+      // Log the emails sent and removed from desiredPriceSubscribers
+      metSubscribers.forEach((sub) => {
+        console.log(
+          `Email sent to ${sub.email}, at price ${updatedPrice} (desired price: ${sub.desiredPrice}) and removed from the desiredPriceSubscribers`
+        );
+      });
+
+      allEmailPromises.push(...desiredPriceEmailPromises);
+    }
   }
+
   try {
     await Promise.all(allEmailPromises);
   } catch (err) {
     console.log('ERROR SENDING MAILS TO SUBSCRIBERS', err);
+  }
+  try {
+    await cleanUnusedTrackedItems({ trackedItems });
+  } catch (err) {
+    console.log('ERROR CLEANING UNUSED TRACKED ITEMS', err);
   }
 };
 
@@ -129,15 +189,35 @@ export const updateTrackedItemDesiredPriceSubscribers = async ({
   id,
   desiredPrice,
 }: UpdateDesiredPriceSubscriber) => {
-  return TrackingModel.updateOne(
-    { _id: id },
-    {
-      $addToSet: {
-        desiredPriceSubscribers: { email, desiredPrice },
-      },
-      $set: {
-        lastSubscriberUpdate: new Date(),
-      },
-    }
-  );
+  const trackingItem = await TrackingModel.findOne({
+    _id: id,
+    'desiredPriceSubscribers.email': email,
+  });
+
+  if (trackingItem) {
+    // Email exists, update the desiredPrice
+    // The $ operator is used to refer to the first array element that matches the query condition
+    return TrackingModel.updateOne(
+      { _id: id, 'desiredPriceSubscribers.email': email },
+      {
+        $set: {
+          'desiredPriceSubscribers.$.desiredPrice': desiredPrice,
+          lastSubscriberUpdate: new Date(),
+        },
+      }
+    );
+  } else {
+    // Email does not exist, add new entry
+    return TrackingModel.updateOne(
+      { _id: id },
+      {
+        $addToSet: {
+          desiredPriceSubscribers: { email, desiredPrice },
+        },
+        $set: {
+          lastSubscriberUpdate: new Date(),
+        },
+      }
+    );
+  }
 };
