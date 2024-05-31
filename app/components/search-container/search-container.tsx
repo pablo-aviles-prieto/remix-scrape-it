@@ -56,10 +56,12 @@ export const SearchContainer = () => {
       >
         <Form id='search-form' method='post'>
           <div className='absolute left-[1px] top-[2px] h-[28px]'>
-            <Select className='!h-[28px]' name='selected-store'>
-              <option value={stores.ALIEXPRESS} selected>
-                {stores.ALIEXPRESS}
-              </option>
+            <Select
+              className='!h-[28px]'
+              name='selected-store'
+              defaultValue={stores.ALIEXPRESS}
+            >
+              <option value={stores.ALIEXPRESS}>{stores.ALIEXPRESS}</option>
               <option value={stores.COOLMOD}>{stores.COOLMOD}</option>
             </Select>
           </div>
