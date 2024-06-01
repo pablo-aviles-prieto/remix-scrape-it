@@ -38,3 +38,7 @@ export enum stores {
   COOLMOD = 'Coolmod',
   ALIEXPRESS = 'Aliexpress',
 }
+
+export const COOLMOD_REGEX = /^(https:\/\/)?(www\.)?coolmod\.com/;
+export const ALIEXPRESS_REGEX =
+  /^(https:\/\/)?(www\.)?([a-z]{2}\.)?aliexpress\.com/;

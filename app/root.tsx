@@ -21,7 +21,7 @@ import reactLoadingSkeleton from 'react-loading-skeleton/dist/skeleton.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 import { Toaster } from 'react-hot-toast';
-import { stores } from './utils/const';
+import { ALIEXPRESS_REGEX, COOLMOD_REGEX, stores } from './utils/const';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -54,18 +54,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return null;
   }
 
-  if (selectedStore === stores.ALIEXPRESS) {
-    // TODO: Logic to redirect to scrap to aliexpress
-    return null;
-  }
+  // Inferring the store when a URL is provided instead of letting the client decide which store is
+  const isAliexpressUrl = ALIEXPRESS_REGEX.test(searchWord);
+  const isCoolmodUrl = COOLMOD_REGEX.test(searchWord);
 
-  const regex = /^(https:\/\/)?(www\.)?coolmod\.com/;
-  if (regex.test(searchWord)) {
+  if (isAliexpressUrl || isCoolmodUrl) {
+    const inferredStore = isAliexpressUrl ? stores.ALIEXPRESS : stores.COOLMOD;
     return searchWord.startsWith('https://')
-      ? redirect(`/search/details?url=${searchWord}`)
-      : redirect(`/search/details?url=https://${searchWord}`);
+      ? redirect(`/search/details?store=${inferredStore}&url=${searchWord}`)
+      : redirect(
+          `/search/details?store=${inferredStore}&url=https://${searchWord}`
+        );
   } else {
-    return redirect(`/search/${searchWord}`);
+    return redirect(`/search/${searchWord}?store=${selectedStore}`);
   }
 };
 

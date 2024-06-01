@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { defer } from '@remix-run/node';
-import { Await, useLoaderData, useNavigate } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
@@ -8,8 +8,9 @@ import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { ItemCard } from '~/components/cards/item-card';
 import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
-import { errorMsgs } from '~/utils/const';
-import toast from 'react-hot-toast';
+import { errorMsgs, stores } from '~/utils/const';
+import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
+import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 
 type LoaderResponse = {
   ok: boolean;
@@ -18,9 +19,13 @@ type LoaderResponse = {
   url: URL;
 };
 
+const ERROR_MESSAGE =
+  'No se pudo obtener los datos del producto, revise el enlace proporcionado e inténtelo más tarde.';
+
 export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
+  const queryStore = url.searchParams.get('store');
   if (!queryUrl || !queryUrl.startsWith('https://')) {
     return defer({
       ok: false,
@@ -30,9 +35,20 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    const scrapResponsePromise = getCoolmodSingleItem({
-      productPage: queryUrl,
-    });
+    let scrapResponsePromise: Promise<SingleItemCoolmod | null> =
+      Promise.resolve(null);
+
+    if (queryStore === stores.COOLMOD) {
+      scrapResponsePromise = getCoolmodSingleItem({
+        productPage: queryUrl,
+      });
+    } else {
+      const aliexpressScrap = getAliexpressSingleItem({
+        productPage: queryUrl,
+      });
+      console.log('aliexpressScrap', aliexpressScrap);
+    }
+
     return defer({
       ok: true,
       data: scrapResponsePromise,
@@ -49,11 +65,10 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function SearchIndex() {
-  const navigate = useNavigate();
   const { data, ok, error, url } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
-    return <p className='text-center mt-4 text-lg'>Error: {error}</p>;
+    return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
   }
 
   return (
@@ -63,12 +78,7 @@ export default function SearchIndex() {
           <Await resolve={data as Promise<SingleItemCoolmod | null>}>
             {(resolvedData) => {
               if (!resolvedData) {
-                toast.error(
-                  `No se pudo obtener los datos del producto, revise el enlace proporcionado.`,
-                  { id: 'product-not-found' }
-                );
-                navigate('/');
-                return;
+                return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
               }
               return (
                 <motion.div

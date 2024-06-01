@@ -1,3 +1,4 @@
+// TODO: Change the name to a generic item for both single and list?
 export type SingleItemCoolmod = {
   itemName: string | undefined;
   actualPrice: string | undefined;
