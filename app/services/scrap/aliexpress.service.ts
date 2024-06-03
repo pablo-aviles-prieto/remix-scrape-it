@@ -1,5 +1,6 @@
-import { COOLMOD_BASE_RUL } from '~/utils/const';
+import { ALIEXPRESS_BASE_URL } from '~/utils/const';
 import { getBrowser } from './browser.service';
+import { scrollPageByPercentage } from '~/utils/scroll-page-by-percentage';
 
 export const getAliexpressSingleItem = async ({
   productPage,
@@ -26,12 +27,31 @@ export const getAliexpressListItems = async ({
   const browser = await getBrowser();
 
   const page = await browser.newPage();
-  const url = `${COOLMOD_BASE_RUL}#01cc/fullscreen/m=and&q=${querySearch}`;
+  const url = `${ALIEXPRESS_BASE_URL}w/wholesale-${querySearch}.html?spm=a2g0o.home.search.0`;
 
   let listItems: any[] = [];
   try {
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
+    await page.waitForSelector('div.search-item-card-wrapper-gallery', {
+      timeout: 5000,
+    });
+    // Scroll down at least 35% of the page height
+    await scrollPageByPercentage({ page, percentage: 35 });
+
+    const itemsList = await page.$$eval(
+      'div.search-item-card-wrapper-gallery',
+      (items) => {
+        return items.map((item) => {
+          const url = item
+            .querySelector('a.search-card-item')
+            ?.getAttribute('href');
+          const parsedUrl = url?.replace(/^\/\//, '');
+          return { url: parsedUrl };
+        });
+      }
+    );
+    console.log('itemsList', itemsList);
 
     listItems = [];
   } catch (err) {

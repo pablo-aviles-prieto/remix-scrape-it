@@ -26,6 +26,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryUrl = url.searchParams.get('url');
   const queryStore = url.searchParams.get('store');
+
   if (!queryUrl || !queryUrl.startsWith('https://')) {
     return defer({
       ok: false,
@@ -43,6 +44,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
         productPage: queryUrl,
       });
     } else {
+      // TODO: FIX THIS
       const aliexpressScrap = getAliexpressSingleItem({
         productPage: queryUrl,
       });

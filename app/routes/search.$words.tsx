@@ -33,7 +33,7 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
   try {
     const url = new URL(request.url);
     const queryStore = url.searchParams.get('store');
-    console.log('queryStore', queryStore);
+
     let scrapResponsePromise: Promise<ListItemsCoolmod[] | null> =
       Promise.resolve(null);
 
@@ -42,6 +42,7 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
         querySearch: params.words,
       });
     } else {
+      // TODO: FIX THIS
       const aliexpressScrap = getAliexpressListItems({
         querySearch: params.words,
       });
