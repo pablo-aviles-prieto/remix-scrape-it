@@ -1,4 +1,5 @@
-const MIN_PIXELS_TO_SCROLL = 2000; // to retrieve a bit more than 30 items in aliexpress
+const MIN_PIXELS_TO_SCROLL = 20; // to retrieve a bit more than 30 items in aliexpress
+// const MIN_PIXELS_TO_SCROLL = 2000; // to retrieve a bit more than 30 items in aliexpress
 
 export const scrollPageByPercentage = async ({
   page,
