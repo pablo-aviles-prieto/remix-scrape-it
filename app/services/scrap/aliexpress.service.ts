@@ -2,6 +2,7 @@ import { ALIEXPRESS_BASE_URL } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { scrollPageByPercentage } from '~/utils/scroll-page-by-percentage';
 
+// TODO: Delete if not used.
 const key = '@shipto@temporary';
 const value = JSON.stringify({
   provinceRes: {
@@ -133,12 +134,6 @@ export const getAliexpressListItems = async ({
             .querySelector('a.search-card-item')
             ?.getAttribute('href');
           const parsedUrl = url?.replace(/^\/\//, '');
-
-          console.log('item', item);
-          console.log(
-            'querySelector',
-            item.querySelectorAll('div[class^="images--imageWindow"] img')
-          );
 
           const imageUrls = Array.from(
             item.querySelectorAll('div[class^="images--imageWindow"] img')
