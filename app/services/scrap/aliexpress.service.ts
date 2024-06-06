@@ -75,14 +75,6 @@ export const getAliexpressSingleItem = async ({
 
   const page = await browser.newPage();
 
-  // Set the localStorage key-value pair before navigating to the page
-  await page.evaluate(
-    ({ key, value }) => {
-      localStorage.setItem(key, value);
-    },
-    { key, value }
-  );
-
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
@@ -99,6 +91,15 @@ export const getAliexpressListItems = async ({
 }) => {
   const browser = await getBrowser();
 
+  // const context = await browser.newContext({
+  //   // Setting headers to simulate a request from Spain
+  //   extraHTTPHeaders: {
+  //     'Accept-Language': 'es-ES,es;q=0.9',
+  //     Referer: 'https://www.aliexpress.com/',
+  //   },
+  // });
+  // const page = await context.newPage();
+
   const page = await browser.newPage();
   const url = `${ALIEXPRESS_BASE_URL}w/wholesale-${querySearch}.html?spm=a2g0o.home.search.0`;
 
@@ -106,6 +107,13 @@ export const getAliexpressListItems = async ({
   let listItems: any[] = [];
   try {
     await page.goto(url);
+    // Set the localStorage key-value pair before navigating to the page
+    await page.evaluate(
+      ({ key, value }: { key: string; value: string }) => {
+        localStorage.setItem(key, value);
+      },
+      { key, value }
+    );
     await page.waitForLoadState('domcontentloaded');
     // Scroll down at least 35% of the page height
     await page.waitForTimeout(300);
@@ -118,6 +126,9 @@ export const getAliexpressListItems = async ({
     await scrollPageByPercentage({ page, percentage: 25 });
     await page.waitForTimeout(500);
     await scrollPageByPercentage({ page, percentage: 30 });
+
+    // TODO: Check if the search didnt throw results to retry
+    // Sorry, your search "iphone 15" did not match any products. Please try again.
 
     // TODO: It should be checked only the wait for selector of search-item-card-wrapper-gallery
     // and in case that it fails, retry closing the browser and opening a new one in case it failed
