@@ -136,7 +136,7 @@ export const getAliexpressListItems = async ({
     //   timeout: 5000,
     // });
 
-    // TODO: Keep getting data
+    // TODO: Keep getting data!
     const itemsList = await page.$$eval(
       'div.search-item-card-wrapper-gallery',
       (items) => {
