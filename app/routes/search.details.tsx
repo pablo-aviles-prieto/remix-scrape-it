@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { ItemCard } from '~/components/cards/item-card';
-import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
+import type { SingleItem } from '~/interfaces';
 import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs, stores } from '~/utils/const';
 import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
@@ -15,7 +15,7 @@ import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 type LoaderResponse = {
   ok: boolean;
   error?: string;
-  data?: Promise<SingleItemCoolmod | null>;
+  data?: Promise<SingleItem | null>;
   url: URL;
 };
 
@@ -36,7 +36,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    let scrapResponsePromise: Promise<SingleItemCoolmod | null> =
+    let scrapResponsePromise: Promise<SingleItem | null> =
       Promise.resolve(null);
 
     if (queryStore === stores.COOLMOD) {
@@ -77,7 +77,7 @@ export default function SearchIndex() {
     <div>
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
-          <Await resolve={data as Promise<SingleItemCoolmod | null>}>
+          <Await resolve={data as Promise<SingleItem | null>}>
             {(resolvedData) => {
               if (!resolvedData) {
                 return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;

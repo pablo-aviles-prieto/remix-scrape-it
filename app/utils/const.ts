@@ -43,3 +43,6 @@ export enum stores {
 export const COOLMOD_REGEX = /^(https:\/\/)?(www\.)?coolmod\.com/;
 export const ALIEXPRESS_REGEX =
   /^(https:\/\/)?(www\.)?([a-z]{2}\.)?aliexpress\.com/;
+
+export const SCRAP_ELEMENT_COUNT = 30;
+export const DEFAULT_TIMEOUT_SELECTOR = 5000;

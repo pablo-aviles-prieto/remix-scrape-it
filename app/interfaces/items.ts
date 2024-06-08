@@ -1,5 +1,4 @@
-// TODO: Change the name to a generic item for both single and list?
-export type SingleItemCoolmod = {
+export type SingleItem = {
   itemName: string | undefined;
   actualPrice: string | undefined;
   currency: string | undefined;
@@ -8,7 +7,7 @@ export type SingleItemCoolmod = {
   discount?: string;
 };
 
-export type ListItemsCoolmod = {
+export type ListItems = {
   name: string | undefined;
   url: string | null | undefined;
   imgPath: string | null | undefined;

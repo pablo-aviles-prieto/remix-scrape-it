@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
+import type { SingleItem } from '~/interfaces';
 import { Dialog } from 'evergreen-ui';
 import { ItemModal } from '../modal/item-modal';
 import { RegularButton } from '../styles/regular-button';
 
 type Props = {
-  item: SingleItemCoolmod;
+  item: SingleItem;
   urlItem: string;
 };
 

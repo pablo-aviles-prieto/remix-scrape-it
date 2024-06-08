@@ -8,7 +8,7 @@ import { LoaderWrapper } from '~/components/loader/loader-wrapper';
 import { FallbackLoader } from '~/components/styles/fallback-loader';
 import { Info } from '~/components/styles/icons/info';
 import { ListItemsCard } from '~/components/cards/list-items-card';
-import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
+import type { ListItems } from '~/interfaces';
 import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
 import { errorMsgs, stores } from '~/utils/const';
 import { getAliexpressListItems } from '~/services/scrap/aliexpress.service';
@@ -17,7 +17,7 @@ import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 type LoaderResponse = {
   ok: boolean;
   error?: string;
-  data?: Promise<ListItemsCoolmod[] | null>;
+  data?: Promise<ListItems[] | null>;
 };
 
 const ERROR_MESSAGE =
@@ -34,7 +34,7 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
     const url = new URL(request.url);
     const queryStore = url.searchParams.get('store');
 
-    let scrapResponsePromise: Promise<ListItemsCoolmod[] | null> =
+    let scrapResponsePromise: Promise<ListItems[] | null> =
       Promise.resolve(null);
 
     if (queryStore === stores.COOLMOD) {
@@ -43,9 +43,10 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
       });
     } else {
       // TODO: FIX THIS
-      const aliexpressScrapPromise = getAliexpressListItems({
+      const aliexpressScrapPromise = await getAliexpressListItems({
         querySearch: params.words,
       });
+      console.log('aliexpressScrapPromise', aliexpressScrapPromise);
     }
 
     return defer({
@@ -73,7 +74,7 @@ export default function SearchItem() {
       <div>
         <LoaderWrapper>
           <Suspense fallback={<FallbackLoader />}>
-            <Await resolve={data as Promise<ListItemsCoolmod[] | null>}>
+            <Await resolve={data as Promise<ListItems[] | null>}>
               {(resolvedData) => {
                 if (!resolvedData) {
                   return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;

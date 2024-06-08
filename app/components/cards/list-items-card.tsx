@@ -1,10 +1,10 @@
 import { Dialog, Position, Tooltip } from 'evergreen-ui';
 import { useState } from 'react';
-import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
+import type { ListItems } from '~/interfaces';
 import { ItemModal } from '../modal/item-modal';
 
 type Props = {
-  item: ListItemsCoolmod;
+  item: ListItems;
 };
 
 export const ListItemsCard = ({ item }: Props) => {
