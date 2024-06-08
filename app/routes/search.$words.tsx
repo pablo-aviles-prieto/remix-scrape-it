@@ -43,10 +43,9 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
       });
     } else {
       // TODO: FIX THIS
-      const aliexpressScrap = getAliexpressListItems({
+      const aliexpressScrapPromise = getAliexpressListItems({
         querySearch: params.words,
       });
-      console.log('aliexpressScrap', aliexpressScrap);
     }
 
     return defer({
