@@ -37,7 +37,7 @@ export const getAliexpressListItems = async ({
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
 
-    // TODO: Check if the search didnt throw results to retry
+    // TODO: Check if the search didnt throw results to retry!
     // No se han encontrado resultados para tu búsqueda de "iphone 15". Inténtalo de nuevo.
     await page.waitForSelector('div.search-item-card-wrapper-gallery');
     await scrollIncrementally(page);
