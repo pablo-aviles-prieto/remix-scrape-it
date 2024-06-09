@@ -1,6 +1,11 @@
-import { ALIEXPRESS_BASE_URL, SCRAP_ELEMENT_COUNT } from '~/utils/const';
+import {
+  ALIEXPRESS_BASE_URL,
+  DEFAULT_TIMEOUT_SELECTOR,
+  SCRAP_ELEMENT_COUNT,
+} from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { scrollIncrementally } from '~/utils/scroll-incrementally';
+import type { Page } from 'playwright';
 
 export const getAliexpressSingleItem = async ({
   productPage,
@@ -27,19 +32,38 @@ export const getAliexpressListItems = async ({
   querySearch: string;
 }) => {
   const browser = await getBrowser();
-
-  const page = await browser.newPage();
   const url = `${ALIEXPRESS_BASE_URL}w/wholesale-${querySearch}.html?g=y&spm=a2g0o.home.search.0`;
 
   // TODO: type it correctly with ListItems
   let listItems: any[] = [];
-  try {
-    await page.goto(url);
-    await page.waitForLoadState('domcontentloaded');
+  let retryRetrieveData: boolean = true;
+  let page: Page = await browser.newPage();
+  let attempts = 0;
 
-    // TODO: Check if the search didnt throw results to retry!
-    // No se han encontrado resultados para tu búsqueda de "iphone 15". Inténtalo de nuevo.
-    await page.waitForSelector('div.search-item-card-wrapper-gallery');
+  // Adding condition to repeat at least 5 times if data wasnt retrieved. Closing and opening a new page
+  while (retryRetrieveData && attempts < 5) {
+    try {
+      await page.goto(url);
+      await page.waitForLoadState('domcontentloaded');
+
+      await page.waitForSelector('div.search-item-card-wrapper-gallery', {
+        timeout: DEFAULT_TIMEOUT_SELECTOR,
+      });
+      retryRetrieveData = false;
+    } catch (err) {
+      // Closing the page and open a new one
+      await page.close();
+      page = await browser.newPage();
+      attempts++;
+    }
+  }
+
+  if (attempts >= 5) {
+    await browser.close();
+    return null;
+  }
+
+  try {
     await scrollIncrementally(page);
 
     const items = await page.$$('div.search-item-card-wrapper-gallery');
@@ -47,7 +71,7 @@ export const getAliexpressListItems = async ({
     for (const item of items) {
       await item.scrollIntoViewIfNeeded();
       await page.waitForSelector('div[class^="images--imageWindow"] img', {
-        timeout: 5000,
+        timeout: DEFAULT_TIMEOUT_SELECTOR,
       });
 
       const itemData = await page.evaluate((item) => {
@@ -76,7 +100,6 @@ export const getAliexpressListItems = async ({
       }
     }
 
-    console.log('itemsList', listItems);
     console.log('itemsList length', listItems.length);
     const itemsWithImages = listItems.filter((item) => item.images.length > 0);
     console.log('itemsWithImages length', itemsWithImages.length);
