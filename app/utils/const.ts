@@ -46,3 +46,5 @@ export const ALIEXPRESS_REGEX =
 
 export const SCRAP_ELEMENT_COUNT = 30;
 export const DEFAULT_TIMEOUT_SELECTOR = 5000;
+
+export const RON_CONVERSION_RATE_TO_EURO = 0.20090637;

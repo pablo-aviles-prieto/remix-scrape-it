@@ -4,6 +4,7 @@ import { schedules } from './schedules';
 
 const jobs: Map<string, cron.ScheduledTask> = new Map();
 
+// TODO: Change the name to a generic one instead of Coolmod
 const updatePricesAndSendSubscriberMail = cron.schedule(
   schedules.updatePricesMidnight,
   async () => {

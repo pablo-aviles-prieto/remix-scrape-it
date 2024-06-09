@@ -42,11 +42,9 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
         querySearch: params.words,
       });
     } else {
-      // TODO: FIX THIS
-      const aliexpressScrapPromise = await getAliexpressListItems({
+      scrapResponsePromise = getAliexpressListItems({
         querySearch: params.words,
       });
-      console.log('aliexpressScrapPromise', aliexpressScrapPromise);
     }
 
     return defer({

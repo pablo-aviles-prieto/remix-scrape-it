@@ -2,10 +2,20 @@ import {
   ALIEXPRESS_BASE_URL,
   DEFAULT_TIMEOUT_SELECTOR,
   SCRAP_ELEMENT_COUNT,
+  availableCurrency,
 } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { scrollIncrementally } from '~/utils/scroll-incrementally';
 import type { Page } from 'playwright';
+import { parseAliexpressPrice } from '~/utils/parse-aliexpress-price';
+import type { ListItems } from '~/interfaces';
+
+interface RawItemsProps {
+  name: string;
+  url: string;
+  images: string[];
+  rawPrice: string;
+}
 
 export const getAliexpressSingleItem = async ({
   productPage,
@@ -35,10 +45,11 @@ export const getAliexpressListItems = async ({
   const url = `${ALIEXPRESS_BASE_URL}w/wholesale-${querySearch}.html?g=y&spm=a2g0o.home.search.0`;
 
   // TODO: type it correctly with ListItems
-  let listItems: any[] = [];
+  let listItems: ListItems[] = [];
   let retryRetrieveData: boolean = true;
   let page: Page = await browser.newPage();
   let attempts = 0;
+  const rawItems: RawItemsProps[] = [];
 
   // Adding condition to repeat at least 5 times if data wasnt retrieved. Closing and opening a new page
   while (retryRetrieveData && attempts < 5) {
@@ -75,9 +86,9 @@ export const getAliexpressListItems = async ({
       });
 
       const itemData = await page.evaluate((item) => {
-        const url = item
-          .querySelector('a.search-card-item')
-          ?.getAttribute('href');
+        console.log('test');
+        const url =
+          item.querySelector('a.search-card-item')?.getAttribute('href') || '';
         const parsedUrl = url?.replace(/^\/\//, '');
 
         const imageUrls = Array.from(
@@ -85,33 +96,53 @@ export const getAliexpressListItems = async ({
         )
           .map((img) => img.getAttribute('src'))
           .map((src) => (src ? src.replace(/^\/\//, 'https://') : null))
-          .filter((src) => src !== null);
+          .filter((src) => src !== null) as string[];
 
-        return { url: parsedUrl, images: imageUrls };
+        const name =
+          item
+            .querySelector('div[class^="multi--title"]')
+            ?.getAttribute('title') || '';
+
+        const rawPrice = Array.from(
+          item.querySelectorAll('div[class^="multi--price-sale"] span')
+        )
+          .map((span) => span.textContent)
+          .join('');
+
+        return {
+          name,
+          url: parsedUrl,
+          images: imageUrls,
+          rawPrice,
+        };
       }, item);
 
       if (itemData.images.length > 0) {
-        listItems.push(itemData);
+        rawItems.push(itemData);
       }
 
-      // Maybe there are less items than TARGET_ELEMENT_COUNT, CHECK IT
       if (listItems.length >= SCRAP_ELEMENT_COUNT) {
         break;
       }
     }
 
-    console.log('itemsList length', listItems.length);
-    const itemsWithImages = listItems.filter((item) => item.images.length > 0);
-    console.log('itemsWithImages length', itemsWithImages.length);
-
-    listItems = [];
+    const rawItemsWithImages = rawItems.filter(
+      (item) => item.images.length > 0
+    );
+    listItems = rawItemsWithImages.map((item) => ({
+      name: item.name,
+      url: `https://${item.url}`,
+      imgPath: item.images[0],
+      currency: availableCurrency.EUR,
+      price: parseAliexpressPrice(item.rawPrice),
+    }));
   } catch (err) {
     console.log('ERROR SCRAPPING LIST ITEMS', err);
     await browser.close();
     return null;
   }
 
-  // await browser.close();
+  await browser.close();
 
   return listItems;
 };

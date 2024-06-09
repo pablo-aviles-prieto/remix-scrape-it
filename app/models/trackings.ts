@@ -23,6 +23,7 @@ const DesiredPriceSubscribersSchema: Schema = new Schema(
   }
 );
 
+// TODO: Add a store prop to know which service use to scrap the item on the CRON
 const TrackingSchema: Schema = new Schema(
   {
     name: { type: String, required: true },

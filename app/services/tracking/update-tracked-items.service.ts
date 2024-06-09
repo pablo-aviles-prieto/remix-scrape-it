@@ -27,6 +27,8 @@ type UpdateDesiredPriceSubscriber = {
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
+// TODO: Create a mapper with the stores and service to scrap
+// TODO: Read the store prop to know which service to use
 export const updateTrackedPriceAndSendMail = async ({
   sendSubscriberMail = false,
 }: {
