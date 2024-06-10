@@ -23,7 +23,6 @@ const DesiredPriceSubscribersSchema: Schema = new Schema(
   }
 );
 
-// TODO: Add a store prop to know which service use to scrap the item on the CRON
 const TrackingSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
@@ -34,6 +33,7 @@ const TrackingSchema: Schema = new Schema(
     currency: { type: String, required: true },
     lastSubscriberUpdate: { type: Date, required: true },
     desiredPriceSubscribers: [DesiredPriceSubscribersSchema],
+    store: { type: String, required: true },
   },
   { timestamps: true }
 );

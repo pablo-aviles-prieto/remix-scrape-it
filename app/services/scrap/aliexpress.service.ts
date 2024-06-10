@@ -44,7 +44,6 @@ export const getAliexpressListItems = async ({
   const browser = await getBrowser();
   const url = `${ALIEXPRESS_BASE_URL}w/wholesale-${querySearch}.html?g=y&spm=a2g0o.home.search.0`;
 
-  // TODO: type it correctly with ListItems
   let listItems: ListItems[] = [];
   let retryRetrieveData: boolean = true;
   let page: Page = await browser.newPage();
@@ -143,6 +142,5 @@ export const getAliexpressListItems = async ({
   }
 
   await browser.close();
-
   return listItems;
 };
