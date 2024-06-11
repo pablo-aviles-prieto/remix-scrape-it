@@ -29,7 +29,7 @@ export const getAliexpressSingleItem = async ({
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
-  // TODO: type it with SingleItem
+  // TODO: type it with SingleItem!
   let itemData = undefined;
 
   await browser.close();
