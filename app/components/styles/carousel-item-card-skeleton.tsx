@@ -8,7 +8,6 @@ export const CarouselItemCardSkeleton = () => {
       </div>
       <div className='p-4 pt-2 h-[50%] flex flex-col justify-between'>
         <div>
-          {/* TODO: Set a max-height/max characters in case tha name is too long? */}
           <p className='text-indigo-600 font-semibold min-h-[4.5rem]'>
             <Skeleton height={72} width='100%' />
           </p>

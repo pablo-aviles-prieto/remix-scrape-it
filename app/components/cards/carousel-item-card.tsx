@@ -1,7 +1,7 @@
 import { useNavigate } from '@remix-run/react';
 import { format } from 'date-fns';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
-import { dateFormat } from '~/utils/const';
+import { dateFormat, getEllipsed } from '~/utils/const';
 import { RegularButton } from '../styles/regular-button';
 
 type Props = {
@@ -26,8 +26,14 @@ export const CarouselItemCard = ({ item }: Props) => {
       </div>
       <div className='p-4 pt-2 h-[50%] flex flex-col justify-between'>
         <div>
-          {/* TODO: Set a max-height/max characters in case tha name is too long? */}
-          <p className='text-indigo-600 font-semibold min-h-[4.5rem]'>
+          <p
+            className={`text-indigo-600 font-semibold min-h-[4.5rem] overflow-hidden text-ellipsis`}
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3,
+            }}
+          >
             {item.name}
           </p>
           <div className='text-sm my-2'>
