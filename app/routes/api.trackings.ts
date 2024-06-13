@@ -18,7 +18,7 @@ export async function action({ request }: ActionFunctionArgs) {
     rawData
   ) as Payload;
 
-  if (!name || !url || !image || !currency || !actualPrice || store) {
+  if (!name || !url || !image || !currency || !actualPrice || !store) {
     return json({ ok: false, error: errorMsgs.invalidPayload }, 400);
   }
 
