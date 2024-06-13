@@ -3,13 +3,15 @@ import type { SingleItem } from '~/interfaces';
 import { Dialog } from 'evergreen-ui';
 import { ItemModal } from '../modal/item-modal';
 import { RegularButton } from '../styles/regular-button';
+import type { stores } from '~/utils/const';
 
 type Props = {
   item: SingleItem;
   urlItem: string;
+  store: stores;
 };
 
-export const ItemCard = ({ item, urlItem }: Props) => {
+export const ItemCard = ({ item, urlItem, store }: Props) => {
   const [isShown, setIsShown] = useState(false);
 
   return (
@@ -82,6 +84,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           discount={item.discount}
           currency={item.currency ?? '€'}
           urlItem={urlItem}
+          store={store}
           onClose={() => setIsShown(false)}
         />
       </Dialog>

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { LineChart } from '../chart/line-chart';
 import toast from 'react-hot-toast';
+import type { stores } from '~/utils/const';
 
 type Props = {
   itemName: string;
@@ -14,6 +15,7 @@ type Props = {
   discount?: string;
   urlItem: string;
   currency: string;
+  store: stores;
   onClose: () => void;
 };
 
@@ -35,6 +37,7 @@ type PayloadTrackingPOST = {
   image: string;
   currency: string;
   actualPrice: string;
+  store: stores;
 };
 
 export const ItemModal = ({
@@ -45,6 +48,7 @@ export const ItemModal = ({
   discount,
   urlItem,
   currency,
+  store,
   onClose,
 }: Props) => {
   const [trackingId, setTrackingId] = useState<string | undefined>(undefined);
@@ -92,6 +96,7 @@ export const ItemModal = ({
       actualPrice,
       currency: currency,
       url: urlItem,
+      store,
     };
 
     const response = await fetch('/api/trackings', {

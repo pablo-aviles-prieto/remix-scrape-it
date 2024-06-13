@@ -17,6 +17,7 @@ type LoaderResponse = {
   error?: string;
   data?: Promise<SingleItem | null>;
   url: URL;
+  store: stores;
 };
 
 const ERROR_MESSAGE =
@@ -32,6 +33,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
       ok: false,
       error: 'Revise la URL introducida',
       url: queryUrl,
+      store: queryStore,
     });
   }
 
@@ -55,6 +57,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
       ok: true,
       data: scrapResponsePromise,
       url: queryUrl,
+      store: queryStore,
     });
   } catch (err) {
     console.log('ERROR SINGLE ITEM', err);
@@ -62,12 +65,13 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
       ok: false,
       error: errorMsgs.internalError,
       url: queryUrl,
+      store: queryStore,
     });
   }
 };
 
 export default function SearchIndex() {
-  const { data, ok, error, url } = useLoaderData<LoaderResponse>();
+  const { data, ok, error, url, store } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
     return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
@@ -89,7 +93,7 @@ export default function SearchIndex() {
                   exit={{ opacity: 0, x: -300 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <ItemCard item={resolvedData} urlItem={url} />
+                  <ItemCard item={resolvedData} urlItem={url} store={store} />
                 </motion.div>
               );
             }}

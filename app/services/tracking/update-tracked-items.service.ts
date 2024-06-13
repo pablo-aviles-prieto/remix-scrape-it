@@ -4,7 +4,7 @@ import { getAllTrackedItems } from './get-all-tracked-items.service';
 import { dailyMailSender } from '../mail/daily-mail-sender.service';
 import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
-import { dateFormat } from '~/utils/const';
+import { dateFormat, stores } from '~/utils/const';
 import type {
   DailyMailDynamicData,
   ProductAvailableMailDynamicData,
@@ -45,6 +45,10 @@ export const updateTrackedPriceAndSendMail = async ({
   const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
 
   for (const item of trackedItems) {
+    if (item.store === stores.ALIEXPRESS) {
+      continue;
+    }
+
     let updatedPrice: string | undefined;
 
     try {

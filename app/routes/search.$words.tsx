@@ -18,22 +18,25 @@ type LoaderResponse = {
   ok: boolean;
   error?: string;
   data?: Promise<ListItems[] | null>;
+  store: stores;
 };
 
 const ERROR_MESSAGE =
   'No se pudo obtener información de los productos, revise los datos introducidos e inténtelo más tarde.';
 
 export const loader = async ({ request, params }: ActionFunctionArgs) => {
+  const url = new URL(request.url);
+  const queryStore = url.searchParams.get('store');
+
   if (!params.words) {
     return json({
       ok: false,
       error: errorMsgs.internalError,
+      store: queryStore,
     });
   }
-  try {
-    const url = new URL(request.url);
-    const queryStore = url.searchParams.get('store');
 
+  try {
     let scrapResponsePromise: Promise<ListItems[] | null> =
       Promise.resolve(null);
 
@@ -50,18 +53,20 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
     return defer({
       ok: true,
       data: scrapResponsePromise,
+      store: queryStore,
     });
   } catch (err) {
     console.log('ERROR LIST ITEMS', err);
     return json({
       ok: false,
       error: errorMsgs.internalError,
+      store: queryStore,
     });
   }
 };
 
 export default function SearchItem() {
-  const { data, ok, error } = useLoaderData<LoaderResponse>();
+  const { data, ok, error, store } = useLoaderData<LoaderResponse>();
 
   if (!ok && error) {
     return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
@@ -98,7 +103,11 @@ export default function SearchItem() {
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
                       {resolvedData.map((item) => (
-                        <ListItemsCard key={item.url} item={item} />
+                        <ListItemsCard
+                          key={item.url}
+                          item={item}
+                          store={store}
+                        />
                       ))}
                     </div>
                   </motion.div>

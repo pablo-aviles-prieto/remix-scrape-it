@@ -1,4 +1,5 @@
 import type { Document, ObjectId } from 'mongoose';
+import type { stores } from '~/utils/const';
 
 export type IPrices = {
   date: Date;
@@ -20,6 +21,7 @@ export interface ITracking {
   currency: string;
   lastSubscriberUpdate: Date;
   desiredPriceSubscribers: IDesiredPriceSubscribers[];
+  store: stores;
   createdAt: Date;
   updatedAt: Date;
 }

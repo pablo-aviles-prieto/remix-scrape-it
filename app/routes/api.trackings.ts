@@ -1,5 +1,6 @@
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import TrackingModel from '~/models/trackings';
+import type { stores } from '~/utils/const';
 import { errorMsgs } from '~/utils/const';
 
 type Payload = {
@@ -8,15 +9,16 @@ type Payload = {
   image: string;
   currency: string;
   actualPrice: string;
+  store: stores;
 };
 
 export async function action({ request }: ActionFunctionArgs) {
   const rawData = await request.text();
-  const { name, url, image, currency, actualPrice } = JSON.parse(
+  const { name, url, image, currency, actualPrice, store } = JSON.parse(
     rawData
   ) as Payload;
 
-  if (!name || !url || !image || !currency || !actualPrice) {
+  if (!name || !url || !image || !currency || !actualPrice || store) {
     return json({ ok: false, error: errorMsgs.invalidPayload }, 400);
   }
 
@@ -36,6 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
           price: actualPrice,
         },
       ],
+      store,
       lastSubscriberUpdate: new Date(),
     });
     return json({ ok: true, insertedId: createdTracking.id }, 201);
