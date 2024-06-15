@@ -32,7 +32,7 @@ export const getAliexpressSingleItem = async ({
   // TODO: type it with SingleItem!
   let itemData = undefined;
 
-  await browser.close();
+  // await browser.close();
   return itemData;
 };
 

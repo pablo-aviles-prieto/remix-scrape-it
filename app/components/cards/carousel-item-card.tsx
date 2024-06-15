@@ -1,7 +1,7 @@
 import { useNavigate } from '@remix-run/react';
 import { format } from 'date-fns';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
-import { dateFormat, getEllipsed } from '~/utils/const';
+import { dateFormat } from '~/utils/const';
 import { RegularButton } from '../styles/regular-button';
 
 type Props = {
