@@ -25,11 +25,59 @@ export const getAliexpressSingleItem = async ({
   productPage: string;
 }) => {
   const browser = await getBrowser();
-
   const page = await browser.newPage();
 
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
+
+  try {
+    const clickOnCurrencySelector = await page.$(
+      'div[class*="ship-to--menuItem"]'
+    );
+    clickOnCurrencySelector?.click();
+    await page.waitForSelector('div[class*="saveBtn"]');
+    const saveBtnElement = await page.$('div[class*="saveBtn"]');
+
+    await page.evaluate(async (saveBtnElement) => {
+      const previousSibling = saveBtnElement?.previousElementSibling;
+      if (previousSibling) {
+        const childElement = previousSibling.firstElementChild as HTMLElement;
+        const selectChildElement =
+          childElement?.firstElementChild as HTMLElement;
+        selectChildElement?.click();
+
+        const selectOptions = childElement.lastElementChild as HTMLElement;
+
+        const options = Array.from(selectOptions.children);
+        console.log('options', options);
+
+        const targetOption = options.find((option) =>
+          option?.textContent?.includes('EUR ( Euro )')
+        ) as HTMLElement;
+        console.log('targetOption', targetOption);
+        targetOption?.click();
+
+        // (saveBtnElement as HTMLElement)?.click();
+      }
+    }, saveBtnElement);
+
+    // const actualPrice2 = await page.$eval('.product-price-value', (el) => {
+    //   return el.textContent?.trim();
+    // });
+
+    // const actualPrice = await page.$eval(
+    //   'span[class*="price--currentPriceText"][class*="product-price-value"]',
+    //   (el) => {
+    //     return el.textContent?.trim();
+    //   }
+    // );
+
+    // console.log('actualPrice2', actualPrice2);
+    // console.log('actualPrice', actualPrice);
+  } catch (err) {
+    console.log('error retrieving data', err);
+    return null;
+  }
 
   // TODO: type it with SingleItem!
   let itemData = undefined;
