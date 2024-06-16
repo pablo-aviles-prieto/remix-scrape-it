@@ -17,6 +17,8 @@ interface RawItemsProps {
   rawPrice: string;
 }
 
+// TODO: Try to add custom cookies to be logged and get the € price
+
 export const getAliexpressSingleItem = async ({
   productPage,
 }: {
