@@ -39,35 +39,41 @@ export const getAliexpressSingleItem = async ({
     const saveBtnElement = await page.$('div[class*="saveBtn"]');
 
     await page.evaluate(async (saveBtnElement) => {
-      const previousSibling = saveBtnElement?.previousElementSibling;
-      if (previousSibling) {
-        const childElement = previousSibling.firstElementChild as HTMLElement;
-        const selectChildElement =
-          childElement?.firstElementChild as HTMLElement;
-        selectChildElement?.click();
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
-        const selectOptions = childElement.lastElementChild as HTMLElement;
+      const elements = Array.from(
+        document.querySelectorAll('div[class*="form-item--title"]')
+      );
+      const sendToElement =
+        elements.find(
+          (element) => element.textContent?.trim() === 'Enviar a'
+        ) || null;
+      const countrySelect = sendToElement?.nextElementSibling
+        ?.firstElementChild as HTMLElement;
+      // Opening the country select input
+      (countrySelect?.firstElementChild as HTMLElement)?.click();
 
-        const options = Array.from(selectOptions.children);
-        console.log('options', options);
+      const selectOptions = countrySelect?.lastElementChild as HTMLElement;
+      const options = Array.from(selectOptions.children);
+      const targetOption = options.find((option) =>
+        option?.textContent?.includes('España')
+      ) as HTMLElement;
+      targetOption?.click();
 
-        const targetOption = options.find((option) =>
-          option?.textContent?.includes('EUR ( Euro )')
-        ) as HTMLElement;
-        console.log('targetOption', targetOption);
-        targetOption?.click();
-
-        // (saveBtnElement as HTMLElement)?.click();
-      }
+      await delay(100);
+      (saveBtnElement as HTMLElement)?.click();
     }, saveBtnElement);
 
     // const actualPrice2 = await page.$eval('.product-price-value', (el) => {
+    //   console.log('el', el);
     //   return el.textContent?.trim();
     // });
 
     // const actualPrice = await page.$eval(
     //   'span[class*="price--currentPriceText"][class*="product-price-value"]',
     //   (el) => {
+    //     console.log('el2', el);
     //     return el.textContent?.trim();
     //   }
     // );
