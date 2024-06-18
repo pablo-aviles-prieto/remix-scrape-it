@@ -64,6 +64,9 @@ export const getAliexpressSingleItem = async ({
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
+  // TODO: type it with SingleItem!
+  let itemData: Record<any, any> | undefined = undefined;
+
   try {
     await changeLanguageAndCurrency(page);
 
@@ -75,14 +78,35 @@ export const getAliexpressSingleItem = async ({
       return el.textContent?.trim();
     });
 
-    console.log('actualPrice', actualPrice);
+    itemData = actualPrice
+      ? { actualPrice: parseAliexpressPrice(actualPrice) }
+      : itemData;
   } catch (err) {
     console.log('error retrieving data', err);
     return null;
   }
+  try {
+    const { oldPrice, discount } = await page.$eval(
+      'div[class*="price--original--"]',
+      (el) => {
+        const spans = el.querySelectorAll('span');
+        const oldPrice = spans[0]?.textContent?.trim() || null;
+        const discount =
+          spans[1]?.textContent?.trim().replace('-', '').replace(' dto.', '') ||
+          null;
+        return { oldPrice, discount };
+      }
+    );
+    itemData =
+      itemData && oldPrice && discount
+        ? { ...itemData, oldPrice: parseAliexpressPrice(oldPrice), discount }
+        : itemData;
+  } catch (err) {
+    // Not retrieving discount and oldPrice, so moving on
+  }
 
-  // TODO: type it with SingleItem!
-  let itemData = undefined;
+  console.log('itemData', itemData);
+  itemData = undefined;
 
   // await browser.close();
   return itemData;
@@ -129,7 +153,6 @@ export const getAliexpressListItems = async ({
       // Closing the page and open a new one
       await page.close();
       page = await context.newPage();
-      // page = await browser.newPage();
       attempts++;
     }
   }
