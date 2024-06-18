@@ -17,7 +17,40 @@ interface RawItemsProps {
   rawPrice: string;
 }
 
-// TODO: Try to add custom cookies to be logged and get the € price
+const changeLanguageAndCurrency = async (page: Page) => {
+  const clickOnCurrencySelector = await page.$(
+    'div[class*="ship-to--menuItem"]'
+  );
+  clickOnCurrencySelector?.click();
+  await page.waitForSelector('div[class*="saveBtn"]');
+  const saveBtnElement = await page.$('div[class*="saveBtn"]');
+
+  await page.evaluate(async (saveBtnElement) => {
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
+    const elements = Array.from(
+      document.querySelectorAll('div[class*="form-item--title"]')
+    );
+    const sendToElement =
+      elements.find((element) => element.textContent?.trim() === 'Enviar a') ||
+      null;
+    const countrySelect = sendToElement?.nextElementSibling
+      ?.firstElementChild as HTMLElement;
+    // Opening the country select input
+    (countrySelect?.firstElementChild as HTMLElement)?.click();
+
+    const selectOptions = countrySelect?.lastElementChild as HTMLElement;
+    const options = Array.from(selectOptions.children);
+    const targetOption = options.find((option) =>
+      option?.textContent?.includes('España')
+    ) as HTMLElement;
+    targetOption?.click();
+
+    await delay(100);
+    (saveBtnElement as HTMLElement)?.click();
+  }, saveBtnElement);
+};
 
 export const getAliexpressSingleItem = async ({
   productPage,
@@ -25,61 +58,34 @@ export const getAliexpressSingleItem = async ({
   productPage: string;
 }) => {
   const browser = await getBrowser();
-  const page = await browser.newPage();
+  const context = await browser.newContext();
+  const page = await context.newPage();
 
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
   try {
-    const clickOnCurrencySelector = await page.$(
-      'div[class*="ship-to--menuItem"]'
+    await changeLanguageAndCurrency(page);
+
+    const newPage = await context.newPage();
+    await newPage.goto(productPage);
+    await newPage.waitForLoadState('domcontentloaded');
+
+    const actualPrice2 = await page.$eval('.product-price-value', (el) => {
+      console.log('el', el);
+      return el.textContent?.trim();
+    });
+
+    const actualPrice = await page.$eval(
+      'span[class*="price--currentPriceText"][class*="product-price-value"]',
+      (el) => {
+        console.log('el2', el);
+        return el.textContent?.trim();
+      }
     );
-    clickOnCurrencySelector?.click();
-    await page.waitForSelector('div[class*="saveBtn"]');
-    const saveBtnElement = await page.$('div[class*="saveBtn"]');
 
-    await page.evaluate(async (saveBtnElement) => {
-      const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
-      const elements = Array.from(
-        document.querySelectorAll('div[class*="form-item--title"]')
-      );
-      const sendToElement =
-        elements.find(
-          (element) => element.textContent?.trim() === 'Enviar a'
-        ) || null;
-      const countrySelect = sendToElement?.nextElementSibling
-        ?.firstElementChild as HTMLElement;
-      // Opening the country select input
-      (countrySelect?.firstElementChild as HTMLElement)?.click();
-
-      const selectOptions = countrySelect?.lastElementChild as HTMLElement;
-      const options = Array.from(selectOptions.children);
-      const targetOption = options.find((option) =>
-        option?.textContent?.includes('España')
-      ) as HTMLElement;
-      targetOption?.click();
-
-      await delay(100);
-      (saveBtnElement as HTMLElement)?.click();
-    }, saveBtnElement);
-
-    // const actualPrice2 = await page.$eval('.product-price-value', (el) => {
-    //   console.log('el', el);
-    //   return el.textContent?.trim();
-    // });
-
-    // const actualPrice = await page.$eval(
-    //   'span[class*="price--currentPriceText"][class*="product-price-value"]',
-    //   (el) => {
-    //     console.log('el2', el);
-    //     return el.textContent?.trim();
-    //   }
-    // );
-
-    // console.log('actualPrice2', actualPrice2);
-    // console.log('actualPrice', actualPrice);
+    console.log('actualPrice2', actualPrice2);
+    console.log('actualPrice', actualPrice);
   } catch (err) {
     console.log('error retrieving data', err);
     return null;
