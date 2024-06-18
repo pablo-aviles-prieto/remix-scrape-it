@@ -71,20 +71,10 @@ export const getAliexpressSingleItem = async ({
     await newPage.goto(productPage);
     await newPage.waitForLoadState('domcontentloaded');
 
-    const actualPrice2 = await page.$eval('.product-price-value', (el) => {
-      console.log('el', el);
+    const actualPrice = await page.$eval('.product-price-value', (el) => {
       return el.textContent?.trim();
     });
 
-    const actualPrice = await page.$eval(
-      'span[class*="price--currentPriceText"][class*="product-price-value"]',
-      (el) => {
-        console.log('el2', el);
-        return el.textContent?.trim();
-      }
-    );
-
-    console.log('actualPrice2', actualPrice2);
     console.log('actualPrice', actualPrice);
   } catch (err) {
     console.log('error retrieving data', err);
@@ -108,9 +98,22 @@ export const getAliexpressListItems = async ({
 
   let listItems: ListItems[] = [];
   let retryRetrieveData: boolean = true;
-  let page: Page = await browser.newPage();
   let attempts = 0;
   const rawItems: RawItemsProps[] = [];
+
+  const context = await browser.newContext();
+  let page: Page;
+  try {
+    const originalPage = await context.newPage();
+    await originalPage.goto(url);
+    await originalPage.waitForLoadState('domcontentloaded');
+    await changeLanguageAndCurrency(originalPage);
+    page = await context.newPage();
+  } catch (err) {
+    // Failing to select the new language and currency on changeLanguageAndCurrency helper
+    await browser.close();
+    return null;
+  }
 
   // Adding condition to repeat at least 5 times if data wasnt retrieved. Closing and opening a new page
   while (retryRetrieveData && attempts < 5) {
@@ -125,7 +128,8 @@ export const getAliexpressListItems = async ({
     } catch (err) {
       // Closing the page and open a new one
       await page.close();
-      page = await browser.newPage();
+      page = await context.newPage();
+      // page = await browser.newPage();
       attempts++;
     }
   }
