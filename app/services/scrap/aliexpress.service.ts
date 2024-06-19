@@ -8,7 +8,7 @@ import { getBrowser } from './browser.service';
 import { scrollIncrementally } from '~/utils/scroll-incrementally';
 import type { Page } from 'playwright';
 import { parseAliexpressPrice } from '~/utils/parse-aliexpress-price';
-import type { ListItems } from '~/interfaces';
+import type { ListItems, SingleItem } from '~/interfaces';
 
 interface RawItemsProps {
   name: string;
@@ -65,7 +65,7 @@ export const getAliexpressSingleItem = async ({
   await page.waitForLoadState('domcontentloaded');
 
   // TODO: type it with SingleItem!
-  let itemData: Record<any, any> | undefined = undefined;
+  let itemData: SingleItem | undefined = undefined;
 
   try {
     await changeLanguageAndCurrency(page);
@@ -78,6 +78,7 @@ export const getAliexpressSingleItem = async ({
       return el.textContent?.trim();
     });
 
+    // @ts-ignore
     itemData = actualPrice
       ? { actualPrice: parseAliexpressPrice(actualPrice) }
       : itemData;

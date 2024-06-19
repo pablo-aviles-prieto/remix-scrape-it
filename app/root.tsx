@@ -21,7 +21,12 @@ import reactLoadingSkeleton from 'react-loading-skeleton/dist/skeleton.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 import { Toaster } from 'react-hot-toast';
-import { ALIEXPRESS_REGEX, COOLMOD_REGEX, stores } from './utils/const';
+import {
+  ALIEXPRESS_HOSTNAME,
+  ALIEXPRESS_REGEX,
+  COOLMOD_REGEX,
+  stores,
+} from './utils/const';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -59,12 +64,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const isCoolmodUrl = COOLMOD_REGEX.test(searchWord);
 
   if (isAliexpressUrl || isCoolmodUrl) {
+    const url = new URL(
+      searchWord.startsWith('http') ? searchWord : `https://${searchWord}`
+    );
+    let modifiedUrl = url.href;
+
+    if (isAliexpressUrl) {
+      // Convert Aliexpress URL to Spanish version to scrap it like a boss
+      url.hostname = ALIEXPRESS_HOSTNAME;
+      modifiedUrl = url.href;
+    }
+
     const inferredStore = isAliexpressUrl ? stores.ALIEXPRESS : stores.COOLMOD;
-    return searchWord.startsWith('https://')
-      ? redirect(`/search/details?store=${inferredStore}&url=${searchWord}`)
-      : redirect(
-          `/search/details?store=${inferredStore}&url=https://${searchWord}`
-        );
+    return redirect(
+      `/search/details?store=${inferredStore}&url=${modifiedUrl}`
+    );
   } else {
     return redirect(`/search/${searchWord}?store=${selectedStore}`);
   }

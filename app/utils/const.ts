@@ -13,6 +13,7 @@ export const errorMsgs = {
 
 export const COOLMOD_BASE_RUL = 'https://www.coolmod.com/';
 export const ALIEXPRESS_BASE_URL = 'https://es.aliexpress.com/';
+export const ALIEXPRESS_HOSTNAME = 'es.aliexpress.com';
 
 export const dateFormat = {
   euWithTime: 'dd/MM/yyyy HH:mm',
