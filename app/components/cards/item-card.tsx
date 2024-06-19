@@ -16,7 +16,7 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
 
   return (
     <>
-      <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md overflow-hidden mx-auto'>
+      <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md mx-auto'>
         <div className='h-[20rem] overflow-hidden'>
           <img
             className='object-cover w-full h-full hover:scale-105 transition-transform'
@@ -25,7 +25,7 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
           />
         </div>
         <div className='p-6'>
-          <h5 className='mb-2 h-[55px] block font-sans text-xl font-semibold line-clamp-2 leading-snug tracking-normal text-slate-600 antialiased'>
+          <h5 className='mb-2 font-sans text-xl font-semibold line-clamp-2 leading-snug tracking-normal text-slate-600 antialiased'>
             {item.itemName}
           </h5>
           <div className='flex gap-3'>

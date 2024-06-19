@@ -14,7 +14,7 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { connectDb } from './config/connect-db';
 import updatePricesCoolmodJobs from './services/jobs/coolmod.job';
 
-const ABORT_DELAY = 5_000;
+const ABORT_DELAY = 45_000;
 
 // Stablish DB connection
 connectDb()

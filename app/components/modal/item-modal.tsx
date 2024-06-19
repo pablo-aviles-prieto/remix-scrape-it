@@ -148,10 +148,8 @@ export const ItemModal = ({
               className='object-cover w-full h-full'
             />
           </div>
-          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col sm:gap-3'>
-            <p className={`text-sm sm:text-base max-h-[100px] overflow-hidden`}>
-              {itemName}
-            </p>
+          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col sm:gap-4'>
+            <p className={`text-sm sm:text-base line-clamp-4`}>{itemName}</p>
             <p>
               Precio:{' '}
               <span

@@ -20,13 +20,15 @@ export const TrackingItemCard = ({ item }: Props) => {
         <img className='sm:w-2/5 object-cover max-h-[280px]' src={item.image} />
         <div className='sm:w-3/5 p-4 flex flex-col justify-between'>
           <div>
-            <h1 className='text-gray-900 font-bold text-2xl'>{item.name}</h1>
+            <h1 className='text-gray-900 font-bold text-xl line-clamp-3'>
+              {item.name}
+            </h1>
             <p className='mt-2 text-gray-600 text-sm'>
               Subscríbete para que te notifiquemos cuando llegue al precio
               indicado o para recibir diariamente en el correo el seguimiento de
               este producto!
             </p>
-            <h1 className='text-gray-700 font-bold text-xl my-2'>
+            <h1 className='text-gray-700 font-bold text-xl mt-2'>
               {lastPrices.price + item.currency}{' '}
               <span className='text-[10px] uppercase'>
                 Último precio (
