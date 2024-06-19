@@ -64,8 +64,7 @@ export const getAliexpressSingleItem = async ({
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
-  // TODO: type it with SingleItem!
-  let itemData: SingleItem | undefined = undefined;
+  let itemData: SingleItem | null = null;
 
   try {
     await changeLanguageAndCurrency(page);
@@ -78,14 +77,26 @@ export const getAliexpressSingleItem = async ({
       return el.textContent?.trim();
     });
 
-    // @ts-ignore
-    itemData = actualPrice
-      ? { actualPrice: parseAliexpressPrice(actualPrice) }
-      : itemData;
+    const itemName = await page.$eval('h1[data-pl]', (el) =>
+      el.textContent?.trim()
+    );
+
+    const imgPath = await page.$eval('img[class*="magnifier--image--"]', (el) =>
+      el.getAttribute('src')
+    );
+
+    itemData = {
+      actualPrice: parseAliexpressPrice(actualPrice ?? ''),
+      itemName,
+      currency: availableCurrency.EUR,
+      imgPath: imgPath ?? '',
+    };
   } catch (err) {
     console.log('error retrieving data', err);
     return null;
   }
+
+  // Retrieving the possible oldPrice and discount
   try {
     const { oldPrice, discount } = await page.$eval(
       'div[class*="price--original--"]',
@@ -106,10 +117,7 @@ export const getAliexpressSingleItem = async ({
     // Not retrieving discount and oldPrice, so moving on
   }
 
-  console.log('itemData', itemData);
-  itemData = undefined;
-
-  // await browser.close();
+  await browser.close();
   return itemData;
 };
 

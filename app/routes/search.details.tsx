@@ -46,11 +46,9 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
         productPage: queryUrl,
       });
     } else {
-      // TODO: FIX THIS
-      const aliexpressScrap = getAliexpressSingleItem({
+      scrapResponsePromise = getAliexpressSingleItem({
         productPage: queryUrl,
       });
-      console.log('aliexpressScrap', aliexpressScrap);
     }
 
     return defer({
