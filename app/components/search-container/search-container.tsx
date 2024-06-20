@@ -12,7 +12,7 @@ import useWindowWidth from '~/hooks/use-window-width';
 import { stores } from '~/utils/const';
 
 const tooltipContent =
-  'Busca entre los artículos de Coolmod para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios o una notificación cuando llegue al precio indicado!';
+  'Busca entre los artículos de las diferentes tiendas para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios o una notificación cuando llegue al precio indicado!';
 
 export const SearchContainer = () => {
   const innerWidth = useWindowWidth();
