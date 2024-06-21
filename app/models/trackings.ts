@@ -33,6 +33,7 @@ const TrackingSchema: Schema = new Schema(
     currency: { type: String, required: true },
     lastSubscriberUpdate: { type: Date, required: true },
     desiredPriceSubscribers: [DesiredPriceSubscribersSchema],
+    store: { type: String, required: true },
   },
   { timestamps: true }
 );

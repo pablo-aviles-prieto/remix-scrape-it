@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { LineChart } from '../chart/line-chart';
 import toast from 'react-hot-toast';
+import type { stores } from '~/utils/const';
 
 type Props = {
   itemName: string;
@@ -14,6 +15,7 @@ type Props = {
   discount?: string;
   urlItem: string;
   currency: string;
+  store: stores;
   onClose: () => void;
 };
 
@@ -35,6 +37,7 @@ type PayloadTrackingPOST = {
   image: string;
   currency: string;
   actualPrice: string;
+  store: stores;
 };
 
 export const ItemModal = ({
@@ -45,6 +48,7 @@ export const ItemModal = ({
   discount,
   urlItem,
   currency,
+  store,
   onClose,
 }: Props) => {
   const [trackingId, setTrackingId] = useState<string | undefined>(undefined);
@@ -92,6 +96,7 @@ export const ItemModal = ({
       actualPrice,
       currency: currency,
       url: urlItem,
+      store,
     };
 
     const response = await fetch('/api/trackings', {
@@ -123,7 +128,7 @@ export const ItemModal = ({
           onClick={onClose}
         />
       </div>
-      <div className='my-8'>
+      <div className='my-6'>
         <div className='mr-8'>
           {trackingData && trackingData.prices.length >= 5 && (
             <LineChart
@@ -143,8 +148,8 @@ export const ItemModal = ({
               className='object-cover w-full h-full'
             />
           </div>
-          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col gap-3'>
-            <p className='text-base'>{itemName}</p>
+          <div className='w-[50%] ml-2 text-xs font-bold flex flex-col sm:gap-4'>
+            <p className={`text-sm sm:text-base line-clamp-4`}>{itemName}</p>
             <p>
               Precio:{' '}
               <span
@@ -156,14 +161,14 @@ export const ItemModal = ({
                 {currency}
               </span>
               {oldPrice && discount && (
-                <span>
+                <span className='block sm:inline'>
                   {' '}
                   sin dto:{' '}
                   <span className='text-base relative font-semibold'>
                     <span className='line-through text-red-800 font-bold italic'>
                       {oldPrice}
                     </span>
-                    <span className='text-xs text-slate-900 absolute -top-[12px] -right-0'>
+                    <span className='text-xs ml-1 sm:ml-0 text-slate-900 sm:absolute sm:-top-[12px] sm:right-0'>
                       {discount}
                     </span>
                   </span>
@@ -173,10 +178,10 @@ export const ItemModal = ({
           </div>
         </div>
         <div>
-          <p className='text-center text-indigo-700 font-semibold'>
+          <p className='text-center text-indigo-700 font-semibold text-sm'>
             {!trackingData && !trackingId
-              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para estar actualizado de los últimos precios'
-              : 'Acceda al seguimiento de este producto para subscribirse y estar actualizado de los últimos precios'}
+              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para ser notificado cuando llegue al precio indicado o para recibir diariamente en el correo el seguimiento de este producto'
+              : 'Acceda al seguimiento de este producto para subscribirse y ser notificado cuando llegue al precio indicado o para recibir diariamente en el correo el seguimiento de este producto'}
           </p>
         </div>
       </div>

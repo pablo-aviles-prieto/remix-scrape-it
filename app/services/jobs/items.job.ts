@@ -5,37 +5,33 @@ import { schedules } from './schedules';
 const jobs: Map<string, cron.ScheduledTask> = new Map();
 
 const updatePricesAndSendSubscriberMail = cron.schedule(
-  schedules.updatePricesMidnight,
+  schedules.updatePricesNoon,
   async () => {
     console.log(
-      `JOB :: Coolmod updating tracked items and sending mails started at ${new Date()}`
+      `JOB :: Updating tracked items and sending mails started at ${new Date()}`
     );
     await updateTrackedPriceAndSendMail({ sendSubscriberMail: true });
     console.log(
-      `JOB :: Coolmod updating tracked items and sending mails finished at ${new Date()}`
+      `JOB :: Updating tracked items and sending mails finished at ${new Date()}`
     );
   },
   { scheduled: false }
 );
 
 const updatePrices = cron.schedule(
-  schedules.updatePricesNoon,
+  schedules.updatePricesMidnight,
   async () => {
-    console.log(
-      `JOB :: Coolmod updating tracked items started at ${new Date()}`
-    );
+    console.log(`JOB :: Updating tracked items started at ${new Date()}`);
     await updateTrackedPriceAndSendMail({ sendSubscriberMail: false });
-    console.log(
-      `JOB :: Coolmod updating tracked items finished at ${new Date()}`
-    );
+    console.log(`JOB :: Updating tracked items finished at ${new Date()}`);
   },
   { scheduled: false }
 );
 
 jobs.set(
-  'updatePricesAndSendSubscriberMailCoolmod',
+  'updatePricesAndSendSubscriberMail',
   updatePricesAndSendSubscriberMail
 );
-jobs.set('updatePricesCoolmod', updatePrices);
+jobs.set('updatePrices', updatePrices);
 
 export default jobs;

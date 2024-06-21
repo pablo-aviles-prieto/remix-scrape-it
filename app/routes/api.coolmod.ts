@@ -3,10 +3,7 @@ import {
   getCoolmodListItems,
   getCoolmodSingleItem,
 } from '~/services/scrap/coolmod.service';
-import type {
-  SingleItemCoolmod,
-  ListItemsCoolmod,
-} from '~/interfaces/item-coolmod';
+import type { SingleItem, ListItems } from '~/interfaces';
 import { errorMsgs } from '~/utils/const';
 
 export const loader = async ({ request }: ActionFunctionArgs) => {
@@ -18,7 +15,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     return json({ ok: false, error: errorMsgs.internalError }, 500);
   }
 
-  let scrapResponse: SingleItemCoolmod | ListItemsCoolmod[] | null = null;
+  let scrapResponse: SingleItem | ListItems[] | null = null;
 
   if (queryUrl) {
     try {

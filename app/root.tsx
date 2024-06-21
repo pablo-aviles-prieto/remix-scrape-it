@@ -21,6 +21,13 @@ import reactLoadingSkeleton from 'react-loading-skeleton/dist/skeleton.css';
 import { SearchContainer } from './components/search-container/search-container';
 import { AppLayout } from './components/styles/app-layout';
 import { Toaster } from 'react-hot-toast';
+import {
+  ALIEXPRESS_HOSTNAME,
+  ALIEXPRESS_REGEX,
+  COOLMOD_REGEX,
+  stores,
+} from './utils/const';
+import { createBaseMetadataInfo } from './utils/create-base-metadata-info';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -31,32 +38,42 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'ScrapeIt! - Seguimiento de precios de Coolmod' },
-    {
-      name: 'description',
-      content:
-        'ScrapeIt! te permite rastrear y seguir los precios de los productos de Coolmod. Crea seguimientos para tus productos favoritos y recibe actualizaciones diarias por correo electrónico sobre los últimos precios.',
-    },
-  ];
+// TODO: add metadata on different pages for SEO
+export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+  return createBaseMetadataInfo(ServerRuntimeMetaArgs);
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
+  const selectedStore = formData.get('selected-store')?.toString();
   const searchWord = formData.get('search')?.toString();
 
   if (!searchWord) {
     return null;
   }
 
-  const regex = /^(https:\/\/)?(www\.)?coolmod\.com/;
-  if (regex.test(searchWord)) {
-    return searchWord.startsWith('https://')
-      ? redirect(`/search/details?url=${searchWord}`)
-      : redirect(`/search/details?url=https://${searchWord}`);
+  // Inferring the store when a URL is provided instead of letting the client decide which store is
+  const isAliexpressUrl = ALIEXPRESS_REGEX.test(searchWord);
+  const isCoolmodUrl = COOLMOD_REGEX.test(searchWord);
+
+  if (isAliexpressUrl || isCoolmodUrl) {
+    const url = new URL(
+      searchWord.startsWith('http') ? searchWord : `https://${searchWord}`
+    );
+    let modifiedUrl = url.href;
+
+    if (isAliexpressUrl) {
+      // Convert Aliexpress URL to Spanish version to scrap it like a boss
+      url.hostname = ALIEXPRESS_HOSTNAME;
+      modifiedUrl = url.href;
+    }
+
+    const inferredStore = isAliexpressUrl ? stores.ALIEXPRESS : stores.COOLMOD;
+    return redirect(
+      `/search/details?store=${inferredStore}&url=${modifiedUrl}`
+    );
   } else {
-    return redirect(`/search/${searchWord}`);
+    return redirect(`/search/${searchWord}?store=${selectedStore}`);
   }
 };
 

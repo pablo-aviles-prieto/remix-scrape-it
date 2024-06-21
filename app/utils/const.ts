@@ -12,6 +12,8 @@ export const errorMsgs = {
 };
 
 export const COOLMOD_BASE_RUL = 'https://www.coolmod.com/';
+export const ALIEXPRESS_BASE_URL = 'https://es.aliexpress.com/';
+export const ALIEXPRESS_HOSTNAME = 'es.aliexpress.com';
 
 export const dateFormat = {
   euWithTime: 'dd/MM/yyyy HH:mm',
@@ -31,3 +33,19 @@ export const availableCurrency = {
   JPY: '¥',
   INR: '₹',
 } as const;
+
+export const getEllipsed = 'overflow-hidden text-ellipsis whitespace-nowrap';
+
+export enum stores {
+  COOLMOD = 'Coolmod',
+  ALIEXPRESS = 'Aliexpress',
+}
+
+export const COOLMOD_REGEX = /^(https:\/\/)?(www\.)?coolmod\.com/;
+export const ALIEXPRESS_REGEX =
+  /^(https:\/\/)?(www\.)?([a-z]{2}\.)?aliexpress\.com/;
+
+export const SCRAP_ELEMENT_COUNT = 30;
+export const DEFAULT_TIMEOUT_SELECTOR = 5000;
+
+export const RON_CONVERSION_RATE_TO_EURO = 0.20090637;

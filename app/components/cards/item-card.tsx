@@ -1,20 +1,34 @@
-import { useState } from 'react';
-import type { SingleItemCoolmod } from '~/interfaces/item-coolmod';
+import { useEffect, useState } from 'react';
+import type { SingleItem } from '~/interfaces';
 import { Dialog } from 'evergreen-ui';
 import { ItemModal } from '../modal/item-modal';
 import { RegularButton } from '../styles/regular-button';
+import type { stores } from '~/utils/const';
+import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
+import { customEllipsis } from '~/utils/custom-ellipsis';
 
 type Props = {
-  item: SingleItemCoolmod;
+  item: SingleItem;
   urlItem: string;
+  store: stores;
 };
 
-export const ItemCard = ({ item, urlItem }: Props) => {
+export const ItemCard = ({ item, urlItem, store }: Props) => {
   const [isShown, setIsShown] = useState(false);
+  const { modifyDocTitle } = useModifyDocumentTitle();
+
+  // Have to modify this on client comp to avoid rehydratation error things (updateDehydratedSuspenseComponent)
+  useEffect(() => {
+    const newTitle = `Detalles del producto ${customEllipsis(
+      item.itemName ?? '',
+      15
+    )} de ${store}`;
+    modifyDocTitle(newTitle);
+  }, [modifyDocTitle, item, store]);
 
   return (
     <>
-      <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md overflow-hidden mx-auto'>
+      <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md mx-auto'>
         <div className='h-[20rem] overflow-hidden'>
           <img
             className='object-cover w-full h-full hover:scale-105 transition-transform'
@@ -23,7 +37,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           />
         </div>
         <div className='p-6'>
-          <h5 className='mb-2 h-[55px] block font-sans text-xl font-semibold line-clamp-2 leading-snug tracking-normal text-slate-600 antialiased'>
+          <h5 className='mb-2 font-sans text-xl font-semibold line-clamp-2 leading-snug tracking-normal text-slate-600 antialiased'>
             {item.itemName}
           </h5>
           <div className='flex gap-3'>
@@ -82,6 +96,7 @@ export const ItemCard = ({ item, urlItem }: Props) => {
           discount={item.discount}
           currency={item.currency ?? '€'}
           urlItem={urlItem}
+          store={store}
           onClose={() => setIsShown(false)}
         />
       </Dialog>

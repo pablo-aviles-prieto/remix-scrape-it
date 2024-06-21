@@ -1,13 +1,15 @@
 import { Dialog, Position, Tooltip } from 'evergreen-ui';
 import { useState } from 'react';
-import type { ListItemsCoolmod } from '~/interfaces/item-coolmod';
+import type { ListItems } from '~/interfaces';
 import { ItemModal } from '../modal/item-modal';
+import type { stores } from '~/utils/const';
 
 type Props = {
-  item: ListItemsCoolmod;
+  item: ListItems;
+  store: stores;
 };
 
-export const ListItemsCard = ({ item }: Props) => {
+export const ListItemsCard = ({ item, store }: Props) => {
   const [isShown, setIsShown] = useState(false);
 
   return (
@@ -81,6 +83,7 @@ export const ListItemsCard = ({ item }: Props) => {
           imgPath={item.imgPath ?? ''}
           currency={item.currency}
           urlItem={item.url ?? ''}
+          store={store}
           onClose={() => setIsShown(false)}
         />
       </Dialog>

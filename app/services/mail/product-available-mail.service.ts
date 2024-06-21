@@ -1,5 +1,6 @@
 import sgMail from '@sendgrid/mail';
 import type { ProductAvailableMailDynamicData } from '~/interfaces/mail-dynamic-data';
+import { customEllipsis } from '~/utils/custom-ellipsis';
 
 const {
   SENDGRID_API_KEY,
@@ -20,9 +21,9 @@ export const productAvailableMail = ({
   const emailData: sgMail.MailDataRequired = {
     to: emailReceiver,
     from: SENDGRID_SENDER_MAIL ?? '',
-    subject: `ScrapeIt! - Producto disponible ${dynamicData.productName
-      .substring(0, 10)
-      .trim()}...`,
+    subject: `ScrapeIt! - Producto disponible ${customEllipsis(
+      dynamicData.productName
+    )}`,
     templateId: SENDGRID_PRODUCT_AVAILABLE_TEMPLATE_ID ?? '',
     dynamicTemplateData: dynamicData,
   };

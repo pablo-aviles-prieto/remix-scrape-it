@@ -4,11 +4,13 @@ import { useLoaderData, useOutletContext } from '@remix-run/react';
 import { errorMsgs } from '~/utils/const';
 import CryptoJS from 'crypto-js';
 import { Dialog } from 'evergreen-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UnsubscribeModal } from '~/components/modal/unsubscribe-modal';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { removeSubscriber } from '~/services/tracking/remove-subscriber.service';
 import toast from 'react-hot-toast';
+import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
+import { customEllipsis } from '~/utils/custom-ellipsis';
 
 type LoaderResponse = {
   ok: boolean;
@@ -64,6 +66,15 @@ export default function Unsubscribe() {
   const { ok, id, error, mail } = useLoaderData<LoaderResponse>();
   const itemData = useOutletContext<TrackingResponse>();
   const [isShown, setIsShown] = useState(Boolean(id && mail));
+  const { modifyDocTitle } = useModifyDocumentTitle();
+
+  useEffect(() => {
+    modifyDocTitle(
+      `Desubscribirse del producto ${customEllipsis(itemData.name, 15)} de ${
+        itemData.store
+      }`
+    );
+  }, [modifyDocTitle, itemData]);
 
   if (!ok && error) {
     toast.error(`Error interno. Inténtelo más tarde`);

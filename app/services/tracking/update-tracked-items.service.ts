@@ -4,7 +4,7 @@ import { getAllTrackedItems } from './get-all-tracked-items.service';
 import { dailyMailSender } from '../mail/daily-mail-sender.service';
 import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
-import { dateFormat } from '~/utils/const';
+import { dateFormat, stores } from '~/utils/const';
 import type {
   DailyMailDynamicData,
   ProductAvailableMailDynamicData,
@@ -13,6 +13,7 @@ import CryptoJS from 'crypto-js';
 import { parseAmount } from '~/utils/parse-amount';
 import { productAvailableMail } from '../mail/product-available-mail.service';
 import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
+import { getAliexpressSingleItem } from '../scrap/aliexpress.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -26,6 +27,11 @@ type UpdateDesiredPriceSubscriber = {
 };
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
+
+const STORES_MAPPER = {
+  [stores.ALIEXPRESS]: getAliexpressSingleItem,
+  [stores.COOLMOD]: getCoolmodSingleItem,
+};
 
 export const updateTrackedPriceAndSendMail = async ({
   sendSubscriberMail = false,
@@ -46,7 +52,10 @@ export const updateTrackedPriceAndSendMail = async ({
     let updatedPrice: string | undefined;
 
     try {
-      const updatedData = await getCoolmodSingleItem({ productPage: item.url });
+      // Retrieving the service to use from the different stores
+      const getItemService = STORES_MAPPER[item.store];
+      const updatedData = await getItemService({ productPage: item.url });
+
       updatedPrice = updatedData?.actualPrice;
       if (!updatedPrice) {
         console.log(`No updated price found for item ${item.name}, skipping.`);
@@ -58,7 +67,7 @@ export const updateTrackedPriceAndSendMail = async ({
         {
           $push: {
             prices: {
-              price: updatedPrice ?? '0',
+              price: updatedPrice,
               date: new Date(),
             },
           },

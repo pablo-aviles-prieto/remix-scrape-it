@@ -12,9 +12,9 @@ import { RemixServer } from '@remix-run/react';
 import isbot from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { connectDb } from './config/connect-db';
-import updatePricesCoolmodJobs from './services/jobs/coolmod.job';
+import updatePricesCoolmodJobs from './services/jobs/items.job';
 
-const ABORT_DELAY = 5_000;
+const ABORT_DELAY = 45_000;
 
 // Stablish DB connection
 connectDb()

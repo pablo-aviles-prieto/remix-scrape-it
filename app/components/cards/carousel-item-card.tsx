@@ -26,7 +26,14 @@ export const CarouselItemCard = ({ item }: Props) => {
       </div>
       <div className='p-4 pt-2 h-[50%] flex flex-col justify-between'>
         <div>
-          <p className='text-indigo-600 font-semibold min-h-[4.5rem]'>
+          <p
+            className={`text-indigo-600 font-semibold min-h-[4.5rem] overflow-hidden text-ellipsis`}
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3,
+            }}
+          >
             {item.name}
           </p>
           <div className='text-sm my-2'>

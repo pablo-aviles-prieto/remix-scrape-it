@@ -1,11 +1,18 @@
 import { Form, useNavigate } from '@remix-run/react';
-import { Button, Heading, Position, TextInput, Tooltip } from 'evergreen-ui';
+import {
+  Button,
+  Heading,
+  Position,
+  Select,
+  TextInput,
+  Tooltip,
+} from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
 import useWindowWidth from '~/hooks/use-window-width';
+import { stores } from '~/utils/const';
 
-// TODO: Change the content of the tooltip to include aliexpress
 const tooltipContent =
-  'Busca entre los artículos de Coolmod para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios!';
+  'Busca entre los artículos de las diferentes tiendas para ver o crear un seguimiento de los precios de dicho artículo. Además puedes subscribirte a dicho seguimiento para que te llegue un email diario con los últimos precios o una notificación cuando llegue al precio indicado!';
 
 export const SearchContainer = () => {
   const innerWidth = useWindowWidth();
@@ -44,18 +51,28 @@ export const SearchContainer = () => {
       </div>
       <div
         className={`relative ${
-          innerWidth && innerWidth > 640 ? 'w-[30rem]' : 'w-[22rem]'
+          innerWidth && innerWidth > 640 ? 'w-[35rem]' : 'w-[22rem]'
         } mx-auto mt-2`}
       >
         <Form id='search-form' method='post'>
+          <div className='absolute left-[1px] top-[2px] h-[28px]'>
+            <Select
+              className='!h-[28px]'
+              name='selected-store'
+              defaultValue={stores.ALIEXPRESS}
+            >
+              <option value={stores.ALIEXPRESS}>{stores.ALIEXPRESS}</option>
+              <option value={stores.COOLMOD}>{stores.COOLMOD}</option>
+            </Select>
+          </div>
           <TextInput
             name='search'
             placeholder='Busca o inserta el enlace de un producto'
-            className='bg-gray-100 !pr-20 !pl-7 !text-sm'
-            width={innerWidth && innerWidth > 640 ? '30rem' : '22rem'}
+            className='bg-gray-100 !pr-20 !pl-[122px] !text-sm'
+            width={innerWidth && innerWidth > 640 ? '35rem' : '22rem'}
           />
           <SearchIcon
-            className='absolute left-1 top-[7px] text-indigo-600'
+            className='absolute left-[100px] top-[6px] text-indigo-600'
             width={20}
             height={20}
             strokeWidth={2.5}

@@ -71,7 +71,7 @@ export const SubscribeModal = ({
       );
       onClose();
     }
-  }, [fetcherData, onClose, isSubscribedToPrice]);
+  }, [hasErrors, fetcherData, onClose, isSubscribedToPrice]);
 
   return (
     <div>
@@ -151,8 +151,14 @@ export const SubscribeModal = ({
               }`}
             />
           ) : null}
-          <input hidden name='item-id' value={itemId} readOnly />
-          <input hidden name='item-last-price' value={itemLastPrice} readOnly />
+          <input type='text' hidden name='item-id' value={itemId} readOnly />
+          <input
+            type='text'
+            hidden
+            name='item-last-price'
+            value={itemLastPrice}
+            readOnly
+          />
         </div>
         <div className='flex justify-between mb-1'>
           <RegularButton content='Cerrar' onClick={onClose} color='secondary' />
