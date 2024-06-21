@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { dateFormat } from '~/utils/const';
 import { RegularButton } from '../styles/regular-button';
+import type { StoreImageInfo } from '../styles/store-badge';
+import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
 
 type Props = {
   item: TrackingResponse;
@@ -14,10 +16,12 @@ export const CarouselItemCard = ({ item }: Props) => {
   const sortedPrices = [...item.prices].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+  const storeImageInfo = STORE_IMAGE_MAPPER[item.store] as StoreImageInfo;
 
   return (
     <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white'>
-      <div className='h-[50%] overflow-hidden rounded-lg p-1'>
+      <div className='h-[50%] overflow-hidden rounded-lg p-1 relative'>
+        <StoreBadge store={item.store} storeImageInfo={storeImageInfo} />
         <img
           className='object-cover w-full h-full hover:scale-105 transition-transform'
           src={item.image}

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import type { ListItems } from '~/interfaces';
 import { ItemModal } from '../modal/item-modal';
 import type { stores } from '~/utils/const';
+import type { StoreImageInfo } from '../styles/store-badge';
+import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
 
 type Props = {
   item: ListItems;
@@ -12,9 +14,12 @@ type Props = {
 export const ListItemsCard = ({ item, store }: Props) => {
   const [isShown, setIsShown] = useState(false);
 
+  const storeImageInfo = STORE_IMAGE_MAPPER[store] as StoreImageInfo;
+
   return (
     <>
       <div className='w-full relative shadow-md rounded-lg overflow-hidden'>
+        <StoreBadge store={store} storeImageInfo={storeImageInfo} />
         <img
           src={
             item.imgPath ??
