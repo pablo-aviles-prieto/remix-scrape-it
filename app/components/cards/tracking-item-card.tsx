@@ -3,8 +3,10 @@ import { RegularButton } from '../styles/regular-button';
 import { format } from 'date-fns';
 import { dateFormat } from '~/utils/const';
 import { SubscribeModal } from '../modal/subscribe-modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog } from 'evergreen-ui';
+import { customEllipsis } from '~/utils/custom-ellipsis';
+import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
 
 type Props = {
   item: TrackingResponse;
@@ -13,6 +15,16 @@ type Props = {
 export const TrackingItemCard = ({ item }: Props) => {
   const [isShown, setIsShown] = useState(false);
   const { [item.prices.length - 1]: lastPrices } = item.prices;
+  const { modifyDocTitle } = useModifyDocumentTitle();
+
+  // Have to modify this on client comp to avoid rehydratation error things (updateDehydratedSuspenseComponent)
+  useEffect(() => {
+    const newTitle = `Detalles del producto ${customEllipsis(
+      item.name,
+      15
+    )} de ${item.store}`;
+    modifyDocTitle(newTitle);
+  }, [modifyDocTitle, item]);
 
   return (
     <>

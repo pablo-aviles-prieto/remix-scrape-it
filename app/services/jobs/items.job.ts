@@ -5,7 +5,7 @@ import { schedules } from './schedules';
 const jobs: Map<string, cron.ScheduledTask> = new Map();
 
 const updatePricesAndSendSubscriberMail = cron.schedule(
-  schedules.updatePricesMidnight,
+  schedules.updatePricesNoon,
   async () => {
     console.log(
       `JOB :: Updating tracked items and sending mails started at ${new Date()}`
@@ -19,7 +19,7 @@ const updatePricesAndSendSubscriberMail = cron.schedule(
 );
 
 const updatePrices = cron.schedule(
-  schedules.updatePricesNoon,
+  schedules.updatePricesMidnight,
   async () => {
     console.log(`JOB :: Updating tracked items started at ${new Date()}`);
     await updateTrackedPriceAndSendMail({ sendSubscriberMail: false });

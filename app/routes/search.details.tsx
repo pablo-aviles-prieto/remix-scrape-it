@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { defer } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense } from 'react';
@@ -11,6 +11,7 @@ import { getCoolmodSingleItem } from '~/services/scrap/coolmod.service';
 import { errorMsgs, stores } from '~/utils/const';
 import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
+import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 
 type LoaderResponse = {
   ok: boolean;
@@ -22,6 +23,20 @@ type LoaderResponse = {
 
 const ERROR_MESSAGE =
   'No se pudo obtener los datos del producto, revise el enlace proporcionado e inténtelo más tarde.';
+
+export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+  const metadata = createBaseMetadataInfo(ServerRuntimeMetaArgs);
+  // removing the base metadata title
+  const filteredMetadata = metadata.filter(
+    (metaItem) => !metaItem.hasOwnProperty('title')
+  );
+  return [
+    {
+      title: `Obteniendo información...`,
+    },
+    ...filteredMetadata,
+  ];
+};
 
 export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);

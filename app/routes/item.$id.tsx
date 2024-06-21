@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
 import { Await, Outlet, useLoaderData, useNavigate } from '@remix-run/react';
 import { Suspense } from 'react';
@@ -19,6 +19,7 @@ import { TablePricingHistory } from '~/components/styles/table-pricing-history';
 import { RegularButton } from '~/components/styles/regular-button';
 import { parseAmount } from '~/utils/parse-amount';
 import { formatAmount } from '~/utils/format-amount';
+import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 
 type LoaderResponse = {
   ok: boolean;
@@ -53,6 +54,20 @@ const validateDesiredPrice = (
   }
 
   return { parsedPrice: parsedDesiredPrice, error: null };
+};
+
+export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+  const metadata = createBaseMetadataInfo(ServerRuntimeMetaArgs);
+  // removing the base metadata title
+  const filteredMetadata = metadata.filter(
+    (metaItem) => !metaItem.hasOwnProperty('title')
+  );
+  return [
+    {
+      title: 'Detalles del producto...',
+    },
+    ...filteredMetadata,
+  ];
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {

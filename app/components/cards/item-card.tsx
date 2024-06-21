@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { SingleItem } from '~/interfaces';
 import { Dialog } from 'evergreen-ui';
 import { ItemModal } from '../modal/item-modal';
 import { RegularButton } from '../styles/regular-button';
 import type { stores } from '~/utils/const';
+import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
+import { customEllipsis } from '~/utils/custom-ellipsis';
 
 type Props = {
   item: SingleItem;
@@ -13,6 +15,16 @@ type Props = {
 
 export const ItemCard = ({ item, urlItem, store }: Props) => {
   const [isShown, setIsShown] = useState(false);
+  const { modifyDocTitle } = useModifyDocumentTitle();
+
+  // Have to modify this on client comp to avoid rehydratation error things (updateDehydratedSuspenseComponent)
+  useEffect(() => {
+    const newTitle = `Detalles del producto ${customEllipsis(
+      item.itemName ?? '',
+      15
+    )} de ${store}`;
+    modifyDocTitle(newTitle);
+  }, [modifyDocTitle, item, store]);
 
   return (
     <>

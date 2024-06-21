@@ -27,6 +27,7 @@ import {
   COOLMOD_REGEX,
   stores,
 } from './utils/const';
+import { createBaseMetadataInfo } from './utils/create-base-metadata-info';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -37,17 +38,9 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
-// TODO: Change the metadata for aliexpress and coolmod.
-// add metadata on different pages for SEO
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'ScrapeIt! - Seguimiento de precios de Coolmod' },
-    {
-      name: 'description',
-      content:
-        'ScrapeIt! te permite rastrear y seguir los precios de los productos de Coolmod. Crea seguimientos para tus productos favoritos y recibe actualizaciones diarias por correo electrónico sobre los últimos precios.',
-    },
-  ];
+// TODO: add metadata on different pages for SEO
+export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+  return createBaseMetadataInfo(ServerRuntimeMetaArgs);
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {

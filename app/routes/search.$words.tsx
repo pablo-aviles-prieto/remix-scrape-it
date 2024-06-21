@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
 import { defer, json } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { motion } from 'framer-motion';
@@ -13,6 +13,8 @@ import { getCoolmodListItems } from '~/services/scrap/coolmod.service';
 import { errorMsgs, stores } from '~/utils/const';
 import { getAliexpressListItems } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
+import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
+import { customEllipsis } from '~/utils/custom-ellipsis';
 
 type LoaderResponse = {
   ok: boolean;
@@ -23,6 +25,24 @@ type LoaderResponse = {
 
 const ERROR_MESSAGE =
   'No se pudo obtener información de los productos, revise los datos introducidos e inténtelo más tarde.';
+
+export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+  const metadata = createBaseMetadataInfo(ServerRuntimeMetaArgs);
+  // removing the base metadata title
+  const filteredMetadata = metadata.filter(
+    (metaItem) => !metaItem.hasOwnProperty('title')
+  );
+
+  return [
+    {
+      title: `Buscando ${customEllipsis(
+        ServerRuntimeMetaArgs.params.words ?? '',
+        20
+      )} en ${(ServerRuntimeMetaArgs.data as LoaderResponse).store}`,
+    },
+    ...filteredMetadata,
+  ];
+};
 
 export const loader = async ({ request, params }: ActionFunctionArgs) => {
   const url = new URL(request.url);
