@@ -38,7 +38,7 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
-// TODO: add metadata on different pages for SEO!!
+// TODO: add metadata on different pages for SEO
 export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
   return createBaseMetadataInfo(ServerRuntimeMetaArgs);
 };
