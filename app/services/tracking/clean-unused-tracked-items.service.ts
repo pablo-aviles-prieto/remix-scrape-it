@@ -14,6 +14,10 @@ const isDateOlderThan7Days = (date: Date): boolean => {
   return isBefore(date, sevenDaysAgo);
 };
 
+/*
+ ** TODO: Should be taken in mind if an item has the last price obtained several days ago
+ ** meaning that the website doesnt have a price and should be candidate to remove first
+ */
 export const cleanUnusedTrackedItems = async ({
   trackedItems,
 }: CleanUnusedTrackedItemsProps) => {

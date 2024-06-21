@@ -13,6 +13,7 @@ import CryptoJS from 'crypto-js';
 import { parseAmount } from '~/utils/parse-amount';
 import { productAvailableMail } from '../mail/product-available-mail.service';
 import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
+import { getAliexpressSingleItem } from '../scrap/aliexpress.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -27,8 +28,11 @@ type UpdateDesiredPriceSubscriber = {
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
-// TODO: Create a mapper with the stores and service to scrap
-// TODO: Read the store prop to know which service to use
+const STORES_MAPPER = {
+  [stores.ALIEXPRESS]: getAliexpressSingleItem,
+  [stores.COOLMOD]: getCoolmodSingleItem,
+};
+
 export const updateTrackedPriceAndSendMail = async ({
   sendSubscriberMail = false,
 }: {
@@ -45,14 +49,13 @@ export const updateTrackedPriceAndSendMail = async ({
   const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
 
   for (const item of trackedItems) {
-    if (item.store === stores.ALIEXPRESS) {
-      continue;
-    }
-
     let updatedPrice: string | undefined;
 
     try {
-      const updatedData = await getCoolmodSingleItem({ productPage: item.url });
+      // Retrieving the service to use from the different stores
+      const getItemService = STORES_MAPPER[item.store];
+      const updatedData = await getItemService({ productPage: item.url });
+
       updatedPrice = updatedData?.actualPrice;
       if (!updatedPrice) {
         console.log(`No updated price found for item ${item.name}, skipping.`);
@@ -64,7 +67,7 @@ export const updateTrackedPriceAndSendMail = async ({
         {
           $push: {
             prices: {
-              price: updatedPrice ?? '0',
+              price: updatedPrice,
               date: new Date(),
             },
           },
