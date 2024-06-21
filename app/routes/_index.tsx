@@ -47,11 +47,11 @@ export default function Index() {
   const sliderSettings: Slider.Settings = {
     infinite: true,
     speed: 500,
-    arrows: false,
+    arrows: true,
     swipeToSlide: true,
     slidesToShow: 3,
     slidesToScroll: 1,
-    autoplaySpeed: 2500,
+    autoplaySpeed: 2_500,
     responsive: [
       {
         breakpoint: 1100,
@@ -62,6 +62,7 @@ export default function Index() {
       {
         breakpoint: 800,
         settings: {
+          arrows: false,
           slidesToShow: 1,
         },
       },

@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { Dialog } from 'evergreen-ui';
 import { customEllipsis } from '~/utils/custom-ellipsis';
 import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
+import type { StoreImageInfo } from '../styles/store-badge';
+import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
 
 type Props = {
   item: TrackingResponse;
@@ -26,10 +28,16 @@ export const TrackingItemCard = ({ item }: Props) => {
     modifyDocTitle(newTitle);
   }, [modifyDocTitle, item]);
 
+  const storeImageInfo = STORE_IMAGE_MAPPER[item.store] as StoreImageInfo;
+
   return (
     <>
-      <div className='flex flex-col sm:flex-row mx-auto max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden'>
-        <img className='sm:w-2/5 object-cover max-h-[280px]' src={item.image} />
+      <div className='flex flex-col sm:flex-row mx-auto max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden relative'>
+        <StoreBadge store={item.store} storeImageInfo={storeImageInfo} />
+        <img
+          className='sm:w-2/5 object-cover max-h-[280px] hover:scale-105 transition-transform'
+          src={item.image}
+        />
         <div className='sm:w-3/5 p-4 flex flex-col justify-between'>
           <div>
             <h1 className='text-gray-900 font-bold text-xl line-clamp-3'>

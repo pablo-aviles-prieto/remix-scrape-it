@@ -6,6 +6,8 @@ import { RegularButton } from '../styles/regular-button';
 import type { stores } from '~/utils/const';
 import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
 import { customEllipsis } from '~/utils/custom-ellipsis';
+import type { StoreImageInfo } from '../styles/store-badge';
+import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
 
 type Props = {
   item: SingleItem;
@@ -26,10 +28,17 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
     modifyDocTitle(newTitle);
   }, [modifyDocTitle, item, store]);
 
+  const storeImageInfo = STORE_IMAGE_MAPPER[store] as StoreImageInfo;
+
   return (
     <>
       <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md mx-auto'>
-        <div className='h-[20rem] overflow-hidden'>
+        <div className='h-[20rem] overflow-hidden relative'>
+          <StoreBadge
+            store={store}
+            storeImageInfo={storeImageInfo}
+            size='medium'
+          />
           <img
             className='object-cover w-full h-full hover:scale-105 transition-transform'
             src={item.imgPath}
