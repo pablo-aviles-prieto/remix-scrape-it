@@ -1,6 +1,7 @@
 import type { MetaFunction } from '@remix-run/node';
 import { stores } from './const';
 
+// TODO: Add OG to the metadata base
 export const createBaseMetadataInfo: MetaFunction = () => {
   const supportedStores = Object.values(stores);
   const storeList = supportedStores.join(', ');
