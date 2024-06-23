@@ -1,5 +1,8 @@
-import { THOMANN_BASE_URL } from '~/utils/const';
+import { THOMANN_BASE_URL, availableCurrency } from '~/utils/const';
 import { getBrowser } from './browser.service';
+import type { ListItems } from '~/interfaces';
+import { parseAmount } from '~/utils/parse-amount';
+import { formatAmount } from '~/utils/format-amount';
 
 export const getThomannSingleItem = async ({
   productPage,
@@ -28,30 +31,47 @@ export const getThomannListItems = async ({
   const page = await browser.newPage();
   const url = `${THOMANN_BASE_URL}intl/search_dir.html?sw=${querySearch}`;
 
-  let listItems = [];
+  // let listItems = [];
   try {
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
 
-    listItems = await page.$$eval('div.fx-product-list-entry', (items) => {
-      const parsedItems = items.map((item) => {
-        const productImage = item.querySelector('a.product__image');
-        const url = productImage?.getAttribute('href');
+    const listItems = await page.$$eval(
+      'div.fx-product-list-entry',
+      (items) => {
+        return items.map((item) => {
+          const productImage = item.querySelector('a.product__image');
+          const url = productImage?.getAttribute('href') ?? '';
+          const sourceElement = productImage?.querySelector('picture source');
+          const imageUrl = sourceElement?.getAttribute('srcset') ?? '';
 
-        const sourceElement = productImage?.querySelector('picture source');
-        const imageUrl = sourceElement?.getAttribute('srcset');
+          const productContent = item.querySelector('a.product__content');
+          const price =
+            productContent?.querySelector('span.product__price-primary')
+              ?.textContent ?? '';
 
-        return { imgPath: imageUrl, url };
-      });
-      return parsedItems;
+          const manufacturer =
+            productContent?.querySelector('.title__manufacturer')
+              ?.textContent ?? '';
+          const name =
+            productContent?.querySelector('.title__name')?.textContent ?? '';
+          const fullTitle = `${manufacturer} ${name}`.trim();
+
+          return { name: fullTitle, imgPath: imageUrl, url, price };
+        });
+      }
+    );
+    const parsedItems: ListItems[] = listItems.map((item) => {
+      const priceWithoutCurrencySign = item.price.replaceAll('€', '');
+      const parsedPrice = formatAmount(parseAmount(priceWithoutCurrencySign));
+      return { ...item, price: parsedPrice, currency: availableCurrency.EUR };
     });
-    console.log('listItems', listItems);
+
+    await browser.close();
+    return parsedItems;
   } catch (err) {
     console.log('ERROR SCRAPPING THOMANN LIST ITEMS', err);
     await browser.close();
     return null;
   }
-
-  // await browser.close();
-  return null;
 };
