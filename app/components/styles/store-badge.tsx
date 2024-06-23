@@ -23,9 +23,11 @@ export type StoreImageInfo =
       isImage: false;
     };
 
+// TODO: Change thomann image
 export const STORE_IMAGE_MAPPER = {
   [stores.COOLMOD]: { src: '/images/logo_coolmod.webp', isImage: true },
   [stores.ALIEXPRESS]: { icon: AliexpressIcon, isImage: false },
+  [stores.THOMANN]: { src: '/images/logo_coolmod.webp', isImage: true },
 };
 
 const isImageInfo = (

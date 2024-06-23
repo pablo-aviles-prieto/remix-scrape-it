@@ -171,7 +171,7 @@ export const getCoolmodListItems = async ({
       }
     );
   } catch (err) {
-    console.log('ERROR SCRAPPING LIST ITEMS', err);
+    console.log('ERROR SCRAPPING COOLMOD LIST ITEMS', err);
     await browser.close();
     return null;
   }

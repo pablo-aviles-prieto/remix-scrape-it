@@ -15,6 +15,7 @@ import { getAliexpressListItems } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { customEllipsis } from '~/utils/custom-ellipsis';
+import { getThomannListItems } from '~/services/scrap/thomann.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -60,10 +61,11 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
     let scrapResponsePromise: Promise<ListItems[] | null> =
       Promise.resolve(null);
 
+    // TODO: Use a mapper to obtain the scrapper service instead nesting if/else
     if (queryStore === stores.COOLMOD) {
-      scrapResponsePromise = getCoolmodListItems({
-        querySearch: params.words,
-      });
+      scrapResponsePromise = getCoolmodListItems({ querySearch: params.words });
+    } else if (queryStore === stores.THOMANN) {
+      scrapResponsePromise = getThomannListItems({ querySearch: params.words });
     } else {
       scrapResponsePromise = getAliexpressListItems({
         querySearch: params.words,

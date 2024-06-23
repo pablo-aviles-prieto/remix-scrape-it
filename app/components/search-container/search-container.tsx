@@ -61,8 +61,11 @@ export const SearchContainer = () => {
               name='selected-store'
               defaultValue={stores.ALIEXPRESS}
             >
-              <option value={stores.ALIEXPRESS}>{stores.ALIEXPRESS}</option>
-              <option value={stores.COOLMOD}>{stores.COOLMOD}</option>
+              {Object.values(stores).map((store) => (
+                <option key={store} value={store}>
+                  {store}
+                </option>
+              ))}
             </Select>
           </div>
           <TextInput

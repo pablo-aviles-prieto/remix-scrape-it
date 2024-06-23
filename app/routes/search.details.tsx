@@ -12,6 +12,7 @@ import { errorMsgs, stores } from '~/utils/const';
 import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
+import { getThomannSingleItem } from '~/services/scrap/thomann.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -56,14 +57,13 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     let scrapResponsePromise: Promise<SingleItem | null> =
       Promise.resolve(null);
 
+    // TODO: Use a mapper to obtain the scrapper service instead nesting if/else
     if (queryStore === stores.COOLMOD) {
-      scrapResponsePromise = getCoolmodSingleItem({
-        productPage: queryUrl,
-      });
+      scrapResponsePromise = getCoolmodSingleItem({ productPage: queryUrl });
+    } else if (queryStore === stores.THOMANN) {
+      scrapResponsePromise = getThomannSingleItem({ productPage: queryUrl });
     } else {
-      scrapResponsePromise = getAliexpressSingleItem({
-        productPage: queryUrl,
-      });
+      scrapResponsePromise = getAliexpressSingleItem({ productPage: queryUrl });
     }
 
     return defer({
