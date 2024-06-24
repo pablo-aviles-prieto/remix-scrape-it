@@ -13,7 +13,6 @@ import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { getThomannSingleItem } from '~/services/scrap/thomann.service';
-import { normalizeThomannUrl } from '~/utils/normalize-thomann-url';
 
 type LoaderResponse = {
   ok: boolean;
