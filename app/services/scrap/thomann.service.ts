@@ -92,8 +92,16 @@ export const getThomannListItems = async ({
         });
       }
     );
+    /*
+     ** Have to replace the '.' since the dot is used for thousand separator and there are
+     ** a lot of items without decimals, so the formatter thinks is a decimal separator
+     ** instead of the thousand separator
+     */
     const parsedItems: ListItems[] = listItems.map((item) => {
-      const priceWithoutCurrencySign = item.price.replaceAll('€', '');
+      const priceWithoutCurrencySign = item.price
+        .replaceAll('€', '')
+        .replaceAll('.', '')
+        .trim();
       const parsedPrice = formatAmount(parseAmount(priceWithoutCurrencySign));
       return { ...item, price: parsedPrice, currency: availableCurrency.EUR };
     });
