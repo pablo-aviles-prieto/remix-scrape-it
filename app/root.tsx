@@ -25,9 +25,11 @@ import {
   ALIEXPRESS_HOSTNAME,
   ALIEXPRESS_REGEX,
   COOLMOD_REGEX,
+  THOMANN_REGEX,
   stores,
 } from './utils/const';
 import { createBaseMetadataInfo } from './utils/create-base-metadata-info';
+import { normalizeThomannUrl } from './utils/normalize-thomann-url';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -38,7 +40,6 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: reactLoadingSkeleton },
 ];
 
-// TODO: add metadata on different pages for SEO
 export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
   return createBaseMetadataInfo(ServerRuntimeMetaArgs);
 };
@@ -55,8 +56,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Inferring the store when a URL is provided instead of letting the client decide which store is
   const isAliexpressUrl = ALIEXPRESS_REGEX.test(searchWord);
   const isCoolmodUrl = COOLMOD_REGEX.test(searchWord);
+  const isThomannUrl = THOMANN_REGEX.test(searchWord);
 
-  if (isAliexpressUrl || isCoolmodUrl) {
+  if (isAliexpressUrl || isCoolmodUrl || isThomannUrl) {
     const url = new URL(
       searchWord.startsWith('http') ? searchWord : `https://${searchWord}`
     );
@@ -68,7 +70,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       modifiedUrl = url.href;
     }
 
-    const inferredStore = isAliexpressUrl ? stores.ALIEXPRESS : stores.COOLMOD;
+    if (isThomannUrl) {
+      // Convert Thomann URL to the intl version
+      modifiedUrl = normalizeThomannUrl(url.href);
+    }
+
+    const inferredStore = isAliexpressUrl
+      ? stores.ALIEXPRESS
+      : isThomannUrl
+      ? stores.THOMANN
+      : stores.COOLMOD;
+
     return redirect(
       `/search/details?store=${inferredStore}&url=${modifiedUrl}`
     );

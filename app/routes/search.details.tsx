@@ -12,6 +12,7 @@ import { errorMsgs, stores } from '~/utils/const';
 import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
+import { getThomannSingleItem } from '~/services/scrap/thomann.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -43,7 +44,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   const queryUrl = url.searchParams.get('url');
   const queryStore = url.searchParams.get('store');
 
-  if (!queryUrl || !queryUrl.startsWith('https://')) {
+  if (!queryUrl || !queryUrl.startsWith('https://') || !queryStore) {
     return defer({
       ok: false,
       error: 'Revise la URL introducida',
@@ -52,19 +53,18 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     });
   }
 
-  try {
-    let scrapResponsePromise: Promise<SingleItem | null> =
-      Promise.resolve(null);
+  const STORE_SCRAPPER = {
+    [stores.ALIEXPRESS]: getAliexpressSingleItem,
+    [stores.COOLMOD]: getCoolmodSingleItem,
+    [stores.THOMANN]: getThomannSingleItem,
+  };
 
-    if (queryStore === stores.COOLMOD) {
-      scrapResponsePromise = getCoolmodSingleItem({
-        productPage: queryUrl,
-      });
-    } else {
-      scrapResponsePromise = getAliexpressSingleItem({
-        productPage: queryUrl,
-      });
-    }
+  try {
+    const getSingleItemServiceByStore = STORE_SCRAPPER[queryStore as stores];
+
+    const scrapResponsePromise = getSingleItemServiceByStore({
+      productPage: queryUrl,
+    });
 
     return defer({
       ok: true,

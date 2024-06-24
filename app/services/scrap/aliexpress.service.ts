@@ -234,7 +234,7 @@ export const getAliexpressListItems = async ({
       price: parseAliexpressPrice(item.rawPrice),
     }));
   } catch (err) {
-    console.log('ERROR SCRAPPING LIST ITEMS', err);
+    console.log('ERROR SCRAPPING ALIEXPRESS LIST ITEMS', err);
     await browser.close();
     return null;
   }

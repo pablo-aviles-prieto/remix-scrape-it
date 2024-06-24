@@ -14,6 +14,7 @@ import { parseAmount } from '~/utils/parse-amount';
 import { productAvailableMail } from '../mail/product-available-mail.service';
 import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
 import { getAliexpressSingleItem } from '../scrap/aliexpress.service';
+import { getThomannSingleItem } from '../scrap/thomann.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -31,6 +32,7 @@ const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 const STORES_MAPPER = {
   [stores.ALIEXPRESS]: getAliexpressSingleItem,
   [stores.COOLMOD]: getCoolmodSingleItem,
+  [stores.THOMANN]: getThomannSingleItem,
 };
 
 export const updateTrackedPriceAndSendMail = async ({
