@@ -15,6 +15,7 @@ export const COOLMOD_BASE_RUL = 'https://www.coolmod.com/';
 export const ALIEXPRESS_BASE_URL = 'https://es.aliexpress.com/';
 export const ALIEXPRESS_HOSTNAME = 'es.aliexpress.com';
 export const THOMANN_BASE_URL = 'https://www.thomann.de/';
+export const THOMANN_INTL_URL = 'https://www.thomann.de/intl/';
 
 export const dateFormat = {
   euWithTime: 'dd/MM/yyyy HH:mm',
@@ -47,6 +48,8 @@ export const COOLMOD_REGEX = /^(https:\/\/)?(www\.)?coolmod\.com/;
 export const ALIEXPRESS_REGEX =
   /^(https:\/\/)?(www\.)?([a-z]{2}\.)?aliexpress\.com/;
 export const THOMANN_REGEX = /^(https:\/\/)?(www\.)?thomann\.de/;
+export const THOMANN_COUNTRY_CODE_REGEX =
+  /https:\/\/www\.thomann\.de\/[a-z]{2}\//;
 
 export const SCRAP_ELEMENT_COUNT = 30;
 export const DEFAULT_TIMEOUT_SELECTOR = 5000;

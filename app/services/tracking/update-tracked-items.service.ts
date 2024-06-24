@@ -28,9 +28,11 @@ type UpdateDesiredPriceSubscriber = {
 
 const { APP_BASE_URL, SECRET_UNSUBSCRIBE } = process.env;
 
+// TODO: Change THOMANN
 const STORES_MAPPER = {
   [stores.ALIEXPRESS]: getAliexpressSingleItem,
   [stores.COOLMOD]: getCoolmodSingleItem,
+  [stores.THOMANN]: getCoolmodSingleItem,
 };
 
 export const updateTrackedPriceAndSendMail = async ({

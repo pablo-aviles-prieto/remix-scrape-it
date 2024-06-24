@@ -13,6 +13,7 @@ import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { getThomannSingleItem } from '~/services/scrap/thomann.service';
+import { normalizeThomannUrl } from '~/utils/normalize-thomann-url';
 
 type LoaderResponse = {
   ok: boolean;
@@ -61,7 +62,8 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     if (queryStore === stores.COOLMOD) {
       scrapResponsePromise = getCoolmodSingleItem({ productPage: queryUrl });
     } else if (queryStore === stores.THOMANN) {
-      scrapResponsePromise = getThomannSingleItem({ productPage: queryUrl });
+      const parsedUrl = normalizeThomannUrl(queryUrl);
+      scrapResponsePromise = getThomannSingleItem({ productPage: parsedUrl });
     } else {
       scrapResponsePromise = getAliexpressSingleItem({ productPage: queryUrl });
     }

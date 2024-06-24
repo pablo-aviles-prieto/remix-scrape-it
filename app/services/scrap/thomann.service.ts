@@ -1,6 +1,6 @@
 import { THOMANN_BASE_URL, availableCurrency } from '~/utils/const';
 import { getBrowser } from './browser.service';
-import type { ListItems } from '~/interfaces';
+import type { ListItems, SingleItem } from '~/interfaces';
 import { parseAmount } from '~/utils/parse-amount';
 import { formatAmount } from '~/utils/format-amount';
 
@@ -15,10 +15,29 @@ export const getThomannSingleItem = async ({
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
-  // let itemData = undefined;
+  const itemData = await page.evaluate((el) => {
+    const actualPrice =
+      document
+        .querySelector('meta[itemprop="price"]')
+        ?.getAttribute('content') ?? '';
+    const itemName =
+      document.querySelector('h1.product-title__title')?.textContent?.trim() ??
+      '';
+    const imgPath =
+      document
+        .querySelector('img.ZoomCurrentImage.spotlight__item-image')
+        ?.getAttribute('src') ?? '';
 
-  // await browser.close();
-  return null;
+    return { itemName, actualPrice, imgPath };
+  });
+
+  const parsedItem: SingleItem = {
+    ...itemData,
+    currency: availableCurrency.EUR,
+  };
+
+  await browser.close();
+  return parsedItem;
 };
 
 export const getThomannListItems = async ({
