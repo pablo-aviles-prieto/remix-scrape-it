@@ -15,29 +15,41 @@ export const getThomannSingleItem = async ({
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
 
-  const itemData = await page.evaluate((el) => {
-    const actualPrice =
-      document
-        .querySelector('meta[itemprop="price"]')
-        ?.getAttribute('content') ?? '';
-    const itemName =
-      document.querySelector('h1.product-title__title')?.textContent?.trim() ??
-      '';
-    const imgPath =
-      document
-        .querySelector('img.ZoomCurrentImage.spotlight__item-image')
-        ?.getAttribute('src') ?? '';
+  try {
+    const itemData = await page.evaluate(() => {
+      const actualPrice =
+        document
+          .querySelector('meta[itemprop="price"]')
+          ?.getAttribute('content') ?? '';
+      const itemName =
+        document
+          .querySelector('h1.product-title__title')
+          ?.textContent?.trim() ?? '';
+      const imgPath =
+        document
+          .querySelector('img.ZoomCurrentImage.spotlight__item-image')
+          ?.getAttribute('src') ?? '';
 
-    return { itemName, actualPrice, imgPath };
-  });
+      return { itemName, actualPrice, imgPath };
+    });
 
-  const parsedItem: SingleItem = {
-    ...itemData,
-    currency: availableCurrency.EUR,
-  };
+    if (!itemData.actualPrice || !itemData.imgPath || !itemData.itemName) {
+      return null;
+    }
 
-  await browser.close();
-  return parsedItem;
+    const parsedItem: SingleItem = {
+      ...itemData,
+      actualPrice: formatAmount(parseAmount(itemData.actualPrice)),
+      currency: availableCurrency.EUR,
+    };
+
+    await browser.close();
+    return parsedItem;
+  } catch (err) {
+    console.log('ERROR SCRAPPING THOMANN SINGLE ITEM', err);
+    await browser.close();
+    return null;
+  }
 };
 
 export const getThomannListItems = async ({
