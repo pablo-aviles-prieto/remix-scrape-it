@@ -29,6 +29,7 @@ import {
   stores,
 } from './utils/const';
 import { createBaseMetadataInfo } from './utils/create-base-metadata-info';
+import { normalizeThomannUrl } from './utils/normalize-thomann-url';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -68,7 +69,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       url.hostname = ALIEXPRESS_HOSTNAME;
       modifiedUrl = url.href;
     }
-    // TODO: Convert the url to https://www.thomann.de/intl ¿?
+
+    if (isThomannUrl) {
+      // Convert Thomann URL to the intl version
+      modifiedUrl = normalizeThomannUrl(url.href);
+    }
 
     const inferredStore = isAliexpressUrl
       ? stores.ALIEXPRESS

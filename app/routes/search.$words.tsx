@@ -49,7 +49,7 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryStore = url.searchParams.get('store');
 
-  if (!params.words) {
+  if (!params.words || !queryStore) {
     return json({
       ok: false,
       error: errorMsgs.internalError,
@@ -57,20 +57,18 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
     });
   }
 
-  try {
-    let scrapResponsePromise: Promise<ListItems[] | null> =
-      Promise.resolve(null);
+  const STORE_SCRAPPER = {
+    [stores.ALIEXPRESS]: getAliexpressListItems,
+    [stores.COOLMOD]: getCoolmodListItems,
+    [stores.THOMANN]: getThomannListItems,
+  };
 
-    // TODO: Use a mapper to obtain the scrapper service instead nesting if/else
-    if (queryStore === stores.COOLMOD) {
-      scrapResponsePromise = getCoolmodListItems({ querySearch: params.words });
-    } else if (queryStore === stores.THOMANN) {
-      scrapResponsePromise = getThomannListItems({ querySearch: params.words });
-    } else {
-      scrapResponsePromise = getAliexpressListItems({
-        querySearch: params.words,
-      });
-    }
+  try {
+    const getListItemsServiceByStore = STORE_SCRAPPER[queryStore as stores];
+
+    const scrapResponsePromise = getListItemsServiceByStore({
+      querySearch: params.words,
+    });
 
     return defer({
       ok: true,
