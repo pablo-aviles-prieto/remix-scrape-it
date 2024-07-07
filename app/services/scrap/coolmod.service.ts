@@ -1,8 +1,10 @@
-import { COOLMOD_BASE_RUL, availableCurrency } from '~/utils/const';
+import { COOLMOD_BASE_RUL, availableCurrency, stores } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { parseAmount } from '~/utils/parse-amount';
 import { type Page } from 'playwright';
 import { formatAmount } from '~/utils/format-amount';
+import type { IError } from '~/interfaces/error-schema';
+import { createErrorDocument } from '../errors/create-error-document.service';
 
 /*
  ** The discount is calculated like 30 years after the DOM is rendered, so the only
@@ -32,6 +34,12 @@ export const getCoolmodSingleItem = async ({
   const page = await browser.newPage();
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
+
+  const errorParams: Partial<IError> = {
+    message: 'Error retrieving coolmod single item data',
+    store: stores.COOLMOD,
+    searchValue: productPage,
+  };
 
   // Check if the class productrightpadding exists, if not it means that
   // there is no price info for the product
@@ -102,7 +110,11 @@ export const getCoolmodSingleItem = async ({
   } catch (err) {
     // If this error happens it means that didnt find an oldPrice (#discountProductPrice .crossout)
     // and also, didnt find the selector for actualPrice (#normalpriceproduct), so we just close the browser
-    console.log('ERROR SCRAPPING SINGLE ITEM', err);
+    console.log('ERROR SCRAPPING COOLMOD SINGLE ITEM', err);
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
     await browser.close();
     return null;
   }
@@ -171,7 +183,16 @@ export const getCoolmodListItems = async ({
       }
     );
   } catch (err) {
+    const errorParams: Partial<IError> = {
+      message: 'Error retrieving coolmod list items',
+      store: stores.COOLMOD,
+      searchValue: querySearch,
+    };
     console.log('ERROR SCRAPPING COOLMOD LIST ITEMS', err);
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
     await browser.close();
     return null;
   }
