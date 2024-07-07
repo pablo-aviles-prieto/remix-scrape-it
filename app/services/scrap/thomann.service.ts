@@ -34,6 +34,7 @@ export const getThomannSingleItem = async ({
     });
 
     if (!itemData.actualPrice || !itemData.imgPath || !itemData.itemName) {
+      await browser.close();
       return null;
     }
 
@@ -47,6 +48,7 @@ export const getThomannSingleItem = async ({
     return parsedItem;
   } catch (err) {
     console.log('ERROR SCRAPPING THOMANN SINGLE ITEM', err);
+    // TODO: add error on DB
     await browser.close();
     return null;
   }
@@ -62,7 +64,6 @@ export const getThomannListItems = async ({
   const page = await browser.newPage();
   const url = `${THOMANN_BASE_URL}intl/search_dir.html?sw=${querySearch}`;
 
-  // let listItems = [];
   try {
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
@@ -110,6 +111,7 @@ export const getThomannListItems = async ({
     return parsedItems;
   } catch (err) {
     console.log('ERROR SCRAPPING THOMANN LIST ITEMS', err);
+    // TODO: add error on DB
     await browser.close();
     return null;
   }

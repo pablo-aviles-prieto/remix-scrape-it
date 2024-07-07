@@ -92,6 +92,7 @@ export const getAliexpressSingleItem = async ({
       imgPath: imgPath ?? '',
     };
   } catch (err) {
+    // TODO: add error on DB
     console.log('error retrieving data', err);
     return null;
   }
@@ -144,6 +145,7 @@ export const getAliexpressListItems = async ({
     page = await context.newPage();
   } catch (err) {
     // Failing to select the new language and currency on changeLanguageAndCurrency helper
+    // TODO: add error on DB
     await browser.close();
     return null;
   }
@@ -167,6 +169,7 @@ export const getAliexpressListItems = async ({
   }
 
   if (attempts >= 5) {
+    // TODO: add error on DB
     await browser.close();
     return null;
   }
@@ -235,6 +238,7 @@ export const getAliexpressListItems = async ({
     }));
   } catch (err) {
     console.log('ERROR SCRAPPING ALIEXPRESS LIST ITEMS', err);
+    // TODO: add error on DB
     await browser.close();
     return null;
   }

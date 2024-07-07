@@ -76,6 +76,7 @@ export const updateTrackedPriceAndSendMail = async ({
         }
       );
     } catch (err) {
+      // TODO: add error on DB
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
@@ -169,11 +170,13 @@ export const updateTrackedPriceAndSendMail = async ({
   try {
     await Promise.all(allEmailPromises);
   } catch (err) {
+    // TODO: add error on DB
     console.log('ERROR SENDING MAILS TO SUBSCRIBERS', err);
   }
   try {
     await cleanUnusedTrackedItems({ trackedItems });
   } catch (err) {
+    // TODO: add error on DB
     console.log('ERROR CLEANING UNUSED TRACKED ITEMS', err);
   }
 };

@@ -37,6 +37,7 @@ export const getCoolmodSingleItem = async ({
   // there is no price info for the product
   const productRightPaddingExists = await page.$('.productrightpadding');
   if (!productRightPaddingExists) {
+    // TODO: add error on DB
     await browser.close();
     return null;
   }
@@ -102,7 +103,8 @@ export const getCoolmodSingleItem = async ({
   } catch (err) {
     // If this error happens it means that didnt find an oldPrice (#discountProductPrice .crossout)
     // and also, didnt find the selector for actualPrice (#normalpriceproduct), so we just close the browser
-    console.log('ERROR SCRAPPING SINGLE ITEM', err);
+    console.log('ERROR SCRAPPING COOLMOD SINGLE ITEM', err);
+    // TODO: add error on DB
     await browser.close();
     return null;
   }
@@ -172,6 +174,7 @@ export const getCoolmodListItems = async ({
     );
   } catch (err) {
     console.log('ERROR SCRAPPING COOLMOD LIST ITEMS', err);
+    // TODO: add error on DB
     await browser.close();
     return null;
   }
