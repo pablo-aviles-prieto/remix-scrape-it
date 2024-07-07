@@ -8,7 +8,7 @@ const ErrorSchema: Schema = new Schema(
     message: { type: String },
     responseMessage: { type: String, required: true },
     store: { type: String },
-    notifiedByEmail: { type: Boolean, required: true },
+    notifiedByEmail: { type: Boolean, required: true, default: false },
     searchValue: { type: String },
   },
   { timestamps: true }
