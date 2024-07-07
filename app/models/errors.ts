@@ -26,10 +26,10 @@ ErrorSchema.set('toJSON', {
 
 let ErrorModel: Model<IDocError>;
 
-if (modelExists('trackings')) {
-  ErrorModel = model<IDocError>('trackings');
+if (modelExists('errors')) {
+  ErrorModel = model<IDocError>('errors');
 } else {
-  ErrorModel = model<IDocError>('trackings', ErrorSchema);
+  ErrorModel = model<IDocError>('errors', ErrorSchema);
 }
 
 export default ErrorModel;
