@@ -11,7 +11,7 @@ import type { Page } from 'playwright';
 import { parseAliexpressPrice } from '~/utils/parse-aliexpress-price';
 import type { ListItems, SingleItem } from '~/interfaces';
 import type { IError } from '~/interfaces/error-schema';
-import { createErrorDocument } from '../errors/createErrorDocument';
+import { createErrorDocument } from '../errors/create-error-document.service';
 
 interface RawItemsProps {
   name: string;

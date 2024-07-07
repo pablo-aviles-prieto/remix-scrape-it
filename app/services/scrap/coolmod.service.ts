@@ -4,7 +4,7 @@ import { parseAmount } from '~/utils/parse-amount';
 import { type Page } from 'playwright';
 import { formatAmount } from '~/utils/format-amount';
 import type { IError } from '~/interfaces/error-schema';
-import { createErrorDocument } from '../errors/createErrorDocument';
+import { createErrorDocument } from '../errors/create-error-document.service';
 
 /*
  ** The discount is calculated like 30 years after the DOM is rendered, so the only

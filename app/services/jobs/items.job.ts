@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import { updateTrackedPriceAndSendMail } from '../tracking/update-tracked-items.service';
 import { schedules } from './schedules';
+import { getErrorsAndSendMail } from '../errors/check-errors-and-send-mail.service';
 
 const jobs: Map<string, cron.ScheduledTask> = new Map();
 
@@ -11,6 +12,7 @@ const updatePricesAndSendSubscriberMail = cron.schedule(
       `JOB :: Updating tracked items and sending mails started at ${new Date()}`
     );
     await updateTrackedPriceAndSendMail({ sendSubscriberMail: true });
+    await getErrorsAndSendMail();
     console.log(
       `JOB :: Updating tracked items and sending mails finished at ${new Date()}`
     );
@@ -23,6 +25,7 @@ const updatePrices = cron.schedule(
   async () => {
     console.log(`JOB :: Updating tracked items started at ${new Date()}`);
     await updateTrackedPriceAndSendMail({ sendSubscriberMail: false });
+    await getErrorsAndSendMail();
     console.log(`JOB :: Updating tracked items finished at ${new Date()}`);
   },
   { scheduled: false }

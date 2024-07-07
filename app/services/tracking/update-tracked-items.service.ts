@@ -16,7 +16,7 @@ import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
 import { getAliexpressSingleItem } from '../scrap/aliexpress.service';
 import { getThomannSingleItem } from '../scrap/thomann.service';
 import type { IError } from '~/interfaces/error-schema';
-import { createErrorDocument } from '../errors/createErrorDocument';
+import { createErrorDocument } from '../errors/create-error-document.service';
 
 type UpdateItemSubscriber = {
   email: string;

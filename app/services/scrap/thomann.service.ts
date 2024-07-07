@@ -4,7 +4,7 @@ import type { ListItems, SingleItem } from '~/interfaces';
 import { parseAmount } from '~/utils/parse-amount';
 import { formatAmount } from '~/utils/format-amount';
 import type { IError } from '~/interfaces/error-schema';
-import { createErrorDocument } from '../errors/createErrorDocument';
+import { createErrorDocument } from '../errors/create-error-document.service';
 
 export const getThomannSingleItem = async ({
   productPage,
