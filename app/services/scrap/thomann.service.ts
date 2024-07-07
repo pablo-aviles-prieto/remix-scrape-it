@@ -1,8 +1,10 @@
-import { THOMANN_BASE_URL, availableCurrency } from '~/utils/const';
+import { THOMANN_BASE_URL, availableCurrency, stores } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import type { ListItems, SingleItem } from '~/interfaces';
 import { parseAmount } from '~/utils/parse-amount';
 import { formatAmount } from '~/utils/format-amount';
+import type { IError } from '~/interfaces/error-schema';
+import { createErrorDocument } from '../errors/createErrorDocument';
 
 export const getThomannSingleItem = async ({
   productPage,
@@ -14,6 +16,12 @@ export const getThomannSingleItem = async ({
   const page = await browser.newPage();
   await page.goto(productPage);
   await page.waitForLoadState('domcontentloaded');
+
+  const errorParams: Partial<IError> = {
+    message: 'Error retrieving thomann single item data',
+    store: stores.THOMANN,
+    searchValue: productPage,
+  };
 
   try {
     const itemData = await page.evaluate(() => {
@@ -34,6 +42,10 @@ export const getThomannSingleItem = async ({
     });
 
     if (!itemData.actualPrice || !itemData.imgPath || !itemData.itemName) {
+      await createErrorDocument({
+        ...errorParams,
+        responseMessage: `Couldn't retrieve actualPrice or imgPath or itemName`,
+      });
       await browser.close();
       return null;
     }
@@ -48,7 +60,10 @@ export const getThomannSingleItem = async ({
     return parsedItem;
   } catch (err) {
     console.log('ERROR SCRAPPING THOMANN SINGLE ITEM', err);
-    // TODO: add error on DB
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
     await browser.close();
     return null;
   }
@@ -63,6 +78,12 @@ export const getThomannListItems = async ({
 
   const page = await browser.newPage();
   const url = `${THOMANN_BASE_URL}intl/search_dir.html?sw=${querySearch}`;
+
+  const errorParams: Partial<IError> = {
+    message: 'Error retrieving thomann list items',
+    store: stores.THOMANN,
+    searchValue: querySearch,
+  };
 
   try {
     await page.goto(url);
@@ -111,7 +132,10 @@ export const getThomannListItems = async ({
     return parsedItems;
   } catch (err) {
     console.log('ERROR SCRAPPING THOMANN LIST ITEMS', err);
-    // TODO: add error on DB
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
     await browser.close();
     return null;
   }

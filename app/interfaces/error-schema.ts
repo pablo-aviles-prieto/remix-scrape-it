@@ -5,7 +5,7 @@ export interface IError {
   _id: ObjectId;
   message?: string;
   responseMessage: string;
-  store: stores;
+  store?: stores;
   notifiedByEmail: boolean;
   searchValue?: string;
 }

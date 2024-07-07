@@ -3,12 +3,15 @@ import {
   DEFAULT_TIMEOUT_SELECTOR,
   SCRAP_ELEMENT_COUNT,
   availableCurrency,
+  stores,
 } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { scrollIncrementally } from '~/utils/scroll-incrementally';
 import type { Page } from 'playwright';
 import { parseAliexpressPrice } from '~/utils/parse-aliexpress-price';
 import type { ListItems, SingleItem } from '~/interfaces';
+import type { IError } from '~/interfaces/error-schema';
+import { createErrorDocument } from '../errors/createErrorDocument';
 
 interface RawItemsProps {
   name: string;
@@ -66,6 +69,11 @@ export const getAliexpressSingleItem = async ({
 
   let itemData: SingleItem | null = null;
 
+  const errorParams: Partial<IError> = {
+    message: 'Error retrieving aliexpress single item data',
+    store: stores.ALIEXPRESS,
+    searchValue: productPage,
+  };
   try {
     await changeLanguageAndCurrency(page);
 
@@ -92,8 +100,11 @@ export const getAliexpressSingleItem = async ({
       imgPath: imgPath ?? '',
     };
   } catch (err) {
-    // TODO: add error on DB
-    console.log('error retrieving data', err);
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
+    console.log('error retrieving aliexpress single item data', err);
     return null;
   }
 
@@ -137,6 +148,13 @@ export const getAliexpressListItems = async ({
 
   const context = await browser.newContext();
   let page: Page;
+
+  const errorParams: Partial<IError> = {
+    message: 'Error retrieving aliexpress list items',
+    store: stores.ALIEXPRESS,
+    searchValue: querySearch,
+  };
+
   try {
     const originalPage = await context.newPage();
     await originalPage.goto(url);
@@ -145,7 +163,12 @@ export const getAliexpressListItems = async ({
     page = await context.newPage();
   } catch (err) {
     // Failing to select the new language and currency on changeLanguageAndCurrency helper
-    // TODO: add error on DB
+    await createErrorDocument({
+      ...errorParams,
+      message:
+        'Failed to select the new language and currency on changeLanguageAndCurrency helper',
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
     await browser.close();
     return null;
   }
@@ -169,7 +192,10 @@ export const getAliexpressListItems = async ({
   }
 
   if (attempts >= 5) {
-    // TODO: add error on DB
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: 'More than 5 attempts ',
+    });
     await browser.close();
     return null;
   }
@@ -238,7 +264,10 @@ export const getAliexpressListItems = async ({
     }));
   } catch (err) {
     console.log('ERROR SCRAPPING ALIEXPRESS LIST ITEMS', err);
-    // TODO: add error on DB
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
     await browser.close();
     return null;
   }

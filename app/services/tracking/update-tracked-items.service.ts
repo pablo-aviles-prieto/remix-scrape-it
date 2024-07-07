@@ -15,6 +15,8 @@ import { productAvailableMail } from '../mail/product-available-mail.service';
 import { cleanUnusedTrackedItems } from './clean-unused-tracked-items.service';
 import { getAliexpressSingleItem } from '../scrap/aliexpress.service';
 import { getThomannSingleItem } from '../scrap/thomann.service';
+import type { IError } from '~/interfaces/error-schema';
+import { createErrorDocument } from '../errors/createErrorDocument';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -76,7 +78,14 @@ export const updateTrackedPriceAndSendMail = async ({
         }
       );
     } catch (err) {
-      // TODO: add error on DB
+      const errorParams: Partial<IError> = {
+        message: `Error updating prices on cron job updateTrackedPriceAndSendMail`,
+        store: item.store,
+        searchValue: item.url,
+        responseMessage:
+          err instanceof Error ? err.message : JSON.stringify(err),
+      };
+      await createErrorDocument(errorParams);
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
     }
 
@@ -170,13 +179,21 @@ export const updateTrackedPriceAndSendMail = async ({
   try {
     await Promise.all(allEmailPromises);
   } catch (err) {
-    // TODO: add error on DB
+    const errorParams: Partial<IError> = {
+      message: 'Error sending mails to subscribers',
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+    await createErrorDocument(errorParams);
     console.log('ERROR SENDING MAILS TO SUBSCRIBERS', err);
   }
   try {
     await cleanUnusedTrackedItems({ trackedItems });
   } catch (err) {
-    // TODO: add error on DB
+    const errorParams: Partial<IError> = {
+      message: 'Error cleaning unused tracked items',
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    };
+    await createErrorDocument(errorParams);
     console.log('ERROR CLEANING UNUSED TRACKED ITEMS', err);
   }
 };
