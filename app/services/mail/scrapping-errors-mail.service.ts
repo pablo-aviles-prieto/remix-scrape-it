@@ -13,6 +13,8 @@ interface Params {
   arrayOfErrorsID: string[];
 }
 
+// TODO: Change the url URL_TO_SCRAPEIT_ERROR_COLLECTION, so we send to the mail a concrete url
+// with the created error documents filtered, to only display the newly created documents
 export const scrappingErrorsMail = ({
   numberOfErrors,
   arrayOfErrorsID,

@@ -16,6 +16,7 @@ import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { customEllipsis } from '~/utils/custom-ellipsis';
 import { getThomannListItems } from '~/services/scrap/thomann.service';
+import { getProzisListItems } from '~/services/scrap/prozis.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -61,6 +62,7 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
     [stores.ALIEXPRESS]: getAliexpressListItems,
     [stores.COOLMOD]: getCoolmodListItems,
     [stores.THOMANN]: getThomannListItems,
+    [stores.PROZIS]: getProzisListItems,
   };
 
   try {

@@ -25,6 +25,7 @@ import {
   ALIEXPRESS_HOSTNAME,
   ALIEXPRESS_REGEX,
   COOLMOD_REGEX,
+  PROZIS_REGEX,
   THOMANN_REGEX,
   stores,
 } from './utils/const';
@@ -57,8 +58,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const isAliexpressUrl = ALIEXPRESS_REGEX.test(searchWord);
   const isCoolmodUrl = COOLMOD_REGEX.test(searchWord);
   const isThomannUrl = THOMANN_REGEX.test(searchWord);
+  const isProzisUrl = PROZIS_REGEX.test(searchWord);
 
-  if (isAliexpressUrl || isCoolmodUrl || isThomannUrl) {
+  if (isAliexpressUrl || isCoolmodUrl || isThomannUrl || isProzisUrl) {
     const url = new URL(
       searchWord.startsWith('http') ? searchWord : `https://${searchWord}`
     );
@@ -75,10 +77,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       modifiedUrl = normalizeThomannUrl(url.href);
     }
 
+    if (isProzisUrl) {
+      // TODO: Normalize the prozis url to the es lang
+    }
+
     const inferredStore = isAliexpressUrl
       ? stores.ALIEXPRESS
       : isThomannUrl
       ? stores.THOMANN
+      : isProzisUrl
+      ? stores.PROZIS
       : stores.COOLMOD;
 
     return redirect(

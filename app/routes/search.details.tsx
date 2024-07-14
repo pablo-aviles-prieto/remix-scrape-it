@@ -13,6 +13,7 @@ import { getAliexpressSingleItem } from '~/services/scrap/aliexpress.service';
 import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { getThomannSingleItem } from '~/services/scrap/thomann.service';
+import { getProzisSingleItem } from '~/services/scrap/prozis.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -57,6 +58,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     [stores.ALIEXPRESS]: getAliexpressSingleItem,
     [stores.COOLMOD]: getCoolmodSingleItem,
     [stores.THOMANN]: getThomannSingleItem,
+    [stores.PROZIS]: getProzisSingleItem,
   };
 
   try {
