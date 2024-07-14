@@ -88,13 +88,69 @@ export const getProzisListItems = async ({
   const page = await browser.newPage();
   const url = `${PROZIS_BASE_RUL}es/es/search?text=${querySearch}`;
 
-  // TODO: Remove the any type
-  let listItems: any[] = [];
+  let listItems = [];
   try {
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
 
-    listItems = [];
+    // Scroll down to the bottom of the page to get he lazy images
+    await page.evaluate(async () => {
+      await new Promise<void>((resolve) => {
+        const distance = 100; // should be less than or equal to window.innerHeight
+        const delay = 100; // milliseconds
+
+        const scrollInterval = setInterval(() => {
+          const { scrollHeight, scrollTop, clientHeight } =
+            document.documentElement;
+          if (scrollTop + clientHeight >= scrollHeight) {
+            clearInterval(scrollInterval);
+            resolve();
+          }
+          window.scrollBy(0, distance);
+        }, delay);
+      });
+    });
+
+    listItems = await page.$$eval('div.col.list-item', (items) => {
+      console.log('items', items);
+      return items.map((item) => {
+        const anchorElement = item.querySelector('a.click-layer');
+        const url = anchorElement?.getAttribute('href');
+        const name = anchorElement?.getAttribute('aria-label');
+        const img = item
+          .querySelector('img.img-block.img-fluid')
+          ?.getAttribute('src');
+        const rawPrice = item.querySelector('span.price')?.textContent?.trim();
+        const rawDiscountedPrice = item
+          .querySelector('span.price.crossed')
+          ?.textContent?.trim();
+
+        // Checking if i.icon-promo-code exists inside item-label, in that case, it means that
+        // the item-label content is a discount
+        const rawDiscountPercent = item.querySelector(
+          'div.item-label i.icon-promo-code'
+        )
+          ? item.querySelector('div.item-label')?.textContent?.trim()
+          : null;
+
+        return {
+          url,
+          name,
+          imgPath: `https:${img}`,
+          price: rawPrice?.replace('€', ''),
+          ...(rawDiscountedPrice
+            ? { discountedPrice: rawDiscountedPrice.replace('€', '') }
+            : {}),
+          ...(rawDiscountPercent
+            ? {
+                discountPercent: rawDiscountPercent
+                  .replace('DE DESCUENTO', '')
+                  .trim(),
+              }
+            : {}),
+        };
+      });
+    });
   } catch (err) {
     const errorParams: Partial<IError> = {
       message: 'Error retrieving prozis list items',
@@ -102,16 +158,20 @@ export const getProzisListItems = async ({
       searchValue: querySearch,
     };
     console.log('ERROR SCRAPPING PROZIS LIST ITEMS', err);
-    // await createErrorDocument({
-    //   ...errorParams,
-    //   responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
-    // });
-    // await browser.close();
+    await createErrorDocument({
+      ...errorParams,
+      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+    });
+    await browser.close();
     return null;
   }
 
-  // await browser.close();
+  await browser.close();
 
-  // return listItems;
-  return null;
+  const parsedListItems = listItems.map((item) => ({
+    ...item,
+    currency: availableCurrency.EUR,
+    url: `${PROZIS_BASE_RUL}${(item.url as string).substring(1)}`,
+  }));
+  return parsedListItems;
 };
