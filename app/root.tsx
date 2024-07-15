@@ -78,7 +78,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     if (isProzisUrl) {
-      // TODO: Normalize the prozis url to the es lang
+      // Normalize the prozis url to the es lang
+      const pathSegments = url.pathname.split('/').slice(3); // Remove the first three segments
+      const newPath = `/es/es/${pathSegments.join('/')}`;
+      url.pathname = newPath;
+      modifiedUrl = url.href;
     }
 
     const inferredStore = isAliexpressUrl
