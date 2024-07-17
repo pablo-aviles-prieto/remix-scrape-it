@@ -17,6 +17,7 @@ import { getAliexpressSingleItem } from '../scrap/aliexpress.service';
 import { getThomannSingleItem } from '../scrap/thomann.service';
 import type { IError } from '~/interfaces/error-schema';
 import { createErrorDocument } from '../errors/create-error-document.service';
+import { getProzisSingleItem } from '../scrap/prozis.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -35,6 +36,7 @@ const STORES_MAPPER = {
   [stores.ALIEXPRESS]: getAliexpressSingleItem,
   [stores.COOLMOD]: getCoolmodSingleItem,
   [stores.THOMANN]: getThomannSingleItem,
+  [stores.PROZIS]: getProzisSingleItem,
 };
 
 export const updateTrackedPriceAndSendMail = async ({

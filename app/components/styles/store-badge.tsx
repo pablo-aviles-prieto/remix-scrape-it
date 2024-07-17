@@ -28,6 +28,7 @@ export const STORE_IMAGE_MAPPER = {
   [stores.COOLMOD]: { src: '/images/logo_coolmod.webp', isImage: true },
   [stores.ALIEXPRESS]: { icon: AliexpressIcon, isImage: false },
   [stores.THOMANN]: { icon: ThomannIcon, isImage: false },
+  [stores.PROZIS]: { src: '/images/logo_prozis.webp', isImage: true },
 };
 
 const isImageInfo = (
