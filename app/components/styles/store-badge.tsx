@@ -1,6 +1,7 @@
 import { stores } from '~/utils/const';
 import { AliexpressIcon } from './icons/stores/aliexpress';
 import { ThomannIcon } from './icons/stores/thomann';
+import { AmazonIcon } from './icons/stores/amazon';
 
 type BadgeSizes = 'small' | 'medium' | 'large';
 
@@ -29,6 +30,7 @@ export const STORE_IMAGE_MAPPER = {
   [stores.ALIEXPRESS]: { icon: AliexpressIcon, isImage: false },
   [stores.THOMANN]: { icon: ThomannIcon, isImage: false },
   [stores.PROZIS]: { src: '/images/logo_prozis.webp', isImage: true },
+  [stores.AMAZON]: { icon: AmazonIcon, isImage: false },
 };
 
 const isImageInfo = (
