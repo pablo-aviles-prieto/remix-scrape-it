@@ -24,6 +24,8 @@ import { Toaster } from 'react-hot-toast';
 import {
   ALIEXPRESS_HOSTNAME,
   ALIEXPRESS_REGEX,
+  AMAZON_HOSTNAME,
+  AMAZON_REGEX,
   COOLMOD_REGEX,
   PROZIS_REGEX,
   THOMANN_REGEX,
@@ -59,8 +61,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const isCoolmodUrl = COOLMOD_REGEX.test(searchWord);
   const isThomannUrl = THOMANN_REGEX.test(searchWord);
   const isProzisUrl = PROZIS_REGEX.test(searchWord);
+  const isAmazonUrl = AMAZON_REGEX.test(searchWord);
 
-  if (isAliexpressUrl || isCoolmodUrl || isThomannUrl || isProzisUrl) {
+  if (
+    isAliexpressUrl ||
+    isCoolmodUrl ||
+    isThomannUrl ||
+    isProzisUrl ||
+    isAmazonUrl
+  ) {
     const url = new URL(
       searchWord.startsWith('http') ? searchWord : `https://${searchWord}`
     );
@@ -85,13 +94,28 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       modifiedUrl = url.href;
     }
 
-    const inferredStore = isAliexpressUrl
-      ? stores.ALIEXPRESS
-      : isThomannUrl
-      ? stores.THOMANN
-      : isProzisUrl
-      ? stores.PROZIS
-      : stores.COOLMOD;
+    if (isAmazonUrl) {
+      url.hostname = AMAZON_HOSTNAME;
+      modifiedUrl = url.href;
+    }
+
+    let inferredStore;
+    switch (true) {
+      case isAliexpressUrl:
+        inferredStore = stores.ALIEXPRESS;
+        break;
+      case isThomannUrl:
+        inferredStore = stores.THOMANN;
+        break;
+      case isProzisUrl:
+        inferredStore = stores.PROZIS;
+        break;
+      case isAmazonUrl:
+        inferredStore = stores.AMAZON;
+        break;
+      default:
+        inferredStore = stores.COOLMOD;
+    }
 
     return redirect(
       `/search/details?store=${inferredStore}&url=${modifiedUrl}`
