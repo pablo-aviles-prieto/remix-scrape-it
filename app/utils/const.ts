@@ -17,6 +17,7 @@ export const ALIEXPRESS_HOSTNAME = 'es.aliexpress.com';
 export const THOMANN_BASE_URL = 'https://www.thomann.de/';
 export const THOMANN_INTL_URL = 'https://www.thomann.de/intl/';
 export const PROZIS_BASE_RUL = 'https://www.prozis.com/';
+export const AMAZON_BASE_RUL = 'https://www.amazon.es/';
 
 export const dateFormat = {
   euWithTime: 'dd/MM/yyyy HH:mm',
@@ -40,6 +41,7 @@ export const availableCurrency = {
 export const getEllipsed = 'overflow-hidden text-ellipsis whitespace-nowrap';
 
 export enum stores {
+  AMAZON = 'Amazon',
   ALIEXPRESS = 'Aliexpress',
   COOLMOD = 'Coolmod',
   THOMANN = 'Thomann',

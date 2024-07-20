@@ -59,7 +59,7 @@ export const SearchContainer = () => {
             <Select
               className='!h-[28px]'
               name='selected-store'
-              defaultValue={stores.ALIEXPRESS}
+              defaultValue={stores.AMAZON}
             >
               {Object.values(stores).map((store) => (
                 <option key={store} value={store}>
