@@ -27,7 +27,6 @@ export const getProzisSingleItem = async ({
     itemData = null;
 
     const productData = await page.$eval('div.info-main.info-extras', (el) => {
-      console.log('el', el);
       const itemName = el.querySelector('p.product-name')?.textContent?.trim();
       const oldPrice = el.querySelector('p.crossed-price')?.textContent?.trim();
       const actualPrice = el
@@ -112,7 +111,6 @@ export const getProzisListItems = async ({
     });
 
     listItems = await page.$$eval('div.col.list-item', (items) => {
-      console.log('items', items);
       return items.map((item) => {
         const anchorElement = item.querySelector('a.click-layer');
         const url = anchorElement?.getAttribute('href');

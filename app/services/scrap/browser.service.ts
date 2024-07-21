@@ -46,7 +46,7 @@ const getRandomUserAgent = () =>
 
 export const getBrowser = () => {
   return chromium.launch({
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', `--user-agent=${getRandomUserAgent()}`],
     chromiumSandbox: false,
   });
