@@ -17,6 +17,7 @@ import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { customEllipsis } from '~/utils/custom-ellipsis';
 import { getThomannListItems } from '~/services/scrap/thomann.service';
 import { getProzisListItems } from '~/services/scrap/prozis.service';
+import { getAmazonListItems } from '~/services/scrap/amazon.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -63,6 +64,7 @@ export const loader = async ({ request, params }: ActionFunctionArgs) => {
     [stores.COOLMOD]: getCoolmodListItems,
     [stores.THOMANN]: getThomannListItems,
     [stores.PROZIS]: getProzisListItems,
+    [stores.AMAZON]: getAmazonListItems,
   };
 
   try {

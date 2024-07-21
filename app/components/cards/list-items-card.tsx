@@ -26,7 +26,7 @@ export const ListItemsCard = ({ item, store }: Props) => {
             'https://static.vecteezy.com/system/resources/previews/007/126/739/non_2x/question-mark-icon-free-vector.jpg'
           }
           alt={item.name}
-          className='w-full h-auto object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform'
+          className='w-full h-full object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform'
           onClick={() => setIsShown(true)}
         />
         <div

@@ -212,7 +212,6 @@ export const getAliexpressListItems = async ({
       });
 
       const itemData = await page.evaluate((item) => {
-        console.log('test');
         const url =
           item.querySelector('a.search-card-item')?.getAttribute('href') || '';
         const parsedUrl = url?.replace(/^\/\//, '');

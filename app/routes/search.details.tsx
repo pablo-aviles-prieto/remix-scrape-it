@@ -14,6 +14,7 @@ import { ErrorRetrieveData } from '~/components/error/error-retrieve-data';
 import { createBaseMetadataInfo } from '~/utils/create-base-metadata-info';
 import { getThomannSingleItem } from '~/services/scrap/thomann.service';
 import { getProzisSingleItem } from '~/services/scrap/prozis.service';
+import { getAmazonSingleItem } from '~/services/scrap/amazon.service';
 
 type LoaderResponse = {
   ok: boolean;
@@ -59,6 +60,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     [stores.COOLMOD]: getCoolmodSingleItem,
     [stores.THOMANN]: getThomannSingleItem,
     [stores.PROZIS]: getProzisSingleItem,
+    [stores.AMAZON]: getAmazonSingleItem,
   };
 
   try {

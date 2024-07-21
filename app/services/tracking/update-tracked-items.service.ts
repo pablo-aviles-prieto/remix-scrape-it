@@ -18,6 +18,7 @@ import { getThomannSingleItem } from '../scrap/thomann.service';
 import type { IError } from '~/interfaces/error-schema';
 import { createErrorDocument } from '../errors/create-error-document.service';
 import { getProzisSingleItem } from '../scrap/prozis.service';
+import { getAmazonSingleItem } from '../scrap/amazon.service';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -37,6 +38,7 @@ const STORES_MAPPER = {
   [stores.COOLMOD]: getCoolmodSingleItem,
   [stores.THOMANN]: getThomannSingleItem,
   [stores.PROZIS]: getProzisSingleItem,
+  [stores.AMAZON]: getAmazonSingleItem,
 };
 
 export const updateTrackedPriceAndSendMail = async ({

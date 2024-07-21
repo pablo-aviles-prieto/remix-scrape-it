@@ -17,6 +17,8 @@ export const ALIEXPRESS_HOSTNAME = 'es.aliexpress.com';
 export const THOMANN_BASE_URL = 'https://www.thomann.de/';
 export const THOMANN_INTL_URL = 'https://www.thomann.de/intl/';
 export const PROZIS_BASE_RUL = 'https://www.prozis.com/';
+export const AMAZON_BASE_URL = 'https://www.amazon.es/';
+export const AMAZON_HOSTNAME = 'www.amazon.es';
 
 export const dateFormat = {
   euWithTime: 'dd/MM/yyyy HH:mm',
@@ -40,6 +42,7 @@ export const availableCurrency = {
 export const getEllipsed = 'overflow-hidden text-ellipsis whitespace-nowrap';
 
 export enum stores {
+  AMAZON = 'Amazon',
   ALIEXPRESS = 'Aliexpress',
   COOLMOD = 'Coolmod',
   THOMANN = 'Thomann',
@@ -53,6 +56,8 @@ export const THOMANN_REGEX = /^(https:\/\/)?(www\.)?thomann\.de/;
 export const THOMANN_COUNTRY_CODE_REGEX =
   /https:\/\/www\.thomann\.de\/[a-z]{2}\//;
 export const PROZIS_REGEX = /^(https:\/\/)?(www\.)?prozis\.com/;
+export const AMAZON_REGEX =
+  /^(https:\/\/)?(www\.)?amazon\.[a-z]{2,3}(\.[a-z]{2})?/;
 
 export const SCRAP_ELEMENT_COUNT = 30;
 export const DEFAULT_TIMEOUT_SELECTOR = 5000;
