@@ -63,7 +63,7 @@ export const ItemModal = ({
     const getTrackingItemId = async () => {
       setIsLoading(true);
       const response = await fetch(
-        `/api/trackings?name=${itemName}&url=${urlItem}`
+        `/api/trackings?name=${itemName}&url=${urlItem}&store=${store}`
       );
       const trackedItemResponse =
         (await response.json()) as TrackingResponseGET;

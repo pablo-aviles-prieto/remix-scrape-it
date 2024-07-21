@@ -1,7 +1,6 @@
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import TrackingModel from '~/models/trackings';
-import type { stores } from '~/utils/const';
-import { errorMsgs } from '~/utils/const';
+import { stores, errorMsgs } from '~/utils/const';
 
 type Payload = {
   name: string;
@@ -22,9 +21,16 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ ok: false, error: errorMsgs.invalidPayload }, 400);
   }
 
-  const itemExists = await TrackingModel.findOne({
-    $or: [{ name }, { url }],
-  });
+  let query = {};
+  // If its Amazon store, I dont want to check by the name, since the different
+  // variants share the same name, but different urls
+  if (store === stores.AMAZON) {
+    query = { url };
+  } else {
+    query = { $or: [{ name }, { url }] };
+  }
+
+  const itemExists = await TrackingModel.findOne(query);
 
   if (!itemExists) {
     const createdTracking = await TrackingModel.create({
@@ -51,8 +57,9 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
   const url = new URL(request.url);
   const queryName = url.searchParams.get('name');
   const queryUrl = url.searchParams.get('url');
+  const queryStore = url.searchParams.get('store');
 
-  if (!queryUrl || !queryName) {
+  if (!queryUrl || !queryName || !queryStore) {
     return json(
       {
         ok: false,
@@ -62,9 +69,16 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const itemExists = await TrackingModel.findOne({
-    $or: [{ name: queryName }, { url: queryUrl }],
-  });
+  let query = {};
+  // If its Amazon store, I dont want to check by the name, since the different
+  // variants share the same name, but different urls
+  if (queryStore === stores.AMAZON) {
+    query = { url: queryUrl };
+  } else {
+    query = { $or: [{ name: queryName }, { url: queryUrl }] };
+  }
+
+  const itemExists = await TrackingModel.findOne(query);
 
   if (!itemExists) {
     return json({ ok: true, item: undefined });
