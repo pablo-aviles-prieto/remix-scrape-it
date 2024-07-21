@@ -1,11 +1,7 @@
 import * as React from 'react';
 
 export const AmazonIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns='http://www.w3.org/2000/svg'
-    viewBox='163.5 163.5 285 285'
-    {...props}
-  >
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='163 258 285 95' {...props}>
     <g fillRule='evenodd' clipRule='evenodd'>
       <path
         fill='#f90'
