@@ -2,7 +2,7 @@ import { isBefore, subDays } from 'date-fns';
 import type { IDocTracking } from '~/interfaces/tracking-schema';
 import TrackingModel from '~/models/trackings';
 
-const MIN_ITEMS_NEEDED = 10;
+const MIN_ITEMS_NEEDED = 15;
 
 interface CleanUnusedTrackedItemsProps {
   trackedItems: IDocTracking[];
@@ -48,7 +48,7 @@ export const cleanUnusedTrackedItems = async ({
     ),
   ];
 
-  // Ensure at least 6 items remain, filling it with the inactiveItems sorted by newest
+  // Ensure at least 15 items remain, filling it with the inactiveItems sorted by newest
   if (remainingItems.length < MIN_ITEMS_NEEDED) {
     // Sort the inactive items by creation date (newest first)
     const sortedInactiveItems = [...inactiveItems].sort(

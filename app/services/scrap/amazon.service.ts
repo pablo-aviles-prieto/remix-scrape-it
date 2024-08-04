@@ -7,6 +7,7 @@ import { parseAmount } from '~/utils/parse-amount';
 
 const BASE_URL_WITHOUT_TRAILING_SLASH = AMAZON_BASE_URL.slice(0, -1);
 
+// TODO: In amazon, get the SN of the product and store that simple URL
 export const getAmazonSingleItem = async ({
   productPage,
 }: {
