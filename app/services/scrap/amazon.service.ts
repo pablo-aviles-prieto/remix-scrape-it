@@ -7,7 +7,7 @@ import { parseAmount } from '~/utils/parse-amount';
 
 const BASE_URL_WITHOUT_TRAILING_SLASH = AMAZON_BASE_URL.slice(0, -1);
 
-// TODO: In amazon, get the SN of the product and store that simple URL
+// TODO: In amazon, get the SN of the product and store that simple URL!
 export const getAmazonSingleItem = async ({
   productPage,
 }: {
@@ -29,7 +29,10 @@ export const getAmazonSingleItem = async ({
 
   try {
     const actualPrice = await page.$eval('span.a-price', (el) => {
-      return el.querySelector('span.a-offscreen')?.textContent?.trim();
+      return el
+        .querySelector('span.a-offscreen')
+        ?.textContent?.trim()
+        ?.replace('€', '');
     });
     itemData = { actualPrice, discount: undefined, oldPrice: undefined };
   } catch {
@@ -50,7 +53,8 @@ export const getAmazonSingleItem = async ({
           ?.replace('-', '');
         const oldPrice = el
           .querySelector('span.a-price.a-text-price')
-          ?.firstElementChild?.textContent?.trim();
+          ?.firstElementChild?.textContent?.trim()
+          ?.replace('€', '');
 
         return { discount, oldPrice };
       }
