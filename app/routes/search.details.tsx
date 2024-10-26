@@ -27,12 +27,10 @@ type LoaderResponse = {
 const ERROR_MESSAGE =
   'No se pudo obtener los datos del producto, revise el enlace proporcionado e inténtelo más tarde.';
 
-export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+export const meta: MetaFunction = ServerRuntimeMetaArgs => {
   const metadata = createBaseMetadataInfo(ServerRuntimeMetaArgs);
   // removing the base metadata title
-  const filteredMetadata = metadata.filter(
-    (metaItem) => !metaItem.hasOwnProperty('title')
-  );
+  const filteredMetadata = metadata.filter(metaItem => !metaItem.hasOwnProperty('title'));
   return [
     {
       title: `Obteniendo información...`,
@@ -99,7 +97,7 @@ export default function SearchIndex() {
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
           <Await resolve={data as Promise<SingleItem | null>}>
-            {(resolvedData) => {
+            {resolvedData => {
               if (!resolvedData) {
                 return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
               }

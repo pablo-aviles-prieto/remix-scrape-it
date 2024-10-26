@@ -41,8 +41,7 @@ const userAgents = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Safari/537.36',
 ];
 
-const getRandomUserAgent = () =>
-  userAgents[Math.floor(Math.random() * userAgents.length)];
+const getRandomUserAgent = () => userAgents[Math.floor(Math.random() * userAgents.length)];
 
 export const getBrowser = () => {
   return chromium.launch({
