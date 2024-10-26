@@ -20,7 +20,7 @@ async function waitForDiscountChange(page: Page) {
       return element && !element.classList.contains('!hidden');
     },
     undefined, // Argument for the function, if any (not used here)
-    { timeout: 2000 } // Set timeout to 3 seconds
+    { timeout: 2000 } // Set timeout to 2 seconds
   );
 }
 
@@ -40,7 +40,7 @@ export const getCoolmodSingleItem = async ({ productPage }: { productPage: strin
   try {
     await waitForDiscountChange(page);
   } catch (err) {
-    console.log('discount change didnt happens', err);
+    // Item has no discount theoretically
   }
 
   const imgPath = await page.$eval('#section-product-gallery', gallery => {
