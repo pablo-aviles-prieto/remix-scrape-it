@@ -13,22 +13,18 @@ import { createErrorDocument } from '../errors/create-error-document.service';
  ** is always 0,00 even when no discount exists, CMS things.
  */
 async function waitForDiscountChange(page: Page) {
-  // Wait for either the `d-none` class to be removed or the element to be removed
+  // Wait for either the `!hidden` class to be removed or timeout after 3 seconds
   await page.waitForFunction(
     () => {
-      const element = document.querySelector('.discount');
-      return !element || !element.classList.contains('d-none');
+      const element = document.querySelector('div.discount-badge-product');
+      return element && !element.classList.contains('!hidden');
     },
-    undefined, // The 2nd argument is an arg passed to the function of the 1st arg
-    { timeout: 10000 } // the timeout option obj is the 3rd arg
+    undefined, // Argument for the function, if any (not used here)
+    { timeout: 2000 } // Set timeout to 3 seconds
   );
 }
 
-export const getCoolmodSingleItem = async ({
-  productPage,
-}: {
-  productPage: string;
-}) => {
+export const getCoolmodSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
@@ -41,79 +37,42 @@ export const getCoolmodSingleItem = async ({
     searchValue: productPage,
   };
 
-  // Check if the class productrightpadding exists, if not it means that
-  // there is no price info for the product
-  const productRightPaddingExists = await page.$('.productrightpadding');
-  if (!productRightPaddingExists) {
-    await browser.close();
-    return null;
-  }
-
   try {
     await waitForDiscountChange(page);
   } catch (err) {
     console.log('discount change didnt happens', err);
   }
 
-  let itemData = undefined;
-  const inputElement = await page.$('#layerdt');
-  const itemName =
-    (await inputElement?.getAttribute('data-itemname')) || undefined;
+  const imgPath = await page.$eval('#section-product-gallery', gallery => {
+    const firstImg = gallery.querySelector('img');
+    return firstImg ? firstImg.src : null;
+  });
 
-  const imgElement = await page.$('#productmainimageitem');
-  const imgPath = (await imgElement?.getAttribute('src')) || undefined;
+  const itemData = await page.$eval(
+    'div.col-span-12.lg\\:col-span-4.flex.flex-col.gap-2.relative',
+    itemBlockData => {
+      const itemName = itemBlockData.querySelector('h1.text-2xl.font-bold')?.textContent?.trim();
+      const oldPrice = itemBlockData.querySelector('p.price-old-product')?.textContent?.trim();
 
-  try {
-    const oldPrice = await page.$eval(
-      '#discountProductPrice .crossout',
-      (el) => {
-        const amount = el.querySelector('#oldprice')?.textContent?.trim();
-        return { amount };
-      }
-    );
-    const actualPrice =
-      (await inputElement?.getAttribute('data-itemprice')) || undefined;
+      const priceWithoutDecimals = itemBlockData
+        .querySelector('span.product_price.int_price')
+        ?.textContent?.trim();
+      const decimals = itemBlockData.querySelector('span.dec_price')?.textContent?.trim();
+      const actualPrice = `${priceWithoutDecimals}.${decimals}`;
 
-    const discountElement = await page.$('.ratebox');
-    const discount =
-      (await discountElement?.textContent())?.trim() || undefined;
-
-    itemData = {
-      oldPrice: oldPrice.amount,
-      actualPrice,
-      itemName,
-      currency: availableCurrency.EUR,
-      imgPath,
-      discount,
-    };
-  } catch (err) {
-    // Meaning the product doesnt have a discount
-  }
-
-  try {
-    if (!itemData?.oldPrice) {
-      const actualPrice = await page.$eval('#normalpriceproduct', (el) => {
-        const amount = el
-          .querySelector('#normalpricenumber')
-          ?.textContent?.trim();
-        const currency = el.textContent?.replace(amount ?? '', '').trim();
-        return { amount, currency };
-      });
-
-      itemData = {
-        actualPrice: actualPrice.amount,
-        itemName,
-        currency: availableCurrency.EUR,
-        imgPath,
-      };
+      const discount = itemBlockData
+        .querySelector('div.discount-badge-product')
+        ?.textContent?.trim();
+      const parsedDiscount = discount?.replace('Dto. ', '')?.trim();
+      return { itemName, oldPrice, actualPrice, discount: parsedDiscount };
     }
-  } catch (err) {
-    // If this error happens it means that didnt find an oldPrice (#discountProductPrice .crossout)
-    // and also, didnt find the selector for actualPrice (#normalpriceproduct), so we just close the browser
-    console.log('ERROR SCRAPPING COOLMOD SINGLE ITEM', err);
+  );
+
+  if (!imgPath || !itemData.itemName || !itemData.actualPrice) {
+    console.log('No image path, or item name, or actual price found');
     await createErrorDocument({
       ...errorParams,
-      responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
+      responseMessage: 'No image path, or item name, or actual price found',
     });
     await browser.close();
     return null;
@@ -121,19 +80,16 @@ export const getCoolmodSingleItem = async ({
 
   await browser.close();
   return {
-    ...itemData,
-    ...(itemData?.oldPrice
-      ? { oldPrice: formatAmount(parseAmount(itemData.oldPrice)) }
-      : {}),
-    actualPrice: formatAmount(parseAmount(itemData?.actualPrice ?? '')),
+    ...(itemData.oldPrice ? { oldPrice: formatAmount(parseAmount(itemData.oldPrice)) } : {}),
+    actualPrice: formatAmount(parseAmount(itemData.actualPrice)),
+    imgPath,
+    itemName: itemData.itemName,
+    currency: availableCurrency.EUR,
+    discount: itemData.discount,
   };
 };
 
-export const getCoolmodListItems = async ({
-  querySearch,
-}: {
-  querySearch: string;
-}) => {
+export const getCoolmodListItems = async ({ querySearch }: { querySearch: string }) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
@@ -147,16 +103,14 @@ export const getCoolmodListItems = async ({
 
     listItems = await page.$$eval(
       'div.dfd-card.dfd-card-preset-product.dfd-card-type-indiceproductos',
-      (items) => {
-        const parsedItems = items.map((item) => {
+      items => {
+        const parsedItems = items.map(item => {
           const url = item.getAttribute('dfd-value-link');
           const imgPath = item
             .querySelector('.dfd-card-thumbnail img')
             ?.getAttribute('src')
             ?.replace('normal', 'large');
-          const name = item
-            .querySelector('.dfd-card-title')
-            ?.textContent?.trim();
+          const name = item.querySelector('.dfd-card-title')?.textContent?.trim();
           const discountedPrice = item
             .querySelector('.dfd-card-price.dfd-card-price--sale')
             ?.getAttribute('data-value')
@@ -199,7 +153,7 @@ export const getCoolmodListItems = async ({
 
   await browser.close();
 
-  const parsedListItems = listItems.map((item) => ({
+  const parsedListItems = listItems.map(item => ({
     ...item,
     price: formatAmount(parseAmount(item.price ?? '')),
     currency: availableCurrency.EUR,
