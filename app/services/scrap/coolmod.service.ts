@@ -84,7 +84,7 @@ export const getCoolmodSingleItem = async ({ productPage }: { productPage: strin
     actualPrice: formatAmount(parseAmount(itemData.actualPrice)),
     imgPath,
     itemName: itemData.itemName,
-    currency: '€',
+    currency: availableCurrency.EUR,
     discount: itemData.discount,
   };
 };
