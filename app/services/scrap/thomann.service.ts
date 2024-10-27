@@ -6,11 +6,7 @@ import { formatAmount } from '~/utils/format-amount';
 import type { IError } from '~/interfaces/error-schema';
 import { createErrorDocument } from '../errors/create-error-document.service';
 
-export const getThomannSingleItem = async ({
-  productPage,
-}: {
-  productPage: string;
-}) => {
+export const getThomannSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
@@ -26,17 +22,12 @@ export const getThomannSingleItem = async ({
   try {
     const itemData = await page.evaluate(() => {
       const actualPrice =
-        document
-          .querySelector('meta[itemprop="price"]')
-          ?.getAttribute('content') ?? '';
-      const itemName =
-        document
-          .querySelector('h1.product-title__title')
-          ?.textContent?.trim() ?? '';
+        document.querySelector('meta[itemprop="price"]')?.getAttribute('content') ?? '';
+      const itemNameBlock = document.querySelector('div.product-title');
+      const itemName = itemNameBlock?.querySelector('h1')?.textContent?.trim();
       const imgPath =
-        document
-          .querySelector('img.ZoomCurrentImage.spotlight__item-image')
-          ?.getAttribute('src') ?? '';
+        document.querySelector('img.ZoomCurrentImage.spotlight__item-image')?.getAttribute('src') ??
+        '';
 
       return { itemName, actualPrice, imgPath };
     });
@@ -69,11 +60,7 @@ export const getThomannSingleItem = async ({
   }
 };
 
-export const getThomannListItems = async ({
-  querySearch,
-}: {
-  querySearch: string;
-}) => {
+export const getThomannListItems = async ({ querySearch }: { querySearch: string }) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
@@ -89,41 +76,32 @@ export const getThomannListItems = async ({
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
 
-    const listItems = await page.$$eval(
-      'div.fx-product-list-entry',
-      (items) => {
-        return items.map((item) => {
-          const productImage = item.querySelector('a.product__image');
-          const url = productImage?.getAttribute('href') ?? '';
-          const sourceElement = productImage?.querySelector('picture source');
-          const imageUrl = sourceElement?.getAttribute('srcset') ?? '';
+    const listItems = await page.$$eval('div.fx-product-list-entry', items => {
+      return items.map(item => {
+        const productImage = item.querySelector('a.product__image');
+        const url = productImage?.getAttribute('href') ?? '';
+        const sourceElement = productImage?.querySelector('picture source');
+        const imageUrl = sourceElement?.getAttribute('srcset') ?? '';
 
-          const productContent = item.querySelector('a.product__content');
-          const price =
-            productContent?.querySelector('span.product__price-primary')
-              ?.textContent ?? '';
+        const productContent = item.querySelector('a.product__content');
+        const price =
+          productContent?.querySelector('span.product__price-primary')?.textContent ?? '';
 
-          const manufacturer =
-            productContent?.querySelector('.title__manufacturer')
-              ?.textContent ?? '';
-          const name =
-            productContent?.querySelector('.title__name')?.textContent ?? '';
-          const fullTitle = `${manufacturer} ${name}`.trim();
+        const manufacturer =
+          productContent?.querySelector('.title__manufacturer')?.textContent ?? '';
+        const name = productContent?.querySelector('.title__name')?.textContent ?? '';
+        const fullTitle = `${manufacturer} ${name}`.trim();
 
-          return { name: fullTitle, imgPath: imageUrl, url, price };
-        });
-      }
-    );
+        return { name: fullTitle, imgPath: imageUrl, url, price };
+      });
+    });
     /*
      ** Have to replace the '.' since the dot is used for thousand separator and there are
      ** a lot of items without decimals, so the formatter thinks is a decimal separator
      ** instead of the thousand separator
      */
-    const parsedItems: ListItems[] = listItems.map((item) => {
-      const priceWithoutCurrencySign = item.price
-        .replaceAll('€', '')
-        .replaceAll('.', '')
-        .trim();
+    const parsedItems: ListItems[] = listItems.map(item => {
+      const priceWithoutCurrencySign = item.price.replaceAll('€', '').replaceAll('.', '').trim();
       const parsedPrice = formatAmount(parseAmount(priceWithoutCurrencySign));
       return { ...item, price: parsedPrice, currency: availableCurrency.EUR };
     });
