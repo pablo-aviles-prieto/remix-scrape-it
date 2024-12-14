@@ -20,32 +20,59 @@ interface RawItemsProps {
   rawPrice: string;
 }
 
-const changeLanguageAndCurrency = async (page: Page) => {
-  const clickOnCurrencySelector = await page.$(
-    'div[class*="ship-to--menuItem"]'
+/*
+ ** In case the media displayed is actually a video instead of an image, we gotta get the
+ ** thumbnail of the image, and parse it to remove the crop it might have (checking if there
+ ** is 2 jpg suffix on the string)
+ */
+const retrieveFirstImage = async (page: Page) => {
+  let imgPath: string | null = null;
+  try {
+    imgPath = await page.$eval('img[class*="magnifier--image--"]', el => el.getAttribute('src'));
+    console.log('imgPath', imgPath);
+    if (imgPath) return imgPath;
+  } catch (error) {
+    // Selector (img) not found, meaning the first media in the page is a video
+  }
+
+  // Since there is no image, it means its a video, we have to get the tumbnail image in this case
+  // and remove the crop it might have
+  imgPath = await page.$eval('div[class*="slider--wrap--"] div[class*="slider--img--"] img', el =>
+    el.getAttribute('src')
   );
+  if (!imgPath) throw new Error(`Couldn't find a thumbnail image as backup`);
+
+  // Checking multiple and different extensiones
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+  // The regex is replacing the string _200x200q72.jpg
+  // It removes the underscore, the width number, the 'x' word, the height number
+  // the quality number (optional) and the img extension (from the possible extensions on the array)
+  const removeCropPattern = new RegExp(`(_\\d+x\\d+(q\\d+)?\\.(?:${imageExtensions.join('|')}))`);
+
+  // const cleanThumbnailCrop = imgPath.replace(/(_\d+x\d+q\d+\.jpg)/, '');
+  const cleanThumbnailCrop = imgPath.replace(removeCropPattern, '');
+  return cleanThumbnailCrop;
+};
+
+const changeLanguageAndCurrency = async (page: Page) => {
+  const clickOnCurrencySelector = await page.$('div[class*="ship-to--menuItem"]');
   clickOnCurrencySelector?.click();
   await page.waitForSelector('div[class*="saveBtn"]');
   const saveBtnElement = await page.$('div[class*="saveBtn"]');
 
-  await page.evaluate(async (saveBtnElement) => {
-    const delay = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
+  await page.evaluate(async saveBtnElement => {
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const elements = Array.from(
-      document.querySelectorAll('div[class*="form-item--title"]')
-    );
+    const elements = Array.from(document.querySelectorAll('div[class*="form-item--title"]'));
     const sendToElement =
-      elements.find((element) => element.textContent?.trim() === 'Enviar a') ||
-      null;
-    const countrySelect = sendToElement?.nextElementSibling
-      ?.firstElementChild as HTMLElement;
+      elements.find(element => element.textContent?.trim() === 'Enviar a') || null;
+    const countrySelect = sendToElement?.nextElementSibling?.firstElementChild as HTMLElement;
     // Opening the country select input
     (countrySelect?.firstElementChild as HTMLElement)?.click();
 
     const selectOptions = countrySelect?.lastElementChild as HTMLElement;
     const options = Array.from(selectOptions.children);
-    const targetOption = options.find((option) =>
+    const targetOption = options.find(option =>
       option?.textContent?.includes('España')
     ) as HTMLElement;
     targetOption?.click();
@@ -55,11 +82,7 @@ const changeLanguageAndCurrency = async (page: Page) => {
   }, saveBtnElement);
 };
 
-export const getAliexpressSingleItem = async ({
-  productPage,
-}: {
-  productPage: string;
-}) => {
+export const getAliexpressSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -81,17 +104,12 @@ export const getAliexpressSingleItem = async ({
     await newPage.goto(productPage);
     await newPage.waitForLoadState('domcontentloaded');
 
-    const actualPrice = await page.$eval('.product-price-value', (el) => {
+    const actualPrice = await page.$eval('.product-price-value', el => {
       return el.textContent?.trim();
     });
 
-    const itemName = await page.$eval('h1[data-pl]', (el) =>
-      el.textContent?.trim()
-    );
-
-    const imgPath = await page.$eval('img[class*="magnifier--image--"]', (el) =>
-      el.getAttribute('src')
-    );
+    const itemName = await page.$eval('h1[data-pl]', el => el.textContent?.trim());
+    const imgPath = await retrieveFirstImage(page);
 
     itemData = {
       actualPrice: parseAliexpressPrice(actualPrice ?? ''),
@@ -105,22 +123,18 @@ export const getAliexpressSingleItem = async ({
       responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
     });
     console.log('error retrieving aliexpress single item data', err);
+    await browser.close();
     return null;
   }
 
   // Retrieving the possible oldPrice and discount
   try {
-    const { oldPrice, discount } = await page.$eval(
-      'div[class*="price--original--"]',
-      (el) => {
-        const spans = el.querySelectorAll('span');
-        const oldPrice = spans[0]?.textContent?.trim() || null;
-        const discount =
-          spans[1]?.textContent?.trim().replace('-', '').replace(' dto.', '') ||
-          null;
-        return { oldPrice, discount };
-      }
-    );
+    const { oldPrice, discount } = await page.$eval('div[class*="price--original--"]', el => {
+      const spans = el.querySelectorAll('span');
+      const oldPrice = spans[0]?.textContent?.trim() || null;
+      const discount = spans[1]?.textContent?.trim().replace('-', '').replace(' dto.', '') || null;
+      return { oldPrice, discount };
+    });
     itemData =
       itemData && oldPrice && discount
         ? { ...itemData, oldPrice: parseAliexpressPrice(oldPrice), discount }
@@ -133,11 +147,7 @@ export const getAliexpressSingleItem = async ({
   return itemData;
 };
 
-export const getAliexpressListItems = async ({
-  querySearch,
-}: {
-  querySearch: string;
-}) => {
+export const getAliexpressListItems = async ({ querySearch }: { querySearch: string }) => {
   const browser = await getBrowser();
   const url = `${ALIEXPRESS_BASE_URL}w/wholesale-${querySearch}.html?g=y&spm=a2g0o.home.search.0`;
 
@@ -165,8 +175,7 @@ export const getAliexpressListItems = async ({
     // Failing to select the new language and currency on changeLanguageAndCurrency helper
     await createErrorDocument({
       ...errorParams,
-      message:
-        'Failed to select the new language and currency on changeLanguageAndCurrency helper',
+      message: 'Failed to select the new language and currency on changeLanguageAndCurrency helper',
       responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
     });
     await browser.close();
@@ -211,27 +220,19 @@ export const getAliexpressListItems = async ({
         timeout: DEFAULT_TIMEOUT_SELECTOR,
       });
 
-      const itemData = await page.evaluate((item) => {
-        const url =
-          item.querySelector('a.search-card-item')?.getAttribute('href') || '';
+      const itemData = await page.evaluate(item => {
+        const url = item.querySelector('a.search-card-item')?.getAttribute('href') || '';
         const parsedUrl = url?.replace(/^\/\//, '');
 
-        const imageUrls = Array.from(
-          item.querySelectorAll('div[class^="images--imageWindow"] img')
-        )
-          .map((img) => img.getAttribute('src'))
-          .map((src) => (src ? src.replace(/^\/\//, 'https://') : null))
-          .filter((src) => src !== null) as string[];
+        const imageUrls = Array.from(item.querySelectorAll('div[class^="images--imageWindow"] img'))
+          .map(img => img.getAttribute('src'))
+          .map(src => (src ? src.replace(/^\/\//, 'https://') : null))
+          .filter(src => src !== null) as string[];
 
-        const name =
-          item
-            .querySelector('div[class^="multi--title"]')
-            ?.getAttribute('title') || '';
+        const name = item.querySelector('div[class^="multi--title"]')?.getAttribute('title') || '';
 
-        const rawPrice = Array.from(
-          item.querySelectorAll('div[class^="multi--price-sale"] span')
-        )
-          .map((span) => span.textContent)
+        const rawPrice = Array.from(item.querySelectorAll('div[class^="multi--price-sale"] span'))
+          .map(span => span.textContent)
           .join('');
 
         return {
@@ -251,10 +252,8 @@ export const getAliexpressListItems = async ({
       }
     }
 
-    const rawItemsWithImages = rawItems.filter(
-      (item) => item.images.length > 0
-    );
-    listItems = rawItemsWithImages.map((item) => ({
+    const rawItemsWithImages = rawItems.filter(item => item.images.length > 0);
+    listItems = rawItemsWithImages.map(item => ({
       name: item.name,
       url: `https://${item.url}`,
       imgPath: item.images[0],
