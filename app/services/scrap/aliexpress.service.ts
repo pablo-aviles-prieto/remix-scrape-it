@@ -97,6 +97,21 @@ export const getAliexpressSingleItem = async ({ productPage }: { productPage: st
     store: stores.ALIEXPRESS,
     searchValue: productPage,
   };
+
+  let isThereCaptcha: boolean | null = null;
+  try {
+    isThereCaptcha = !!(await page.$('div.J_MIDDLEWARE_FRAME_WIDGET'));
+  } catch (err) {
+    // didn't find the captcha, so move on
+  }
+  try {
+    if (isThereCaptcha) throw new Error('Captcha');
+  } catch (err) {
+    console.log('THERE IS A CAPTCHA IN ALIEXPRESS', err);
+    console.log(':: DETAILS ON THE CAPTCHA ::', errorParams);
+    return null;
+  }
+
   try {
     await changeLanguageAndCurrency(page);
 
