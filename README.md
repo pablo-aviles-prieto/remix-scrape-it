@@ -1,4 +1,4 @@
-# 🛒 ScrapeIt - Price Tracking and Notification System
+# 🛒 ScrapeIt - Price Tracking and Notification System!
 
 ScrapeIt is a versatile web application that allows users to track prices of products from various online stores. Whether you're monitoring the latest tech gadgets or keeping an eye on musical instruments, ScrapeIt simplifies price tracking and notifies you when prices drop.
 
