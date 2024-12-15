@@ -29,7 +29,6 @@ const retrieveFirstImage = async (page: Page) => {
   let imgPath: string | null = null;
   try {
     imgPath = await page.$eval('img[class*="magnifier--image--"]', el => el.getAttribute('src'));
-    console.log('imgPath', imgPath);
     if (imgPath) return imgPath;
   } catch (error) {
     // Selector (img) not found, meaning the first media in the page is a video
@@ -49,7 +48,6 @@ const retrieveFirstImage = async (page: Page) => {
   // the quality number (optional) and the img extension (from the possible extensions on the array)
   const removeCropPattern = new RegExp(`(_\\d+x\\d+(q\\d+)?\\.(?:${imageExtensions.join('|')}))`);
 
-  // const cleanThumbnailCrop = imgPath.replace(/(_\d+x\d+q\d+\.jpg)/, '');
   const cleanThumbnailCrop = imgPath.replace(removeCropPattern, '');
   return cleanThumbnailCrop;
 };
