@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { dateFormat } from '~/utils/const';
+import { parsedDisplayedPriceString } from '~/utils/parse-displayed-price-string';
 
 type Props = {
   item: TrackingResponse;
@@ -29,7 +30,7 @@ export const TablePricingHistory = ({ item }: Props) => {
             }`}
           >
             <span className='text-xs text-slate-400'>Precio: </span>
-            {priceObj.price + item.currency}
+            {parsedDisplayedPriceString(priceObj.price, item.currency)}
           </p>
         </div>
       ))}
