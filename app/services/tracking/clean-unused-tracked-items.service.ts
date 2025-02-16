@@ -2,7 +2,7 @@ import { isBefore, subDays } from 'date-fns';
 import type { IDocTracking } from '~/interfaces/tracking-schema';
 import TrackingModel from '~/models/trackings';
 
-const MIN_ITEMS_NEEDED = 15;
+const MIN_ITEMS_NEEDED = 20;
 
 interface CleanUnusedTrackedItemsProps {
   trackedItems: IDocTracking[];
@@ -18,34 +18,28 @@ const isDateOlderThan7Days = (date: Date): boolean => {
  ** TODO: Should be taken in mind if an item has the last price obtained several days ago
  ** meaning that the website doesnt have a price and should be candidate to remove first
  */
-export const cleanUnusedTrackedItems = async ({
-  trackedItems,
-}: CleanUnusedTrackedItemsProps) => {
+export const cleanUnusedTrackedItems = async ({ trackedItems }: CleanUnusedTrackedItemsProps) => {
   if (trackedItems.length <= MIN_ITEMS_NEEDED) return;
 
   // Separate items with and without subscriptions
   const itemsWithSubscriptions = trackedItems.filter(
-    (item) =>
-      item.subscribers?.length > 0 || item.desiredPriceSubscribers?.length > 0
+    item => item.subscribers?.length > 0 || item.desiredPriceSubscribers?.length > 0
   );
   const itemsWithoutSubscriptions = trackedItems.filter(
-    (item) =>
+    item =>
       (!item.subscribers || item.subscribers.length === 0) &&
-      (!item.desiredPriceSubscribers ||
-        item.desiredPriceSubscribers.length === 0)
+      (!item.desiredPriceSubscribers || item.desiredPriceSubscribers.length === 0)
   );
 
   // Filter out items without subscriptions that are inactive for more than a week
-  const inactiveItems = itemsWithoutSubscriptions.filter((item) =>
+  const inactiveItems = itemsWithoutSubscriptions.filter(item =>
     isDateOlderThan7Days(item.lastSubscriberUpdate)
   );
 
   // Combine items with subscriptions and active items without subscriptions
   let remainingItems = [
     ...itemsWithSubscriptions,
-    ...itemsWithoutSubscriptions.filter(
-      (item) => !isDateOlderThan7Days(item.lastSubscriberUpdate)
-    ),
+    ...itemsWithoutSubscriptions.filter(item => !isDateOlderThan7Days(item.lastSubscriberUpdate)),
   ];
 
   // Ensure at least 15 items remain, filling it with the inactiveItems sorted by newest
@@ -57,26 +51,23 @@ export const cleanUnusedTrackedItems = async ({
 
     // Add the newest inactive items to the remaining items until we have at least 6
     const additionalItemsNeeded = MIN_ITEMS_NEEDED - remainingItems.length;
-    remainingItems = [
-      ...remainingItems,
-      ...sortedInactiveItems.slice(0, additionalItemsNeeded),
-    ];
+    remainingItems = [...remainingItems, ...sortedInactiveItems.slice(0, additionalItemsNeeded)];
   }
 
   // Remove the inactive items that should be deleted
-  const remainingItemIds = remainingItems.map((item) => item._id.toString());
+  const remainingItemIds = remainingItems.map(item => item._id.toString());
   const itemsToDelete = inactiveItems.filter(
-    (item) => !remainingItemIds.includes(item._id.toString())
+    item => !remainingItemIds.includes(item._id.toString())
   );
 
   // Log the info of items to be deleted!
-  itemsToDelete.forEach((item) => {
+  itemsToDelete.forEach(item => {
     console.log(
       `Deleting item: ${item.name}, with url: ${item.url}, where last subscriber was the: ${item.lastSubscriberUpdate}, created on ${item.createdAt}`
     );
   });
 
   await TrackingModel.deleteMany({
-    _id: { $in: itemsToDelete.map((item) => item._id) },
+    _id: { $in: itemsToDelete.map(item => item._id) },
   });
 };
