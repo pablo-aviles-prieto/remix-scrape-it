@@ -1,29 +1,26 @@
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
-import { RegularButton } from '../styles/regular-button';
-import { format } from 'date-fns';
-import { dateFormat } from '~/utils/const';
-import { SubscribeModal } from '../modal/subscribe-modal';
+import { RegularButton } from '../../styles/regular-button';
+import { SubscribeModal } from '../../modal/subscribe-modal';
 import { useEffect, useState } from 'react';
 import { Dialog } from 'evergreen-ui';
 import { customEllipsis } from '~/utils/custom-ellipsis';
 import { useModifyDocumentTitle } from '~/hooks/use-modify-metadata-title';
-import type { StoreImageInfo } from '../styles/store-badge';
-import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
+import type { StoreImageInfo } from '../../styles/store-badge';
+import { STORE_IMAGE_MAPPER, StoreBadge } from '../../styles/store-badge';
+import { PriceBlock } from '~/components/cards/tracking-item-card/price-block';
 
 type Props = {
   item: TrackingResponse;
 };
 
 export const TrackingItemCard = ({ item }: Props) => {
-  console.log('item', item);
   const [isShown, setIsShown] = useState(false);
-  const { [item.prices.length - 1]: lastUnparsedPrice } = item.prices;
   const { modifyDocTitle } = useModifyDocumentTitle();
   const lastValidPrice = [...item.prices]
     .reverse()
     .find(p => !isNaN(parseFloat(p.price)) && isFinite(Number(p.price)));
 
-  const lastPrice = lastValidPrice ?? lastUnparsedPrice;
+  const lastPrice = lastValidPrice;
 
   // Have to modify this on client comp to avoid rehydratation error things (updateDehydratedSuspenseComponent)
   useEffect(() => {
@@ -49,12 +46,7 @@ export const TrackingItemCard = ({ item }: Props) => {
               Subscríbete para que te notifiquemos cuando llegue al precio indicado o para recibir
               diariamente en el correo el seguimiento de este producto!
             </p>
-            <h1 className='text-gray-700 font-bold text-xl mt-2'>
-              {lastPrice.price + item.currency}{' '}
-              <span className='text-[10px] uppercase'>
-                Último precio ({format(new Date(lastPrice.date), dateFormat.euWithTime)})
-              </span>
-            </h1>
+            <PriceBlock lastPrice={lastPrice} currency={item.currency} />
           </div>
           <div className='flex gap-2 flex-col sm:flex-row item-center justify-between mt-3'>
             <a

@@ -5,6 +5,7 @@ import { dateFormat } from '~/utils/const';
 import { RegularButton } from '../styles/regular-button';
 import type { StoreImageInfo } from '../styles/store-badge';
 import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
+import { parsedDisplayedPriceString } from '~/utils/parse-displayed-price-string';
 
 type Props = {
   item: TrackingResponse;
@@ -43,18 +44,15 @@ export const CarouselItemCard = ({ item }: Props) => {
           <div className='text-sm my-2'>
             Últimos precios:
             <ul>
-              {sortedPrices.slice(0, 5).map((priceObj) => (
-                <li
-                  key={priceObj.date.toString()}
-                  className='flex gap-2 text-sm'
-                >
+              {sortedPrices.slice(0, 5).map(priceObj => (
+                <li key={priceObj.date.toString()} className='flex gap-2 text-sm'>
                   <p>
                     <span className='text-xs text-slate-400'>Fecha: </span>
                     {format(new Date(priceObj.date), dateFormat.euWithTime)}
                   </p>
                   <p>
                     <span className='text-xs text-slate-400'>Precio: </span>
-                    {priceObj.price + item.currency}
+                    {parsedDisplayedPriceString(priceObj.price, item.currency)}
                   </p>
                 </li>
               ))}
