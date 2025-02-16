@@ -1,5 +1,4 @@
-// TODO: Scrap 3 times per day
 export const schedules = {
-  updatePricesMidnight: '0 0 * * *',
-  updatePricesNoon: '0 18 * * *',
+  updatePricesMorning: '0 8 * * *',
+  updatePricesMidnightAndAfternoon: '0 0,16 * * *', // Run at 00 and 16
 };
