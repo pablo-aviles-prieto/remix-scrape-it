@@ -172,7 +172,7 @@ export default function SearchItem() {
                   {resolvedData.prices.filter(
                     priceObj =>
                       !isNaN(parseFloat(priceObj.price)) && isFinite(Number(priceObj.price))
-                  ).length >= 1 && (
+                  ).length >= 5 && (
                     <div className='xl:w-[65%] w-full mx-auto'>
                       <Heading color='muted' className='text-center !mb-1' size={600}>
                         Gráfica de precios
