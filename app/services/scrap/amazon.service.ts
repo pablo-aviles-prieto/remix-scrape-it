@@ -7,12 +7,7 @@ import { parseAmount } from '~/utils/parse-amount';
 
 const BASE_URL_WITHOUT_TRAILING_SLASH = AMAZON_BASE_URL.slice(0, -1);
 
-// TODO: In amazon, get the SN of the product and store that simple URL!
-export const getAmazonSingleItem = async ({
-  productPage,
-}: {
-  productPage: string;
-}) => {
+export const getAmazonSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
@@ -28,11 +23,8 @@ export const getAmazonSingleItem = async ({
   let itemData = null;
 
   try {
-    const actualPrice = await page.$eval('span.a-price', (el) => {
-      return el
-        .querySelector('span.a-offscreen')
-        ?.textContent?.trim()
-        ?.replace('€', '');
+    const actualPrice = await page.$eval('span.a-price', el => {
+      return el.querySelector('span.a-offscreen')?.textContent?.trim()?.replace('€', '');
     });
     itemData = { actualPrice, discount: undefined, oldPrice: undefined };
   } catch {
@@ -44,7 +36,7 @@ export const getAmazonSingleItem = async ({
   try {
     const { discount, oldPrice } = await page.$eval(
       'div#corePriceDisplay_desktop_feature_div',
-      (el) => {
+      el => {
         // Parsing from '-22 %' to '22%' the discount string
         const discount = el
           .querySelector('span.savingsPercentage')
@@ -68,10 +60,7 @@ export const getAmazonSingleItem = async ({
     const titleElement = await page.$('span#productTitle');
     const itemName = (await titleElement?.textContent())?.trim() || undefined;
 
-    const imgPath = await page.$eval(
-      '#imgTagWrapperId img',
-      (img) => (img as HTMLImageElement).src
-    );
+    const imgPath = await page.$eval('#imgTagWrapperId img', img => (img as HTMLImageElement).src);
 
     itemData = { ...itemData, itemName, imgPath };
   } catch (err) {
@@ -88,9 +77,7 @@ export const getAmazonSingleItem = async ({
     ...itemData,
     actualPrice: formatAmount(parseAmount(itemData.actualPrice ?? '')),
     currency: availableCurrency.EUR,
-    ...(itemData?.oldPrice
-      ? { oldPrice: formatAmount(parseAmount(itemData.oldPrice)) }
-      : {}),
+    ...(itemData?.oldPrice ? { oldPrice: formatAmount(parseAmount(itemData.oldPrice)) } : {}),
   };
   // Remove undefined properties from parsedItemData
   const cleanedItemData = Object.fromEntries(
@@ -101,11 +88,7 @@ export const getAmazonSingleItem = async ({
   return cleanedItemData;
 };
 
-export const getAmazonListItems = async ({
-  querySearch,
-}: {
-  querySearch: string;
-}) => {
+export const getAmazonListItems = async ({ querySearch }: { querySearch: string }) => {
   const browser = await getBrowser();
 
   const page = await browser.newPage();
@@ -116,52 +99,41 @@ export const getAmazonListItems = async ({
     await page.goto(url);
     await page.waitForLoadState('domcontentloaded');
 
-    listItems = await page.$$eval(
-      'div[data-component-type="s-search-result"]',
-      (items) => {
-        return items.map((item) => {
-          const anchorElement = item.querySelector(
-            'a.a-link-normal.s-no-outline'
-          );
-          const url = anchorElement?.getAttribute('href');
-          const imgPath = anchorElement
-            ?.querySelector('img')
-            ?.getAttribute('src');
+    listItems = await page.$$eval('div[data-component-type="s-search-result"]', items => {
+      return items.map(item => {
+        const anchorElement = item.querySelector('a.a-link-normal.s-no-outline');
+        const url = anchorElement?.getAttribute('href');
+        const imgPath = anchorElement?.querySelector('img')?.getAttribute('src');
 
-          const titleEl = item.querySelector('h2');
-          const name = titleEl?.querySelector('span')?.textContent?.trim();
+        const titleEl = item.querySelector('h2');
+        const name = titleEl?.querySelector('span')?.textContent?.trim();
 
-          const priceBlock = item.querySelector(
-            'div.s-price-instructions-style'
-          );
-          const anchorPriceBlockEl = priceBlock?.querySelector('a');
+        const priceBlock = item.querySelector('div.s-price-instructions-style');
+        const anchorPriceBlockEl = priceBlock?.querySelector('a');
 
-          const spanPriceBlock =
-            anchorPriceBlockEl?.querySelector('span.a-price');
-          const divOldPriceBlock =
-            anchorPriceBlockEl?.querySelector('div.a-section');
+        const spanPriceBlock = anchorPriceBlockEl?.querySelector('span.a-price');
+        const divOldPriceBlock = anchorPriceBlockEl?.querySelector('div.a-section');
 
-          const actualPrice = spanPriceBlock
-            ?.querySelector('span.a-offscreen')
-            ?.textContent?.trim()
-            ?.replace('€', '')
-            ?.replace(/\s/g, '');
-          const oldPrice = divOldPriceBlock
-            ?.querySelector('span.a-offscreen')
-            ?.textContent?.trim()
-            ?.replace('€', '')
-            ?.replace(/\s/g, '');
+        const actualPrice = spanPriceBlock
+          ?.querySelector('span.a-offscreen')
+          ?.textContent?.trim()
+          ?.replace('€', '')
+          ?.replace(/\s/g, '');
+        const oldPrice = divOldPriceBlock
+          ?.querySelector('span.a-offscreen')
+          ?.textContent?.trim()
+          ?.replace('€', '')
+          ?.replace(/\s/g, '');
 
-          return {
-            name,
-            url,
-            imgPath,
-            price: oldPrice ? oldPrice : actualPrice,
-            ...(oldPrice ? { discountedPrice: actualPrice } : {}),
-          };
-        });
-      }
-    );
+        return {
+          name,
+          url,
+          imgPath,
+          price: oldPrice ? oldPrice : actualPrice,
+          ...(oldPrice ? { discountedPrice: actualPrice } : {}),
+        };
+      });
+    });
   } catch (err) {
     const errorParams: Partial<IError> = {
       message: 'Error retrieving amazon list items',
@@ -177,7 +149,7 @@ export const getAmazonListItems = async ({
     return null;
   }
 
-  const parsedItems = listItems.map((item) => {
+  const parsedItems = listItems.map(item => {
     let discountedPrice = item.discountedPrice;
     let discountPercent = null;
     if (item.discountedPrice) {
@@ -186,8 +158,7 @@ export const getAmazonListItems = async ({
       const actualPrice = parseAmount(item.price ?? '0');
 
       // Calculate the discount percentage
-      const discountPercentNumber =
-        ((actualPrice - discountPrice) / actualPrice) * 100;
+      const discountPercentNumber = ((actualPrice - discountPrice) / actualPrice) * 100;
       discountPercent = `${Math.round(discountPercentNumber)}%`;
     }
 

@@ -27,10 +27,7 @@ type LoaderResponse = {
   trackedItem?: Promise<TrackingResponse>;
 };
 
-const validateDesiredPrice = (
-  desiredPrice: string | undefined,
-  itemPrice: string | undefined
-) => {
+const validateDesiredPrice = (desiredPrice: string | undefined, itemPrice: string | undefined) => {
   if (!desiredPrice) {
     return {
       parsedPrice: null,
@@ -56,12 +53,10 @@ const validateDesiredPrice = (
   return { parsedPrice: parsedDesiredPrice, error: null };
 };
 
-export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+export const meta: MetaFunction = ServerRuntimeMetaArgs => {
   const metadata = createBaseMetadataInfo(ServerRuntimeMetaArgs);
   // removing the base metadata title
-  const filteredMetadata = metadata.filter(
-    (metaItem) => !metaItem.hasOwnProperty('title')
-  );
+  const filteredMetadata = metadata.filter(metaItem => !metaItem.hasOwnProperty('title'));
   return [
     {
       title: 'Detalles del producto...',
@@ -157,11 +152,7 @@ export default function SearchItem() {
               : error}
           </span>
         </p>
-        <RegularButton
-          removeShadow
-          content='Volver atrás'
-          onClick={() => navigate(`/`)}
-        />
+        <RegularButton removeShadow content='Volver atrás' onClick={() => navigate(`/`)} />
       </div>
     );
   }
@@ -171,19 +162,19 @@ export default function SearchItem() {
       <LoaderWrapper>
         <Suspense fallback={<FallbackLoader />}>
           <Await resolve={trackedItem as Promise<TrackingResponse>}>
-            {(resolvedData) => (
+            {resolvedData => (
               <div>
                 <div className='my-4'>
                   <TrackingItemCard item={resolvedData} />
                 </div>
                 <div className='xl:flex gap-2 justify-center'>
-                  {resolvedData.prices.length >= 5 && (
+                  {/* Checking if is a valid price (not --) and a finite number to display the Chart */}
+                  {resolvedData.prices.filter(
+                    priceObj =>
+                      !isNaN(parseFloat(priceObj.price)) && isFinite(Number(priceObj.price))
+                  ).length >= 1 && (
                     <div className='xl:w-[65%] w-full mx-auto'>
-                      <Heading
-                        color='muted'
-                        className='text-center !mb-1'
-                        size={600}
-                      >
+                      <Heading color='muted' className='text-center !mb-1' size={600}>
                         Gráfica de precios
                       </Heading>
                       <LineChart
@@ -194,11 +185,7 @@ export default function SearchItem() {
                     </div>
                   )}
                   <div className='xl:w-[35%] sm:w-[28rem] mx-auto'>
-                    <Heading
-                      color='muted'
-                      className='text-center !mb-5'
-                      size={600}
-                    >
+                    <Heading color='muted' className='text-center !mb-5' size={600}>
                       Tabla con todos los precios registrados
                     </Heading>
                     <div className='pr-[2rem] mx-auto border h-[18rem] overflow-y-auto border-slate-500 rounded-lg'>
