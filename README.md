@@ -4,7 +4,7 @@ ScrapeIt is a versatile web application that allows users to track prices of pro
 
 ## 🔗 Live Demo
 
-[Explore ScrapeIt now!](https://www.scrapeit.pabloaviles.es/)
+[Explore ScrapeIt now!](https://www.scrapeit.pabloaviles.dev/)
 
 > 📝 **Note**: Currently available only in Spanish!
 
