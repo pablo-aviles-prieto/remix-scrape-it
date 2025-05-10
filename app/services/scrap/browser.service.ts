@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { webkit } from 'playwright';
 
 const userAgents = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
@@ -43,9 +43,12 @@ const userAgents = [
 
 const getRandomUserAgent = () => userAgents[Math.floor(Math.random() * userAgents.length)];
 
+// TODO: Create a mapper to select the browser via env variable
 export const getBrowser = () => {
-  return chromium.launch({
+  return webkit.launch({
+    // headless: false,
     headless: true,
+    // executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     args: ['--no-sandbox', `--user-agent=${getRandomUserAgent()}`],
     chromiumSandbox: false,
   });
