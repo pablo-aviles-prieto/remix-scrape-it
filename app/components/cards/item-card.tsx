@@ -21,10 +21,7 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
 
   // Have to modify this on client comp to avoid rehydratation error things (updateDehydratedSuspenseComponent)
   useEffect(() => {
-    const newTitle = `Detalles del producto ${customEllipsis(
-      item.itemName ?? '',
-      15
-    )} de ${store}`;
+    const newTitle = `Detalles del producto ${customEllipsis(item.itemName ?? '', 15)} de ${store}`;
     modifyDocTitle(newTitle);
   }, [modifyDocTitle, item, store]);
 
@@ -33,14 +30,10 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
   return (
     <>
       <div className='flex w-[22rem] sm:w-[26rem] flex-col rounded-xl bg-gray-200 bg-clip-border text-gray-700 shadow-md mx-auto'>
-        <div className='h-[20rem] overflow-hidden relative'>
-          <StoreBadge
-            store={store}
-            storeImageInfo={storeImageInfo}
-            size='medium'
-          />
+        <div className='h-[20rem] overflow-hidden relative bg-white'>
+          <StoreBadge store={store} storeImageInfo={storeImageInfo} size='medium' />
           <img
-            className='object-cover w-full h-full hover:scale-105 transition-transform'
+            className='object-contain w-full h-full hover:scale-105 transition-transform'
             src={item.imgPath}
             alt={item.itemName}
           />
@@ -52,11 +45,7 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
           <div className='flex gap-3'>
             <h2 className='text-slate-600 font-bold'>
               <span className={`text-sm`}>Precio:</span>{' '}
-              <span
-                className={`text-lg ${
-                  item.oldPrice ? 'text-green-700' : 'text-slate-800'
-                }`}
-              >
+              <span className={`text-lg ${item.oldPrice ? 'text-green-700' : 'text-slate-800'}`}>
                 {item.actualPrice}
                 {item.currency}
               </span>
@@ -85,10 +74,7 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
           >
             Visitar página
           </a>
-          <RegularButton
-            content='Seguimiento'
-            onClick={() => setIsShown(true)}
-          />
+          <RegularButton content='Seguimiento' onClick={() => setIsShown(true)} />
         </div>
       </div>
       <Dialog

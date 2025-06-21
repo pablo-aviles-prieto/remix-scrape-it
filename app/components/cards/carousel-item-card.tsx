@@ -24,7 +24,7 @@ export const CarouselItemCard = ({ item }: Props) => {
       <div className='h-[50%] overflow-hidden rounded-t-lg relative'>
         <StoreBadge store={item.store} storeImageInfo={storeImageInfo} />
         <img
-          className='object-cover w-full h-full hover:scale-105 transition-transform'
+          className='object-contain w-full h-full hover:scale-105 transition-transform'
           src={item.image}
           alt={item.name}
         />

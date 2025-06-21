@@ -18,7 +18,7 @@ export const ListItemsCard = ({ item, store }: Props) => {
 
   return (
     <>
-      <div className='w-full relative shadow-md rounded-lg overflow-hidden'>
+      <div className='w-full relative shadow-md rounded-lg overflow-hidden bg-white'>
         <StoreBadge store={store} storeImageInfo={storeImageInfo} />
         <img
           src={
@@ -26,7 +26,7 @@ export const ListItemsCard = ({ item, store }: Props) => {
             'https://static.vecteezy.com/system/resources/previews/007/126/739/non_2x/question-mark-icon-free-vector.jpg'
           }
           alt={item.name}
-          className='w-full h-full object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform'
+          className='w-full h-full object-contain rounded-lg cursor-pointer hover:scale-105 transition-transform'
           onClick={() => setIsShown(true)}
         />
         <div
@@ -34,17 +34,11 @@ export const ListItemsCard = ({ item, store }: Props) => {
           backdrop-blur-[3px] text-white p-2 rounded-b-sm'
         >
           <Tooltip content={item.name} position={Position.TOP}>
-            <h1 className='text-sm font-semibold overflow-hidden line-clamp-1'>
-              {item.name}
-            </h1>
+            <h1 className='text-sm font-semibold overflow-hidden line-clamp-1'>{item.name}</h1>
           </Tooltip>
           <div className='pt-1 flex items-center justify-between'>
             <p className='text-lg relative'>
-              <span
-                className={
-                  item.discountedPrice ? 'text-green-300' : 'text-white'
-                }
-              >
+              <span className={item.discountedPrice ? 'text-green-300' : 'text-white'}>
                 {item.discountedPrice ?? item.price}
                 {item.currency}
               </span>
@@ -78,11 +72,7 @@ export const ListItemsCard = ({ item, store }: Props) => {
       >
         <ItemModal
           itemName={item.name ?? ''}
-          actualPrice={
-            item.discountedPrice
-              ? String(item.discountedPrice)
-              : item.price ?? ''
-          }
+          actualPrice={item.discountedPrice ? String(item.discountedPrice) : item.price ?? ''}
           oldPrice={item.discountedPrice ? item.price : undefined}
           discount={item.discountedPrice ? item.discountPercent : undefined}
           imgPath={item.imgPath ?? ''}
