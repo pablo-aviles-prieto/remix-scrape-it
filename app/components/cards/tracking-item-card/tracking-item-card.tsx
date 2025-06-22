@@ -35,7 +35,7 @@ export const TrackingItemCard = ({ item }: Props) => {
       <div className='flex flex-col sm:flex-row mx-auto max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden relative'>
         <StoreBadge store={item.store} storeImageInfo={storeImageInfo} />
         <img
-          className='sm:w-2/5 object-cover max-h-[280px] hover:scale-105 transition-transform'
+          className='sm:w-2/5 object-contain max-h-[280px] hover:scale-105 transition-transform'
           src={item.image}
           alt={item.name}
         />

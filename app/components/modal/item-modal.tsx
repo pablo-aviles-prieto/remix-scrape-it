@@ -52,9 +52,7 @@ export const ItemModal = ({
   onClose,
 }: Props) => {
   const [trackingId, setTrackingId] = useState<string | undefined>(undefined);
-  const [trackingData, setTrackingData] = useState<
-    TrackingResponse | undefined
-  >(undefined);
+  const [trackingData, setTrackingData] = useState<TrackingResponse | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorGettingItem, setErrorGettingItem] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -62,16 +60,11 @@ export const ItemModal = ({
   useEffect(() => {
     const getTrackingItemId = async () => {
       setIsLoading(true);
-      const response = await fetch(
-        `/api/trackings?name=${itemName}&url=${urlItem}&store=${store}`
-      );
-      const trackedItemResponse =
-        (await response.json()) as TrackingResponseGET;
+      const response = await fetch(`/api/trackings?name=${itemName}&url=${urlItem}&store=${store}`);
+      const trackedItemResponse = (await response.json()) as TrackingResponseGET;
 
       if (!trackedItemResponse.ok && trackedItemResponse.error) {
-        toast.error(
-          `Error Interno. No se puede crear ni visualizar seguimientos`
-        );
+        toast.error(`Error Interno. No se puede crear ni visualizar seguimientos`);
         setErrorGettingItem(true);
         setIsLoading(false);
         return;
@@ -118,9 +111,7 @@ export const ItemModal = ({
   return (
     <div>
       <div className='flex gap-8 items-center justify-between'>
-        <h3 className='line-clamp-1 text-slate-900 text-lg font-semibold'>
-          {itemName}
-        </h3>
+        <h3 className='line-clamp-1 text-slate-900 text-lg font-semibold'>{itemName}</h3>
         <CloseBtn
           className='cursor-pointer text-slate-600 hover:text-indigo-400'
           width={40}
@@ -140,23 +131,19 @@ export const ItemModal = ({
             />
           )}
         </div>
-        <div className='my-4 flex items-center max-h-[12rem] overflow-hidden'>
+        <div className='bg-white my-4 flex items-center max-h-[12rem] overflow-hidden'>
           <div className='w-[50%]'>
             <img
               src={imgPath}
               alt={itemName}
-              className='object-cover w-full h-full'
+              className='object-contain max-h-[12rem] w-full h-full'
             />
           </div>
           <div className='w-[50%] ml-2 text-xs font-bold flex flex-col sm:gap-4'>
             <p className={`text-sm sm:text-base line-clamp-4`}>{itemName}</p>
             <p>
               Precio:{' '}
-              <span
-                className={`text-lg ${
-                  oldPrice ? 'text-green-700' : 'text-slate-800'
-                }`}
-              >
+              <span className={`text-lg ${oldPrice ? 'text-green-700' : 'text-slate-800'}`}>
                 {actualPrice}
                 {currency}
               </span>
@@ -165,9 +152,7 @@ export const ItemModal = ({
                   {' '}
                   sin dto:{' '}
                   <span className='text-base relative font-semibold'>
-                    <span className='line-through text-red-800 font-bold italic'>
-                      {oldPrice}
-                    </span>
+                    <span className='line-through text-red-800 font-bold italic'>{oldPrice}</span>
                     <span className='text-xs ml-1 sm:ml-0 text-slate-900 sm:absolute sm:-top-[12px] sm:right-0'>
                       {discount}
                     </span>

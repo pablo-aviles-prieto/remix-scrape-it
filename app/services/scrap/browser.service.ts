@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { webkit, chromium } from 'playwright';
 
 const userAgents = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
@@ -41,10 +41,25 @@ const userAgents = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Safari/537.36',
 ];
 
+const browsers = {
+  chromium,
+  webkit,
+};
+
+const browserTypeGuard = (type: string | undefined): type is keyof typeof browsers => {
+  if (!type) return false;
+  return Object.keys(browsers).includes(type);
+};
 const getRandomUserAgent = () => userAgents[Math.floor(Math.random() * userAgents.length)];
 
 export const getBrowser = () => {
-  return chromium.launch({
+  const browserType: keyof typeof browsers = browserTypeGuard(process.env.BROWSER_TYPE)
+    ? process.env.BROWSER_TYPE
+    : 'chromium';
+
+  const selectedBrowser = browsers[browserType];
+
+  return selectedBrowser.launch({
     headless: true,
     args: ['--no-sandbox', `--user-agent=${getRandomUserAgent()}`],
     chromiumSandbox: false,

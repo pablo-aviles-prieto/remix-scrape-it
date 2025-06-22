@@ -29,19 +29,16 @@ type LoaderResponse = {
 const ERROR_MESSAGE =
   'No se pudo obtener información de los productos, revise los datos introducidos e inténtelo más tarde.';
 
-export const meta: MetaFunction = (ServerRuntimeMetaArgs) => {
+export const meta: MetaFunction = ServerRuntimeMetaArgs => {
   const metadata = createBaseMetadataInfo(ServerRuntimeMetaArgs);
   // removing the base metadata title
-  const filteredMetadata = metadata.filter(
-    (metaItem) => !metaItem.hasOwnProperty('title')
-  );
+  const filteredMetadata = metadata.filter(metaItem => !metaItem.hasOwnProperty('title'));
 
   return [
     {
-      title: `Buscando ${customEllipsis(
-        ServerRuntimeMetaArgs.params.words ?? '',
-        20
-      )} en ${(ServerRuntimeMetaArgs.data as LoaderResponse).store}`,
+      title: `Buscando ${customEllipsis(ServerRuntimeMetaArgs.params.words ?? '', 20)} en ${
+        (ServerRuntimeMetaArgs.data as LoaderResponse).store
+      }`,
     },
     ...filteredMetadata,
   ];
@@ -102,7 +99,7 @@ export default function SearchItem() {
         <LoaderWrapper>
           <Suspense fallback={<FallbackLoader />}>
             <Await resolve={data as Promise<ListItems[] | null>}>
-              {(resolvedData) => {
+              {resolvedData => {
                 if (!resolvedData) {
                   return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
                 }
@@ -114,24 +111,14 @@ export default function SearchItem() {
                     transition={{ duration: 0.5 }}
                   >
                     <div className='flex gap-1 my-4 items-center justify-center'>
-                      <Info
-                        width={20}
-                        height={20}
-                        strokeWidth={2}
-                        className='text-slate-200'
-                      />
+                      <Info width={20} height={20} strokeWidth={2} className='text-slate-200' />
                       <Heading color='muted' size={500}>
-                        Haz click sobre la imagen de un producto para ver su
-                        seguimiento
+                        Haz click sobre la imagen de un producto para ver su seguimiento
                       </Heading>
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-12'>
-                      {resolvedData.map((item) => (
-                        <ListItemsCard
-                          key={item.url}
-                          item={item}
-                          store={store}
-                        />
+                      {resolvedData.map(item => (
+                        <ListItemsCard key={item.url} item={item} store={store} />
                       ))}
                     </div>
                   </motion.div>
