@@ -1,7 +1,7 @@
-import type { DailyMailDynamicData } from '~/interfaces/mail-dynamic-data';
+import type { ProductAvailableMailDynamicData } from '~/interfaces/mail-dynamic-data';
 
-export const renderDailyMailHtml = (dynamicData: DailyMailDynamicData) => {
-  const { productName, productImage, productUrl, unsubscribeUrl, prices } = dynamicData;
+export const renderProductAvailableHtml = (dynamicData: ProductAvailableMailDynamicData) => {
+  const { productImage, productPrice, productUrl, productName } = dynamicData;
 
   return `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -155,7 +155,7 @@ body {font-family: 'Chivo', sans-serif;}
         <p></p>
       </td>
     </tr>
-  </table><table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" role="module" data-type="columns" style="padding:15px 20px 15px 30px;" bgcolor="#676767" data-distribution="1,1">
+  </table><table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" role="module" data-type="columns" style="padding:30px 20px 30px 30px;" bgcolor="#676767" data-distribution="1,1">
     <tbody>
       <tr role="module-content">
         <td height="100%" valign="top"><table width="265" style="width:265px; border-spacing:0; border-collapse:collapse; margin:0px 10px 0px 0px;" cellpadding="0" cellspacing="0" align="left" border="0" bgcolor="" class="column column-0">
@@ -172,13 +172,13 @@ body {font-family: 'Chivo', sans-serif;}
   </table></td>
         </tr>
       </tbody>
-    </table><table width="270" style="width:270px; border-spacing:0; border-collapse:collapse; margin:0px 0px 0px 0px;" cellpadding="0" cellspacing="0" align="left" border="0" bgcolor="" class="column column-1">
+    </table><table width="265" style="width:265px; border-spacing:0; border-collapse:collapse; margin:0px 0px 0px 10px;" cellpadding="0" cellspacing="0" align="left" border="0" bgcolor="" class="column column-1">
       <tbody>
         <tr>
           <td style="padding:0px;margin:0px;border-spacing:0;"><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="b0d9194c-17b6-4db0-8250-0a56573ea469" data-mc-module-version="2019-10-22">
     <tbody>
       <tr>
-        <td style="padding:50px 30px 0px 0px; line-height:32px; text-align:inherit;" height="100%" valign="center" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="box-sizing: border-box; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(103, 101, 101); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; color: #ffffff; direction: ltr; font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: 700; line-height: 30px; font-size: 18px">¡Histórico de precios!</span><span style="font-size: 18px">&nbsp;</span></div><div></div></div></td>
+        <td style="padding:50px 30px 0px 0px; line-height:32px; text-align:inherit;" height="100%" valign="center" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="box-sizing: border-box; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(103, 101, 101); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; color: #ffffff; direction: ltr; font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: 700; line-height: 30px; font-size: 18px">¡El precio lo pones tú!</span><span style="font-size: 18px">&nbsp;</span></div><div></div></div></td>
       </tr>
     </tbody>
   </table></td>
@@ -201,7 +201,11 @@ body {font-family: 'Chivo', sans-serif;}
         </td>
       </tr>
     </tbody>
-  </table><table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" role="module" data-type="columns" style="padding:30px 20px 40px 30px;" bgcolor="#f7f9f5" data-distribution="1">
+  </table>
+  
+  
+  
+  <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" role="module" data-type="columns" style="padding:30px 20px 40px 30px;" bgcolor="#f7f9f5" data-distribution="1">
     <tbody>
       <tr role="module-content">
         <td height="100%" valign="top"><table width="530" style="width:530px; border-spacing:0; border-collapse:collapse; margin:0px 10px 0px 10px;" cellpadding="0" cellspacing="0" align="left" border="0" bgcolor="" class="column column-0">
@@ -210,40 +214,15 @@ body {font-family: 'Chivo', sans-serif;}
           <td style="padding:0px;margin:0px;border-spacing:0;"><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="8c54c8a5-caee-4b33-b6b0-e8aaed51c545" data-mc-module-version="2019-10-22">
     <tbody>
       <tr>
-        <td style="padding:0px 10px 9px 10px; line-height:25px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="color: #79a6ff; font-size: 20px">Precios de ${productName}</span></div><div></div></div></td>
+        <td style="padding:18px 10px 18px 10px; line-height:25px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="color: #79a6ff; font-size: 36px">¡Enhorabuena!</span></div><div></div></div></td>
       </tr>
     </tbody>
-  </table>
-  <table class="wrapper" role="module" data-type="image" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="3923e4a3-acc3-4c88-bb58-8e5cd32f0162">
+  </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="6cf92250-86a4-41d8-865a-ae5fb2569556.1" data-mc-module-version="2019-10-22">
     <tbody>
       <tr>
-        <td style="font-size:6px; line-height:10px; padding:0px 0px 0px 0px;" valign="top" align="center">
-          <img class="max-width" border="0" style="display:block; color:#000000; text-decoration:none; font-family:Helvetica, arial, sans-serif; font-size:16px; max-width:70% !important; width:70%; height:auto !important;" width="NaN" alt="" data-proportionally-constrained="true" data-responsive="true" src="${productImage}">
-        </td>
-      </tr> 
-    </tbody>
-  </table><table class="module" role="module" data-type="spacer" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="2edb1546-1598-49eb-995c-baf7d429f31c.1">
-    <tbody>
-      <tr>
-        <td style="padding:0px 0px 10px 0px;" role="module-content" bgcolor="">
-        </td>
+        <td style="padding:0px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center">Tu producto ${productName} está disponible por ${productPrice}€</div><div></div></div></td>
       </tr>
     </tbody>
-  </table>
-  <table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="6cf92250-86a4-41d8-865a-ae5fb2569556.1" data-mc-module-version="2019-10-22">
-    <tbody>
-      <tr>
-        <td style="padding:0px 0px 9px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center">
-            <ul style="list-style-type: none; padding: 0; margin: 0;">
-                ${prices
-                  .map(
-                    price =>
-                      `<li style="padding: 0; margin: 0; margin-bottom: 2px;">${price.date}: ${price.price}€</li>`
-                  )
-                  .join('')}
-            </ul></div><div></div></div></td>
-      </tr>
-    </tbody> 
   </table><table border="0" cellpadding="0" cellspacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed;" width="100%" data-muid="4bcb53df-57db-48a5-9aa3-4060ac494a64">
       <tbody>
         <tr>
@@ -251,7 +230,7 @@ body {font-family: 'Chivo', sans-serif;}
             <table border="0" cellpadding="0" cellspacing="0" class="wrapper-mobile" style="text-align:center;">
               <tbody>
                 <tr>
-                <td align="center" bgcolor="#333333" class="inner-td" style="border-radius:6px; font-size:16px; text-align:center; background-color:inherit;"><a href="${productUrl}" style="background-color:#333333; border:1px solid #333333; border-color:#333333; border-radius:0px; border-width:1px; color:#ffffff; display:inline-block; font-size:14px; font-weight:normal; letter-spacing:0px; line-height:normal; padding:12px 30px 12px 30px; text-align:center; text-decoration:none; border-style:solid; margin-top:30px;" target="_blank">Ver más seguimiento</a></td>
+                <td align="center" bgcolor="#333333" class="inner-td" style="border-radius:6px; font-size:16px; text-align:center; background-color:inherit;"><a href="${productUrl}" style="background-color:#333333; border:1px solid #333333; border-color:#333333; border-radius:0px; border-width:1px; color:#ffffff; display:inline-block; font-size:14px; font-weight:normal; letter-spacing:0px; line-height:normal; padding:12px 30px 12px 30px; text-align:center; text-decoration:none; border-style:solid;" target="_blank">Comprar ahora</a></td>
                 </tr>
               </tbody>
             </table>
@@ -259,6 +238,21 @@ body {font-family: 'Chivo', sans-serif;}
         </tr>
       </tbody>
     </table><table class="module" role="module" data-type="spacer" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="2edb1546-1598-49eb-995c-baf7d429f31c">
+    <tbody>
+      <tr>
+        <td style="padding:0px 0px 30px 0px;" role="module-content" bgcolor="">
+        </td>
+      </tr>
+    </tbody>
+  </table><table class="wrapper" role="module" data-type="image" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="3923e4a3-acc3-4c88-bb58-8e5cd32f0162">
+    <tbody>
+      <tr>
+        <td style="font-size:6px; line-height:10px; padding:0px 0px 0px 0px;" valign="top" align="center">
+          <img class="max-width" border="0" style="display:block; color:#000000; text-decoration:none; font-family:Helvetica, arial, sans-serif; font-size:16px; max-width:70% !important; width:70%; height:auto !important;" width="NaN" alt="" data-proportionally-constrained="true" data-responsive="true" src="${productImage}">
+        </td>
+      </tr>
+    </tbody>
+  </table><table class="module" role="module" data-type="spacer" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="2edb1546-1598-49eb-995c-baf7d429f31c.1">
     <tbody>
       <tr>
         <td style="padding:0px 0px 30px 0px;" role="module-content" bgcolor="">
@@ -274,14 +268,23 @@ body {font-family: 'Chivo', sans-serif;}
   </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="0afefc1a-f10c-40df-9c38-62839d740a0c" data-mc-module-version="2019-10-22">
     <tbody>
       <tr>
-        <td style="padding:20px 0px 10px 0px; line-height:26px; text-align:inherit; background-color:#000000;" height="100%" valign="top" bgcolor="#000000" role="module-content"><div><div style="font-family: inherit; text-align: center"><a href="${unsubscribeUrl}"><span style="color: #ff8c85; font-size: 22px">Darse de baja</span></a></div><div></div></div></td>
+        <td style="padding:40px 30px 18px 30px; line-height:32px; text-align:inherit; background-color:#000000;" height="100%" valign="top" bgcolor="#000000" role="module-content"><div><div style="font-family: inherit; text-align: center"><a href="https://www.scrapeit.pabloaviles.es/"><span style="color: #ff8c85; font-size: 32px; text-decoration: underline">Mejores ofertas del día</span></a></div><div></div></div></td>
       </tr>
     </tbody>
   </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="6cf92250-86a4-41d8-865a-ae5fb2569556.1.2" data-mc-module-version="2019-10-22">
     <tbody>
       <tr>
-        <td style="padding:0px 30px 18px 30px; line-height:20px; text-align:inherit; background-color:#000000;" height="100%" valign="top" bgcolor="#000000" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="color: #ffffff; font-size: 13px">Esto es un email automático, por favor no contestar.&nbsp;</span></div>
-<div style="font-family: inherit; text-align: center"><span style="color: #ffffff; font-size: 13px">Para no recibir más correos sobre este producto, acceda a este <a href="${unsubscribeUrl}" style="color: #ff8c85"><u>enlace</u></a></span></div><div></div></div></td>
+        <td style="padding:0px 30px 18px 30px; line-height:22px; text-align:inherit; background-color:#000000;" height="100%" valign="top" bgcolor="#000000" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="color: #ffffff">Esto es un email automático, por favor no contestar.&nbsp;</span></div>
+<div style="font-family: inherit; text-align: center"><span style="color: #ffffff">Tu producto ha sido eliminado, no recibirás ninguna otra notificación.</span></div><div></div></div></td>
+      </tr>
+    </tbody>
+  </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="ba2cc448-1854-4e31-b50f-551e3101d5b2" data-mc-module-version="2019-10-22">
+    <tbody>
+      <tr>
+        <td style="padding:40px 30px 40px 30px; line-height:22px; text-align:inherit; background-color:#79a6ff;" height="100%" valign="top" bgcolor="#79a6ff" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="color: #ffffff">¿Necesitas ayuda? ¿Preguntas de cualquier tipo?<br>
+Estamos aquí para ayudar. Nuestro soporte de servicio al cliente están disponibles 24/7.</span></div>
+<div style="font-family: inherit; text-align: center"><br></div>
+<div style="font-family: inherit; text-align: center"><a href="mailto:info@pabloaviles.es?subject=Soporte producto scrape it!&amp;body="><span style="color: #ffffff"><u><strong>Contactar</strong></u></span></a></div><div></div></div></td>
       </tr>
     </tbody>
   </table></td>

@@ -54,8 +54,8 @@ export const updateTrackedPriceAndSendMail = async ({
    * running multiples chromiums in parallel!
    */
 
+  // TODO: Change the any type to the correct type
   const allEmailPromises: Promise<any>[] = [];
-  // const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
 
   for (const item of trackedItems) {
     let updatedPrice: string | undefined;
