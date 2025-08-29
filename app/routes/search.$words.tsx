@@ -100,7 +100,7 @@ export default function SearchItem() {
           <Suspense fallback={<FallbackLoader />}>
             <Await resolve={data as Promise<ListItems[] | null>}>
               {resolvedData => {
-                if (!resolvedData) {
+                if (!resolvedData || resolvedData.length === 0) {
                   return <ErrorRetrieveData>{ERROR_MESSAGE}</ErrorRetrieveData>;
                 }
                 return (

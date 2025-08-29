@@ -14,7 +14,7 @@ export const SearchContainer = () => {
   return (
     <div className='text-center'>
       <button className='mx-auto' type='button' onClick={() => navigate(`/`)}>
-        <img src='/images/logo.webp' className='w-[85px] h-auto' />
+        <img alt='scrapeit logo' src='/images/logo.webp' className='w-[85px] h-auto' />
       </button>
       <div className='flex gap-2 justify-center items-end'>
         <Heading color='muted' size={innerWidth && innerWidth > 640 ? 900 : 800}>
