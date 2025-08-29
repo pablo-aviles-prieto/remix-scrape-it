@@ -2,7 +2,7 @@ import TrackingModel from '~/models/trackings';
 import { getCoolmodSingleItem } from '../scrap/coolmod.service';
 import { getAllTrackedItems } from './get-all-tracked-items.service';
 import { dailyMailSender } from '../mail/daily-mail-sender.service';
-import type { ClientResponse } from '@sendgrid/mail';
+// import type { ClientResponse } from '@sendgrid/mail';
 import { format } from 'date-fns';
 import { dateFormat, stores } from '~/utils/const';
 import type {
@@ -19,6 +19,7 @@ import type { IError } from '~/interfaces/error-schema';
 import { createErrorDocument } from '../errors/create-error-document.service';
 import { getProzisSingleItem } from '../scrap/prozis.service';
 import { getAmazonSingleItem } from '../scrap/amazon.service';
+import type { CreateEmailResponse } from 'resend';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -54,7 +55,7 @@ export const updateTrackedPriceAndSendMail = async ({
    * running multiples chromiums in parallel!
    */
 
-  const allEmailPromises: Promise<[ClientResponse, {}]>[] = [];
+  const allEmailPromises: Promise<CreateEmailResponse>[] = [];
 
   for (const item of trackedItems) {
     let updatedPrice: string | undefined;
@@ -86,8 +87,7 @@ export const updateTrackedPriceAndSendMail = async ({
         message: `Error updating prices on cron job updateTrackedPriceAndSendMail`,
         store: item.store,
         searchValue: item.url,
-        responseMessage:
-          err instanceof Error ? err.message : JSON.stringify(err),
+        responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
       };
       await createErrorDocument(errorParams);
       console.log('ERROR UPDATING PRICES ON CRON JOB', err);
@@ -102,17 +102,14 @@ export const updateTrackedPriceAndSendMail = async ({
           date: format(new Date(), dateFormat.euWithTime),
           price: updatedPrice ?? '',
         },
-        ...sortedPrices.slice(0, 4).map((p) => ({
+        ...sortedPrices.slice(0, 4).map(p => ({
           date: format(p.date, dateFormat.euWithTime),
           price: p.price,
         })),
       ];
 
       const emailPromises = item.subscribers.map((email: string) => {
-        const encodedMail = CryptoJS.AES.encrypt(
-          email,
-          SECRET_UNSUBSCRIBE ?? ''
-        ).toString();
+        const encodedMail = CryptoJS.AES.encrypt(email, SECRET_UNSUBSCRIBE ?? '').toString();
 
         const dynamicData: DailyMailDynamicData = {
           productName: item.name,
@@ -128,20 +125,12 @@ export const updateTrackedPriceAndSendMail = async ({
       allEmailPromises.push(...emailPromises);
     }
 
-    if (
-      updatedPrice &&
-      item.desiredPriceSubscribers &&
-      item.desiredPriceSubscribers.length > 0
-    ) {
-      const metSubscribers = item.desiredPriceSubscribers.filter(
-        (subscriber) => {
-          return (
-            parseAmount(updatedPrice) <= parseAmount(subscriber.desiredPrice)
-          );
-        }
-      );
+    if (updatedPrice && item.desiredPriceSubscribers && item.desiredPriceSubscribers.length > 0) {
+      const metSubscribers = item.desiredPriceSubscribers.filter(subscriber => {
+        return parseAmount(updatedPrice) <= parseAmount(subscriber.desiredPrice);
+      });
 
-      const desiredPriceEmailPromises = metSubscribers.map((subscriber) => {
+      const desiredPriceEmailPromises = metSubscribers.map(subscriber => {
         const dynamicData: ProductAvailableMailDynamicData = {
           productName: item.name,
           productImage: item.image,
@@ -160,7 +149,7 @@ export const updateTrackedPriceAndSendMail = async ({
           {
             $pull: {
               desiredPriceSubscribers: {
-                email: { $in: metSubscribers.map((sub) => sub.email) },
+                email: { $in: metSubscribers.map(sub => sub.email) },
               },
             },
             $set: {
@@ -170,7 +159,7 @@ export const updateTrackedPriceAndSendMail = async ({
         );
       }
       // Log the emails sent and removed from desiredPriceSubscribers
-      metSubscribers.forEach((sub) => {
+      metSubscribers.forEach(sub => {
         console.log(
           `Email sent to ${sub.email}, at price ${updatedPrice} (desired price: ${sub.desiredPrice}) and removed from the desiredPriceSubscribers`
         );
@@ -202,10 +191,7 @@ export const updateTrackedPriceAndSendMail = async ({
   }
 };
 
-export const updateTrackedItemSubscribers = async ({
-  email,
-  id,
-}: UpdateItemSubscriber) => {
+export const updateTrackedItemSubscribers = async ({ email, id }: UpdateItemSubscriber) => {
   return TrackingModel.updateOne(
     { _id: id },
     {

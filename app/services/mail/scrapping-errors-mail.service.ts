@@ -1,12 +1,8 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
-const {
-  SENDGRID_API_KEY,
-  SENDGRID_SENDER_MAIL,
-  SENDGRID_ADMIN_EMAIL,
-  URL_TO_SCRAPEIT_ERROR_COLLECTION,
-} = process.env;
-sgMail.setApiKey(SENDGRID_API_KEY ?? '');
+const { RESEND_API_KEY, SENDER_MAIL, ADMIN_EMAIL, URL_TO_SCRAPEIT_ERROR_COLLECTION } = process.env;
+
+const resend = new Resend(RESEND_API_KEY);
 
 interface Params {
   numberOfErrors: number;
@@ -15,19 +11,21 @@ interface Params {
 
 // TODO: Change the url URL_TO_SCRAPEIT_ERROR_COLLECTION, so we send to the mail a concrete url
 // with the created error documents filtered, to only display the newly created documents
-export const scrappingErrorsMail = ({
-  numberOfErrors,
-  arrayOfErrorsID,
-}: Params) => {
-  const emailData = {
-    to: SENDGRID_ADMIN_EMAIL ?? '',
-    from: SENDGRID_SENDER_MAIL ?? '',
-    subject: `ScrapeIt: ${numberOfErrors} errors generated`,
+export const scrappingErrorsMail = async ({ numberOfErrors, arrayOfErrorsID }: Params) => {
+  const result = await resend.emails.send({
+    from: `ScrapeIt Info <${SENDER_MAIL}>`,
+    to: ADMIN_EMAIL ?? '',
+    subject: `ScrapeIt! - ${numberOfErrors} errores generados`,
     html: `<h1>New errors generated (${numberOfErrors})</h1>
            <p>(${arrayOfErrorsID.join(
              ', '
            )}) generated recently. Check the <a href="${URL_TO_SCRAPEIT_ERROR_COLLECTION}">Database</a></p>
           `,
-  };
-  return sgMail.send(emailData);
+  });
+
+  if (result.error) {
+    console.error('Error sending scrapping errors mail', result.error);
+  }
+
+  return result;
 };
