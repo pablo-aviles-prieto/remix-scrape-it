@@ -21,10 +21,8 @@ export const dailyMailSender = async ({ emailReceiver, dynamicData }: Params) =>
   });
 
   if (result.error) {
-    return console.error({ error: result.error });
+    console.error('Error sending daily mail', result.error);
   }
-
-  console.log({ data: result.data });
 
   return result;
 };

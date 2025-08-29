@@ -19,6 +19,7 @@ import type { IError } from '~/interfaces/error-schema';
 import { createErrorDocument } from '../errors/create-error-document.service';
 import { getProzisSingleItem } from '../scrap/prozis.service';
 import { getAmazonSingleItem } from '../scrap/amazon.service';
+import type { CreateEmailResponse } from 'resend';
 
 type UpdateItemSubscriber = {
   email: string;
@@ -54,8 +55,7 @@ export const updateTrackedPriceAndSendMail = async ({
    * running multiples chromiums in parallel!
    */
 
-  // TODO: Change the any type to the correct type
-  const allEmailPromises: Promise<any>[] = [];
+  const allEmailPromises: Promise<CreateEmailResponse>[] = [];
 
   for (const item of trackedItems) {
     let updatedPrice: string | undefined;

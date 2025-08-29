@@ -24,10 +24,8 @@ export const scrappingErrorsMail = async ({ numberOfErrors, arrayOfErrorsID }: P
   });
 
   if (result.error) {
-    return console.error({ error: result.error });
+    console.error('Error sending scrapping errors mail', result.error);
   }
-
-  console.log({ data: result.data });
 
   return result;
 };

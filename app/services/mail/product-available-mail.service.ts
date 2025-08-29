@@ -21,10 +21,7 @@ export const productAvailableMail = async ({ emailReceiver, dynamicData }: Param
   });
 
   if (result.error) {
-    return console.error({ error: result.error });
+    console.error('Error sending product available mail', result.error);
   }
-
-  console.log({ data: result.data });
-
   return result;
 };
