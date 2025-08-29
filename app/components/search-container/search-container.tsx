@@ -1,12 +1,5 @@
 import { Form, useNavigate } from '@remix-run/react';
-import {
-  Button,
-  Heading,
-  Position,
-  Select,
-  TextInput,
-  Tooltip,
-} from 'evergreen-ui';
+import { Button, Heading, Position, Select, TextInput, Tooltip } from 'evergreen-ui';
 import { SearchIcon } from '../styles/icons/search-icon';
 import useWindowWidth from '~/hooks/use-window-width';
 import { stores } from '~/utils/const';
@@ -24,10 +17,7 @@ export const SearchContainer = () => {
         <img src='/images/logo.webp' className='w-[85px] h-auto' />
       </button>
       <div className='flex gap-2 justify-center items-end'>
-        <Heading
-          color='muted'
-          size={innerWidth && innerWidth > 640 ? 900 : 800}
-        >
+        <Heading color='muted' size={innerWidth && innerWidth > 640 ? 900 : 800}>
           Rastrea los mejores precios
         </Heading>
         <Tooltip id='info' content={tooltipContent} position={Position.TOP}>
@@ -56,12 +46,8 @@ export const SearchContainer = () => {
       >
         <Form id='search-form' method='post'>
           <div className='absolute left-[1px] top-[2px] h-[28px]'>
-            <Select
-              className='!h-[28px]'
-              name='selected-store'
-              defaultValue={stores.AMAZON}
-            >
-              {Object.values(stores).map((store) => (
+            <Select className='!h-[28px]' name='selected-store' defaultValue={stores.AMAZON}>
+              {Object.values(stores).map(store => (
                 <option key={store} value={store}>
                   {store}
                 </option>
@@ -71,11 +57,11 @@ export const SearchContainer = () => {
           <TextInput
             name='search'
             placeholder='Busca o inserta el enlace de un producto'
-            className='bg-gray-100 !pr-20 !pl-[122px] !text-sm'
+            className='bg-gray-100 !pr-20 !pl-[125px] !text-sm'
             width={innerWidth && innerWidth > 640 ? '35rem' : '22rem'}
           />
           <SearchIcon
-            className='absolute left-[100px] top-[6px] text-indigo-600'
+            className='absolute left-[104px] top-[6px] text-indigo-600'
             width={20}
             height={20}
             strokeWidth={2.5}

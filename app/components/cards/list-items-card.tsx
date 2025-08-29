@@ -18,7 +18,7 @@ export const ListItemsCard = ({ item, store }: Props) => {
 
   return (
     <>
-      <div className='w-full relative shadow-md rounded-lg overflow-hidden bg-white'>
+      <div className='w-full relative shadow-md rounded-lg overflow-hidden bg-white h-[300px]'>
         <StoreBadge store={store} storeImageInfo={storeImageInfo} />
         <img
           src={
