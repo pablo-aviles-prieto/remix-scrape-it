@@ -1,11 +1,7 @@
-import { Resend } from 'resend';
 import type { ProductAvailableMailDynamicData } from '~/interfaces/mail-dynamic-data';
 import { renderProductAvailableHtml } from '~/services/mail/email-templates/product-available-html';
 import { customEllipsis } from '~/utils/custom-ellipsis';
-
-const { RESEND_API_KEY, SENDER_MAIL } = process.env;
-
-const resend = new Resend(RESEND_API_KEY);
+import { resend } from '~/lib/resend';
 
 type Params = {
   emailReceiver: string;
@@ -13,10 +9,9 @@ type Params = {
 };
 
 export const productAvailableMail = async ({ emailReceiver, dynamicData }: Params) => {
-  const result = await resend.emails.send({
-    from: `ScrapeIt Info <${SENDER_MAIL}>`,
+  const result = await resend.sendMail({
     to: emailReceiver,
-    subject: `ScrapeIt! - Producto disponible ${customEllipsis(dynamicData.productName)}`,
+    subject: `Producto disponible ${customEllipsis(dynamicData.productName)}`,
     html: renderProductAvailableHtml(dynamicData),
   });
 
