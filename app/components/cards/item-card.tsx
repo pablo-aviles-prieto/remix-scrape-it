@@ -51,13 +51,12 @@ export const ItemCard = ({ item, urlItem, store }: Props) => {
               </span>
             </h2>
             {item.oldPrice && (
-              <h2 className='relative'>
+              <h2 className='flex items-start gap-1'>
                 <span className='text-lg line-through text-red-800 font-semibold italic'>
                   {item.oldPrice}
-                </span>{' '}
-                <span className='text-slate-900 text-xs text-start absolute top-1 -right-[26px]'>
-                  {item.discount}
+                  {item.currency}
                 </span>
+                <span className='text-slate-900 text-xs'>{item.discount}</span>
               </h2>
             )}
           </div>
