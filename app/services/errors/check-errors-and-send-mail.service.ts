@@ -15,7 +15,7 @@ export const getErrorsAndSendMail = async () => {
 
     // Extract the necessary information
     const numberOfErrors = errors.length;
-    const arrayOfErrorsID = errors.map((error) => error.id.toString());
+    const arrayOfErrorsID = errors.map(error => error.id.toString());
 
     // Send the email
     const params: ErrorParams = {
@@ -31,9 +31,7 @@ export const getErrorsAndSendMail = async () => {
       { $set: { notifiedByEmail: true } }
     );
 
-    console.log(
-      `Notified about ${numberOfErrors} errors and updated their status.`
-    );
+    console.log(`Notified about ${numberOfErrors} errors and updated their status.`);
   } catch (err) {
     console.error('Error while notifying about errors:', err);
   }

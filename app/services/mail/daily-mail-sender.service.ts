@@ -1,11 +1,7 @@
-import { Resend } from 'resend';
 import type { DailyMailDynamicData } from '~/interfaces/mail-dynamic-data';
+import { resend } from '~/lib/resend';
 import { renderDailyMailHtml } from '~/services/mail/email-templates/daily-mail-html';
 import { customEllipsis } from '~/utils/custom-ellipsis';
-
-const { RESEND_API_KEY, SENDER_MAIL } = process.env;
-
-const resend = new Resend(RESEND_API_KEY);
 
 type Params = {
   emailReceiver: string;
@@ -13,10 +9,9 @@ type Params = {
 };
 
 export const dailyMailSender = async ({ emailReceiver, dynamicData }: Params) => {
-  const result = await resend.emails.send({
-    from: `ScrapeIt Info <${SENDER_MAIL}>`,
+  const result = await resend.sendMail({
     to: emailReceiver,
-    subject: `ScrapeIt! - Seguimiento ${customEllipsis(dynamicData.productName)}`,
+    subject: `Seguimiento ${customEllipsis(dynamicData.productName)}`,
     html: renderDailyMailHtml(dynamicData),
   });
 
