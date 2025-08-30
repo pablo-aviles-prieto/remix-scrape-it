@@ -117,7 +117,7 @@ export const getAliexpressSingleItem = async ({ productPage }: { productPage: st
     await newPage.goto(productPage);
     await newPage.waitForLoadState('domcontentloaded');
 
-    const actualPrice = await page.$eval('.product-price-value', el => {
+    const actualPrice = await page.$eval('[class*="price-default--current"]', el => {
       return el.textContent?.trim();
     });
 
@@ -142,12 +142,13 @@ export const getAliexpressSingleItem = async ({ productPage }: { productPage: st
 
   // Retrieving the possible oldPrice and discount
   try {
-    const { oldPrice, discount } = await page.$eval('div[class*="price--original--"]', el => {
-      const spans = el.querySelectorAll('span');
-      const oldPrice = spans[0]?.textContent?.trim() || null;
-      const discount = spans[1]?.textContent?.trim().replace('-', '').replace(' dto.', '') || null;
-      return { oldPrice, discount };
+    const discount = await page.$eval('[class*="price-default--discount"]', el => {
+      return el.textContent?.trim()?.replace('-', '').replace(' dto.', '') || null;
     });
+    const oldPrice = await page.$eval('[class*="price-default--original"]', el => {
+      return el.textContent?.trim() || null;
+    });
+
     itemData =
       itemData && oldPrice && discount
         ? { ...itemData, oldPrice: parseAliexpressPrice(oldPrice), discount }
