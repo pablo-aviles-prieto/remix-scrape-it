@@ -16,14 +16,15 @@ import updatePricesCoolmodJobs from './services/jobs/items.job';
 
 const ABORT_DELAY = 45_000;
 
-// Stablish DB connection
-// TODO: reconnect this
+// Establish DB connection with retry logic
 connectDb()
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('MongoDB connection established successfully');
   })
   .catch(err => {
-    console.error('Failed to connect to MongoDB', err);
+    console.error('Failed to connect to MongoDB after all retry attempts:', err);
+    // Don't throw here - let the server start and retry on next request
+    // The connection listeners will handle reconnection attempts
   });
 
 // Load jobs for coolmod items
