@@ -23,7 +23,6 @@ connectDb()
   })
   .catch(err => {
     console.error('Failed to connect to MongoDB after all retry attempts:', err);
-    // Don't throw here - let the server start and retry on next request
     // The connection listeners will handle reconnection attempts
   });
 
