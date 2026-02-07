@@ -7,6 +7,7 @@ import { parseAmount } from '~/utils/parse-amount';
 
 const BASE_URL_WITHOUT_TRAILING_SLASH = AMAZON_BASE_URL.slice(0, -1);
 
+// TODO: Failing in a concrete item, check whats going on
 export const getAmazonSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
 
