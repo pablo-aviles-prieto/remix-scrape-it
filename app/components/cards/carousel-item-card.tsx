@@ -15,10 +15,11 @@ export const CarouselItemCard = ({ item }: Props) => {
   const navigate = useNavigate();
   const navigateToItem = () => navigate(`/item/${item.id}`);
   const sortedPrices = [...item.prices].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
   const storeImageInfo = STORE_IMAGE_MAPPER[item.store] as StoreImageInfo;
 
+  // TODO: Fix the scaling issue on the image overlapping the badge
   return (
     <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white'>
       <div className='h-[50%] overflow-hidden rounded-t-lg relative'>
