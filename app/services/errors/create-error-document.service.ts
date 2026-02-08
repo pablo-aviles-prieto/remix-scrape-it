@@ -9,7 +9,7 @@ export const createErrorDocument = async (params: Partial<IError>) => {
     console.log(
       `${new Date()}:: Error inserting error document into DB: ${
         err instanceof Error ? err.message : err
-      }`
+      }`,
     );
   }
 };

@@ -7,6 +7,23 @@ import { parseAmount } from '~/utils/parse-amount';
 
 const BASE_URL_WITHOUT_TRAILING_SLASH = AMAZON_BASE_URL.slice(0, -1);
 
+/**
+ * Extracts price string from a single Amazon price element (runs in browser context).
+ * Tries span.a-offscreen first; if empty, builds from a-price-whole + a-price-fraction.
+ */
+const getActualPriceFromPriceElement = (el: Element): string | null => {
+  const offscreen = el
+    .querySelector('span.a-offscreen')
+    ?.textContent?.trim()
+    ?.replace(/€/g, '');
+  if (offscreen) return offscreen;
+
+  const whole = el.querySelector('.a-price-whole')?.textContent?.trim() ?? '';
+  const fraction = el.querySelector('.a-price-fraction')?.textContent?.trim() ?? '';
+  const combined = (whole + fraction).replace(/€/g, '').replace(/\s/g, '').trim();
+  return combined || null;
+};
+
 // TODO: Failing in a concrete item, check whats going on
 export const getAmazonSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
@@ -24,9 +41,14 @@ export const getAmazonSingleItem = async ({ productPage }: { productPage: string
   let itemData = null;
 
   try {
-    const actualPrice = await page.$eval('span.a-price', el => {
-      return el.querySelector('span.a-offscreen')?.textContent?.trim()?.replace('€', '');
-    });
+    const actualPrice =
+      (await page.$eval('span.a-price:not(.a-text-price)', getActualPriceFromPriceElement).catch(
+        () => null
+      )) ?? (await page.$eval('span.a-price', getActualPriceFromPriceElement).catch(() => null));
+    if (actualPrice == null || actualPrice === '') {
+      await browser.close();
+      return null;
+    }
     itemData = { actualPrice, discount: undefined, oldPrice: undefined };
   } catch {
     // If the price is not found, probably is because there isn't a variant selected
@@ -50,7 +72,7 @@ export const getAmazonSingleItem = async ({ productPage }: { productPage: string
           ?.replace('€', '');
 
         return { discount, oldPrice };
-      }
+      },
     );
     itemData = { ...itemData, discount, oldPrice };
   } catch (err) {
@@ -82,7 +104,7 @@ export const getAmazonSingleItem = async ({ productPage }: { productPage: string
   };
   // Remove undefined properties from parsedItemData
   const cleanedItemData = Object.fromEntries(
-    Object.entries(parsedItemData).filter(([_, v]) => v !== undefined)
+    Object.entries(parsedItemData).filter(([_, v]) => v !== undefined),
   );
 
   await browser.close();
