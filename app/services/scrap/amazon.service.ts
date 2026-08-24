@@ -12,10 +12,7 @@ const BASE_URL_WITHOUT_TRAILING_SLASH = AMAZON_BASE_URL.slice(0, -1);
  * Tries span.a-offscreen first; if empty, builds from a-price-whole + a-price-fraction.
  */
 const getActualPriceFromPriceElement = (el: Element): string | null => {
-  const offscreen = el
-    .querySelector('span.a-offscreen')
-    ?.textContent?.trim()
-    ?.replace(/€/g, '');
+  const offscreen = el.querySelector('span.a-offscreen')?.textContent?.trim()?.replace(/€/g, '');
   if (offscreen) return offscreen;
 
   const whole = el.querySelector('.a-price-whole')?.textContent?.trim() ?? '';
@@ -24,7 +21,6 @@ const getActualPriceFromPriceElement = (el: Element): string | null => {
   return combined || null;
 };
 
-// TODO: Failing in a concrete item, check whats going on
 export const getAmazonSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
 
@@ -42,9 +38,10 @@ export const getAmazonSingleItem = async ({ productPage }: { productPage: string
 
   try {
     const actualPrice =
-      (await page.$eval('span.a-price:not(.a-text-price)', getActualPriceFromPriceElement).catch(
-        () => null
-      )) ?? (await page.$eval('span.a-price', getActualPriceFromPriceElement).catch(() => null));
+      (await page
+        .$eval('span.a-price:not(.a-text-price)', getActualPriceFromPriceElement)
+        .catch(() => null)) ??
+      (await page.$eval('span.a-price', getActualPriceFromPriceElement).catch(() => null));
     if (actualPrice == null || actualPrice === '') {
       await browser.close();
       return null;
