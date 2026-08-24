@@ -7,7 +7,7 @@ import {
 } from '~/utils/const';
 import { getBrowser } from './browser.service';
 import { scrollIncrementally } from '~/utils/scroll-incrementally';
-import type { Page } from 'playwright';
+import type { BrowserContext, Page } from 'playwright';
 import { parseAliexpressPrice } from '~/utils/parse-aliexpress-price';
 import type { ListItems, SingleItem } from '~/interfaces';
 import type { IError } from '~/interfaces/error-schema';
@@ -52,20 +52,49 @@ const retrieveFirstImage = async (page: Page) => {
   return cleanThumbnailCrop;
 };
 
-const changeLanguageAndCurrency = async (page: Page) => {
-  const clickOnCurrencySelector = await page.$('div[class*="ship-to--menuItem"]');
-  clickOnCurrencySelector?.click();
-  await page.waitForSelector('div[class*="saveBtn"]');
-  const saveBtnElement = await page.$('div[class*="saveBtn"]');
+const AWSC_FINGERPRINT_SCRIPTS = /assets\.aliexpress-media\.com\/g\/AWSC\/(uab|fireyejs)\//;
 
-  await page.evaluate(async saveBtnElement => {
+const attachAliexpressContext = async (context: BrowserContext) => {
+  // collina.js / fireyejs.js create silent WebAudio graphs and often mount a
+  // .baxia-dialog overlay that intercepts Playwright clicks.
+  await context.route(AWSC_FINGERPRINT_SCRIPTS, route => route.abort());
+};
+
+const dismissBaxiaOverlay = async (page: Page) => {
+  await page.evaluate(() => {
+    document
+      .querySelectorAll('.baxia-dialog, .baxia-dialog-mask, .baxia-dialog-wrap')
+      .forEach(el => {
+        (el as HTMLElement).style.pointerEvents = 'none';
+        (el as HTMLElement).style.display = 'none';
+      });
+  });
+};
+
+const changeLanguageAndCurrency = async (page: Page): Promise<boolean> => {
+  await dismissBaxiaOverlay(page);
+
+  const shipToAlreadySet = await page.evaluate(() => {
+    const shipTo = document.querySelector('div[class*="ship-to--menuItem"]');
+    const text = shipTo?.textContent ?? '';
+    return /España|Spain|EUR/i.test(text);
+  });
+  if (shipToAlreadySet) return false;
+
+  // DOM clicks bypass Playwright actionability (baxia-dialog-mask intercepts pointer events).
+  await page.evaluate(() => {
+    (document.querySelector('div[class*="ship-to--menuItem"]') as HTMLElement | null)?.click();
+  });
+
+  await page.waitForSelector('div[class*="saveBtn"]', { timeout: DEFAULT_TIMEOUT_SELECTOR });
+
+  await page.evaluate(async () => {
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     const elements = Array.from(document.querySelectorAll('div[class*="form-item--title"]'));
     const sendToElement =
       elements.find(element => element.textContent?.trim() === 'Enviar a') || null;
     const countrySelect = sendToElement?.nextElementSibling?.firstElementChild as HTMLElement;
-    // Opening the country select input
     (countrySelect?.firstElementChild as HTMLElement)?.click();
 
     const selectOptions = countrySelect?.lastElementChild as HTMLElement;
@@ -76,17 +105,17 @@ const changeLanguageAndCurrency = async (page: Page) => {
     targetOption?.click();
 
     await delay(100);
-    (saveBtnElement as HTMLElement)?.click();
-  }, saveBtnElement);
+    (document.querySelector('div[class*="saveBtn"]') as HTMLElement | null)?.click();
+  });
+
+  return true;
 };
 
 export const getAliexpressSingleItem = async ({ productPage }: { productPage: string }) => {
   const browser = await getBrowser();
   const context = await browser.newContext();
+  await attachAliexpressContext(context);
   const page = await context.newPage();
-
-  await page.goto(productPage);
-  await page.waitForLoadState('domcontentloaded');
 
   let itemData: SingleItem | null = null;
 
@@ -96,26 +125,16 @@ export const getAliexpressSingleItem = async ({ productPage }: { productPage: st
     searchValue: productPage,
   };
 
-  let isThereCaptcha: boolean | null = null;
   try {
-    isThereCaptcha = !!(await page.$('div.J_MIDDLEWARE_FRAME_WIDGET'));
-  } catch (err) {
-    // didn't find the captcha, so move on
-  }
-  try {
-    if (isThereCaptcha) throw new Error('Captcha');
-  } catch (err) {
-    console.log('THERE IS A CAPTCHA IN ALIEXPRESS', err);
-    console.log(':: DETAILS ON THE CAPTCHA ::', errorParams);
-    return null;
-  }
+    await page.goto(productPage);
+    await page.waitForLoadState('domcontentloaded');
+    await dismissBaxiaOverlay(page);
 
-  try {
-    await changeLanguageAndCurrency(page);
-
-    const newPage = await context.newPage();
-    await newPage.goto(productPage);
-    await newPage.waitForLoadState('domcontentloaded');
+    const didChangeLocale = await changeLanguageAndCurrency(page);
+    if (didChangeLocale) {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await dismissBaxiaOverlay(page);
+    }
 
     const actualPrice = await page.$eval('[class*="price-default--current"]', el => {
       return el.textContent?.trim();
@@ -130,35 +149,34 @@ export const getAliexpressSingleItem = async ({ productPage }: { productPage: st
       currency: availableCurrency.EUR,
       imgPath: imgPath ?? '',
     };
+
+    try {
+      const discount = await page.$eval('[class*="price-default--discount"]', el => {
+        return el.textContent?.trim()?.replace('-', '').replace(' dto.', '') || null;
+      });
+      const oldPrice = await page.$eval('[class*="price-default--original"]', el => {
+        return el.textContent?.trim() || null;
+      });
+
+      itemData =
+        itemData && oldPrice && discount
+          ? { ...itemData, oldPrice: parseAliexpressPrice(oldPrice), discount }
+          : itemData;
+    } catch {
+      // Not retrieving discount and oldPrice, so moving on
+    }
+
+    return itemData;
   } catch (err) {
     await createErrorDocument({
       ...errorParams,
       responseMessage: err instanceof Error ? err.message : JSON.stringify(err),
     });
     console.log('error retrieving aliexpress single item data', err);
-    await browser.close();
     return null;
+  } finally {
+    await browser.close();
   }
-
-  // Retrieving the possible oldPrice and discount
-  try {
-    const discount = await page.$eval('[class*="price-default--discount"]', el => {
-      return el.textContent?.trim()?.replace('-', '').replace(' dto.', '') || null;
-    });
-    const oldPrice = await page.$eval('[class*="price-default--original"]', el => {
-      return el.textContent?.trim() || null;
-    });
-
-    itemData =
-      itemData && oldPrice && discount
-        ? { ...itemData, oldPrice: parseAliexpressPrice(oldPrice), discount }
-        : itemData;
-  } catch (err) {
-    // Not retrieving discount and oldPrice, so moving on
-  }
-
-  await browser.close();
-  return itemData;
 };
 
 export const getAliexpressListItems = async ({ querySearch }: { querySearch: string }) => {
@@ -171,6 +189,7 @@ export const getAliexpressListItems = async ({ querySearch }: { querySearch: str
   const rawItems: RawItemsProps[] = [];
 
   const context = await browser.newContext();
+  await attachAliexpressContext(context);
   let page: Page;
 
   const errorParams: Partial<IError> = {
@@ -201,6 +220,7 @@ export const getAliexpressListItems = async ({ querySearch }: { querySearch: str
     try {
       await page.goto(url);
       await page.waitForLoadState('domcontentloaded');
+      await dismissBaxiaOverlay(page);
 
       await page.waitForSelector('div.search-item-card-wrapper-gallery', {
         timeout: DEFAULT_TIMEOUT_SELECTOR,

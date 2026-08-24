@@ -9,22 +9,30 @@ const updatePricesAndSendSubscriberMail = cron.schedule(
   schedules.updatePricesMorning,
   async () => {
     console.log(`JOB :: Updating tracked items and sending mails started at ${new Date()}`);
-    await updateTrackedPriceAndSendMail({ sendSubscriberMail: true });
-    await getErrorsAndSendMail();
+    try {
+      await updateTrackedPriceAndSendMail({ sendSubscriberMail: true });
+      await getErrorsAndSendMail();
+    } catch (err) {
+      console.log('JOB :: Updating tracked items and sending mails failed', err);
+    }
     console.log(`JOB :: Updating tracked items and sending mails finished at ${new Date()}`);
   },
-  { scheduled: false }
+  { scheduled: false },
 );
 
 const updatePrices = cron.schedule(
   schedules.updatePricesMidnightAndAfternoon,
   async () => {
     console.log(`JOB :: Updating tracked items started at ${new Date()}`);
-    await updateTrackedPriceAndSendMail({ sendSubscriberMail: false });
-    await getErrorsAndSendMail();
+    try {
+      await updateTrackedPriceAndSendMail({ sendSubscriberMail: false });
+      await getErrorsAndSendMail();
+    } catch (err) {
+      console.log('JOB :: Updating tracked items failed', err);
+    }
     console.log(`JOB :: Updating tracked items finished at ${new Date()}`);
   },
-  { scheduled: false }
+  { scheduled: false },
 );
 
 jobs.set('updatePricesAndSendSubscriberMail', updatePricesAndSendSubscriberMail);
