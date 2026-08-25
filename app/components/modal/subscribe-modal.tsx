@@ -65,7 +65,7 @@ export const SubscribeModal = ({
             ? 'Recibirás notificaciones diarias sobre este producto'
             : `Te notificaremos cuando llegue a ${formatAmount(
                 fetcherData?.desiredPrice ?? 0
-              )}€`
+              )}€ o menos`
         } en ${fetcherData.email}`,
         { id: 'toast-success' }
       );
@@ -100,9 +100,8 @@ export const SubscribeModal = ({
               </span>{' '}
               del producto o recibir un{' '}
               <span className='font-medium'>
-                correo cuando el producto llegue al precio
-              </span>{' '}
-              deseado
+                correo cuando el producto llegue al precio deseado o baje de él
+              </span>
             </p>
           </div>
 
@@ -119,7 +118,7 @@ export const SubscribeModal = ({
             <p className='text-sm'>
               {!isSubscribedToPrice
                 ? 'Reciba a diario un correo con los precios de este artículo'
-                : 'Indique el precio deseado al que quiere que le notifiquemos'}
+                : 'Indique el precio máximo: le avisaremos si llega a esa cantidad o baja de ella'}
             </p>
           </div>
           <TextInputField
@@ -127,7 +126,7 @@ export const SubscribeModal = ({
             description={
               !isSubscribedToPrice
                 ? 'Introduce tu email para que te llegue un correo diario'
-                : 'Introduce tu email para que te notifiquemos con el precio deseado'
+                : 'Introduce tu email para avisarte cuando el precio llegue a esa cantidad o menos'
             }
             name='subscribe-email'
             placeholder='Introduce tu email'
@@ -139,9 +138,9 @@ export const SubscribeModal = ({
           {isSubscribedToPrice ? (
             <TextInputField
               label=''
-              description='Introduce un precio para que te avisemos'
+              description='Introduce el precio máximo al que quieres que te avisemos'
               name='desired-price'
-              placeholder='Introduce el precio deseado'
+              placeholder='Introduce el precio máximo'
               type='number'
               min={0}
               step={0.01}

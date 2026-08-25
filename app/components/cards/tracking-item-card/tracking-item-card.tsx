@@ -43,8 +43,8 @@ export const TrackingItemCard = ({ item }: Props) => {
           <div>
             <h1 className='text-gray-900 font-bold text-xl line-clamp-3'>{item.name}</h1>
             <p className='mt-2 text-gray-600 text-sm'>
-              Subscríbete para que te notifiquemos cuando llegue al precio indicado o para recibir
-              diariamente en el correo el seguimiento de este producto!
+              Subscríbete para que te notifiquemos cuando llegue al precio indicado o menos, o para
+              recibir diariamente en el correo el seguimiento de este producto!
             </p>
             <PriceBlock lastPrice={lastPrice} currency={item.currency} />
           </div>

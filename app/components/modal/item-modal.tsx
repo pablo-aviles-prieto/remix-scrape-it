@@ -165,8 +165,8 @@ export const ItemModal = ({
         <div>
           <p className='text-center text-indigo-700 font-semibold text-sm'>
             {!trackingData && !trackingId
-              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para ser notificado cuando llegue al precio indicado o para recibir diariamente en el correo el seguimiento de este producto'
-              : 'Acceda al seguimiento de este producto para subscribirse y ser notificado cuando llegue al precio indicado o para recibir diariamente en el correo el seguimiento de este producto'}
+              ? 'No hay seguimiento para este producto. Puede crearlo y subscribirse para ser notificado cuando llegue al precio indicado o menos, o para recibir diariamente en el correo el seguimiento de este producto'
+              : 'Acceda al seguimiento de este producto para subscribirse y ser notificado cuando llegue al precio indicado o menos, o para recibir diariamente en el correo el seguimiento de este producto'}
           </p>
         </div>
       </div>
