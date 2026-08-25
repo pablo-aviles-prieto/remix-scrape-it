@@ -2,7 +2,7 @@ import Skeleton from 'react-loading-skeleton';
 
 export const CarouselItemCardSkeleton = () => {
   return (
-    <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white'>
+    <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white hover:cursor-grab active:cursor-grabbing'>
       <div className='h-[50%] overflow-hidden rounded-lg'>
         <Skeleton height='90%' width='91%' className='ml-4 mt-4 rounded-lg' />
       </div>

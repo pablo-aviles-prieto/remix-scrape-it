@@ -1,8 +1,7 @@
-import { useNavigate } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 import { format } from 'date-fns';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { dateFormat } from '~/utils/const';
-import { RegularButton } from '../styles/regular-button';
 import type { StoreImageInfo } from '../styles/store-badge';
 import { STORE_IMAGE_MAPPER, StoreBadge } from '../styles/store-badge';
 import { parsedDisplayedPriceString } from '~/utils/parse-displayed-price-string';
@@ -12,8 +11,6 @@ type Props = {
 };
 
 export const CarouselItemCard = ({ item }: Props) => {
-  const navigate = useNavigate();
-  const navigateToItem = () => navigate(`/item/${item.id}`);
   const sortedPrices = [...item.prices].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
@@ -21,7 +18,7 @@ export const CarouselItemCard = ({ item }: Props) => {
 
   // TODO: Fix the scaling issue on the image overlapping the badge
   return (
-    <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white'>
+    <div className='shadow-lg m-2 h-[36rem] rounded-lg bg-white hover:cursor-grab active:cursor-grabbing'>
       <div className='h-[50%] overflow-hidden rounded-t-lg relative'>
         <StoreBadge store={item.store} storeImageInfo={storeImageInfo} />
         <img
@@ -62,7 +59,7 @@ export const CarouselItemCard = ({ item }: Props) => {
         </div>
         <div className='flex justify-between'>
           <a
-            className='select-none rounded-lg bg-transparent py-3 px-6 text-center align-middle font-sans text-xs font-bold 
+            className='cursor-pointer select-none rounded-lg bg-transparent py-3 px-6 text-center align-middle font-sans text-xs font-bold 
             uppercase text-indigo-600 shadow-md shadow-indigo-300/20 transition-all hover:shadow-lg border border-indigo-600
            hover:shadow-indigo-300/30 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] 
             active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
@@ -72,7 +69,14 @@ export const CarouselItemCard = ({ item }: Props) => {
           >
             Visitar página
           </a>
-          <RegularButton content='Seguimiento' onClick={navigateToItem} />
+          <Link
+            to={`/item/${item.id}`}
+            className='cursor-pointer select-none rounded-lg border-0 bg-indigo-600 py-3 px-6 text-center align-middle font-sans text-xs font-bold
+            uppercase text-slate-200 shadow-md shadow-indigo-500/20 transition-all hover:shadow-lg
+            hover:shadow-indigo-500/40 active:opacity-[0.85] active:shadow-none'
+          >
+            Seguimiento
+          </Link>
         </div>
       </div>
     </div>
