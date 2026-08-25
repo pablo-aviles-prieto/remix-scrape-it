@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import * as Slider from 'react-slick';
 import { CarouselItemCard } from '~/components/cards/carousel-item-card';
 import { CarouselItemCardSkeleton } from '~/components/styles/carousel-item-card-skeleton';
+import useWindowWidth from '~/hooks/use-window-width';
 import type { TrackingResponse } from '~/interfaces/tracking-schema';
 import { getAllTrackedItems } from '~/services/tracking/get-all-tracked-items.service';
 import { errorMsgs } from '~/utils/const';
@@ -33,8 +34,19 @@ export const loader = async () => {
   }
 };
 
+const SLIDER_TWO_SLIDES_BELOW = 1100;
+const SLIDER_ONE_SLIDE_BELOW = 800;
+
+const getSlidesToShow = (width?: number) => {
+  if (width === undefined || width >= SLIDER_TWO_SLIDES_BELOW) return 3;
+  if (width >= SLIDER_ONE_SLIDE_BELOW) return 2;
+  return 1;
+};
+
 export default function Index() {
   const { trackedItemsPromise, ok, error } = useLoaderData<LoaderResponse>();
+  const innerWidth = useWindowWidth();
+  const slidesToShow = getSlidesToShow(innerWidth);
 
   if (!ok && error) {
     return (
@@ -49,18 +61,18 @@ export default function Index() {
     speed: 500,
     arrows: true,
     swipeToSlide: true,
-    slidesToShow: 3,
+    slidesToShow,
     slidesToScroll: 1,
     autoplaySpeed: 2_500,
     responsive: [
       {
-        breakpoint: 1100,
+        breakpoint: SLIDER_TWO_SLIDES_BELOW,
         settings: {
           slidesToShow: 2,
         },
       },
       {
-        breakpoint: 800,
+        breakpoint: SLIDER_ONE_SLIDE_BELOW,
         settings: {
           arrows: false,
           slidesToShow: 1,
@@ -74,7 +86,7 @@ export default function Index() {
       <Suspense
         fallback={
           <Slider2 {...sliderSettings}>
-            {Array.from({ length: 3 }, (_, index) => (
+            {Array.from({ length: slidesToShow }, (_, index) => (
               <CarouselItemCardSkeleton key={index} />
             ))}
           </Slider2>
